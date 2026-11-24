@@ -108,7 +108,7 @@ async function main() {
     let total = 0;
     const maiores = [];
     for (const it of itens) {
-      const v = Number(it.valorLiquido) || 0;
+      const v = Math.abs(Number(it.valorLiquido) || 0);
       total += v;
       const tipo = (it.tipoDespesa || "OUTROS").replace(/\.$/, "");
       porTipo[tipo] = (porTipo[tipo] ?? 0) + v;
