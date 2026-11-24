@@ -40,6 +40,7 @@ async function lerZip(zip, padrao, cadaLinha) {
   console.log("   ", n, "linhas de", padrao);
 }
 
+const limpo = v => (!v || /^#(NULO|NE)#?$/i.test(v) || v === "-1") ? "" : v.trim();
 const soma = (obj, chave, v) => { obj[chave] = (obj[chave] || 0) + v; };
 const ordena = lista => lista.sort((a, b) => b.votos - a.votos);
 const eleito = s => /^ELEITO/.test(s || "");
@@ -55,7 +56,7 @@ async function lerMunzona(ano, cargosQueQuero, ufsQueQuero) {
     if (ufsQueQuero && !ufsQueQuero.includes(uf) && cargo !== 1) return;
     const k = [uf, cargo, g("NR_TURNO"), g("CD_MUNICIPIO"), g("SQ_CANDIDATO")].join("|");
     let r = porMun.get(k);
-    if (!r) porMun.set(k, r = { nome: g("NM_URNA_CANDIDATO"), partido: g("SG_PARTIDO"), numero: g("NR_CANDIDATO"), sit: g("DS_SIT_TOT_TURNO"), mun: g("NM_MUNICIPIO"), votos: 0 });
+    if (!r) porMun.set(k, r = { nome: g("NM_URNA_CANDIDATO"), partido: g("SG_PARTIDO"), numero: g("NR_CANDIDATO"), sit: g("DS_SIT_TOT_TURNO"), mun: g("NM_MUNICIPIO"), fed: limpo(g("SG_FEDERACAO")), fedNome: limpo(g("NM_FEDERACAO")), colig: limpo(g("DS_COMPOSICAO_COLIGACAO")), votos: 0 });
     const vv = g("QT_VOTOS_NOMINAIS_VALIDOS");
     r.votos += +(vv !== undefined ? vv : g("QT_VOTOS_NOMINAIS")) || 0;
   });
@@ -69,9 +70,9 @@ function agrupar(porMun) {
     const [uf, cargo, turno, mun, sq] = k.split("|");
     if (uf === UF) nomesMun[mun] = r.mun;
     const ke = `${uf}|${cargo}|${turno}`;
-    ((estado[ke] ??= {})[sq] ??= { nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, votos: 0 }).votos += r.votos;
+    ((estado[ke] ??= {})[sq] ??= { nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, fed: r.fed, fedNome: r.fedNome, colig: r.colig, votos: 0 }).votos += r.votos;
     const km = `${mun}|${cargo}|${turno}`;
-    ((municipio[km] ??= {})[sq] ??= { nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, votos: 0 }).votos += r.votos;
+    ((municipio[km] ??= {})[sq] ??= { nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, fed: r.fed, fedNome: r.fedNome, colig: r.colig, votos: 0 }).votos += r.votos;
   }
   const lista = o => ordena(Object.values(o));
   return { estado: Object.fromEntries(Object.entries(estado).map(([k, v]) => [k, lista(v)])), municipio: Object.fromEntries(Object.entries(municipio).map(([k, v]) => [k, lista(v)])), nomesMun };
@@ -88,18 +89,51 @@ async function lerSecao(ano, arquivo, cargos, ufFiltro) {
     const mun = g("CD_MUNICIPIO"), kl = `${g("NR_ZONA")}|${g("NR_LOCAL_VOTACAO")}`;
     const L = ((locais[mun] ??= {})[kl] ??= { zona: g("NR_ZONA"), nome: g("NM_LOCAL_VOTACAO"), end: g("DS_LOCAL_VOTACAO_ENDERECO"), secoes: new Set(), votos: {} });
     L.secoes.add(g("NR_SECAO"));
-    soma((L.votos[`${CARGOS[cargo]}|${g("NR_TURNO")}`] ??= {}), g("NM_VOTAVEL"), +g("QT_VOTOS") || 0);
+    const q = +g("QT_VOTOS") || 0, kc = `${CARGOS[cargo]}|${g("NR_TURNO")}`;
+    soma((L.votos[kc] ??= {}), g("NM_VOTAVEL"), q);
+    if ([6, 7, 13].includes(cargo)) { const nr = String(g("NR_VOTAVEL") || ""); if (/^\d+$/.test(nr) && !["95", "96", "97"].includes(nr)) soma(((L.partidos ??= {})[kc] ??= {}), nr.slice(0, 2), q); }
   });
   // vira listas ordenadas e enxutas
   const saida = {};
   for (const [mun, ls] of Object.entries(locais)) {
     saida[mun] = Object.values(ls).map(L => ({
       zona: L.zona, nome: L.nome, end: L.end, secoes: L.secoes.size,
-      votos: Object.fromEntries(Object.entries(L.votos).map(([k, o]) => [k, Object.entries(o).sort((a, b) => b[1] - a[1])]))
+      votos: Object.fromEntries(Object.entries(L.votos).map(([k, o]) => [k, Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, 25)])),
+      partidos: L.partidos ? Object.fromEntries(Object.entries(L.partidos).map(([k, o]) => [k, Object.entries(o).sort((a, b) => b[1] - a[1])])) : undefined
     })).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
   }
   return saida;
 }
+
+// Votos de legenda (no número do partido) por município
+async function lerLegenda(ano, cargos, uf) {
+  const leg = {}; // mun|cargo -> {siglaPartido: votos}
+  try {
+    const zip = baixar(`partido_${ano}.zip`, `${CDN}/votacao_partido_munzona/votacao_partido_munzona_${ano}.zip`);
+    await lerZip(zip, `votacao_partido_munzona_${ano}_${uf}.csv`, g => {
+      const cargo = +g("CD_CARGO"); if (!cargos.includes(cargo) || g("NR_TURNO") !== "1") return;
+      soma((leg[`${g("CD_MUNICIPIO")}|${cargo}`] ??= {}), g("SG_PARTIDO"), +g("QT_VOTOS_LEGENDA_VALIDOS") || 0);
+    });
+  } catch (e) { console.warn("Sem votos de legenda:", e.message); }
+  return leg;
+}
+// Resumo por partido/federação de um cargo proporcional (vereador, deputado)
+function porPartido(cands, legenda = {}) {
+  const P = {};
+  for (const c of cands) {
+    const k = c.fed || c.partido;
+    const p = (P[k] ??= { sigla: k, nome: c.fed ? (c.fedNome || c.fed) : c.partido, federacao: !!c.fed, partidos: [], nominais: 0, legenda: 0, cadeiras: 0, candidatos: 0 });
+    if (!p.partidos.includes(c.partido)) p.partidos.push(c.partido);
+    p.nominais += c.votos; p.candidatos++; if (eleito(c.sit)) p.cadeiras++;
+  }
+  const fedDe = Object.fromEntries(cands.map(c => [c.partido, c.fed || c.partido]));
+  for (const [sigla, v] of Object.entries(legenda)) { const k = fedDe[sigla] || sigla; (P[k] ??= { sigla: k, nome: k, federacao: false, partidos: [sigla], nominais: 0, legenda: 0, cadeiras: 0, candidatos: 0 }).legenda += v; }
+  const lista = Object.values(P).map(p => ({ ...p, total: p.nominais + p.legenda })).sort((a, b) => b.cadeiras - a.cadeiras || b.total - a.total);
+  const validos = lista.reduce((t, p) => t + p.total, 0), vagas = lista.reduce((t, p) => t + p.cadeiras, 0);
+  const qe = vagas ? Math.round(validos / vagas) : 0;
+  return { validos, vagas, quociente: qe, lista };
+}
+const enxuto = c => { const o = { nome: c.nome, partido: c.partido, numero: c.numero, sit: c.sit, votos: c.votos }; if (c.fed) o.fed = c.fed; return o; };
 
 const turnos = (fonte, chave, cargo) => {
   const t = {};
@@ -117,7 +151,8 @@ async function gravar(caminho, dados) {
 async function ano2024() {
   console.log(`2024 · ${UF}`);
   const { municipio, nomesMun } = agrupar(await lerMunzona(2024, [11, 13], [UF]));
-  const locais = await lerSecao(2024, UF, [11], UF);
+  const locais = await lerSecao(2024, UF, [11, 13], UF);
+  const legenda = await lerLegenda(2024, [13], UF);
   const indice = [];
   for (const [cd, nome] of Object.entries(nomesMun).sort((a, b) => a[1].localeCompare(b[1], "pt-BR"))) {
     const prefeito = turnos(municipio, cd, 11);
@@ -127,7 +162,7 @@ async function ano2024() {
     await gravar(`${SAIDA}/2024/${UF}/m/${cd}.json`, {
       cd, nome, ano: 2024,
       prefeito,
-      vereadores: { eleitos: so(ver, c => eleito(c.sit)), maisVotados: ver.slice(0, 30) },
+      vereadores: { eleitos: so(ver, c => eleito(c.sit)).map(enxuto), todos: ver.map(enxuto), partidos: porPartido(ver, legenda[`${cd}|13`]) },
       locais: locais[cd] || []
     });
   }
@@ -148,17 +183,19 @@ async function ano2026() {
   }
   const brasilL = Object.fromEntries(Object.entries(brasil).map(([t, o]) => [t, ordena(Object.values(o))]));
   await gravar(`${SAIDA}/2026/brasil.json`, { presidente: brasilL });
+  const legenda = await lerLegenda(2026, [6, 7], UF);
+  const somaLeg = (L, cargo) => { const o = {}; for (const [k, v] of Object.entries(L)) if (k.endsWith(`|${cargo}`)) for (const [p, q] of Object.entries(v)) soma(o, p, q); return o; };
 
   await gravar(`${SAIDA}/2026/${UF}/estado.json`, {
     uf: UF,
     presidente: turnos(estado, UF, 1),
     governador: turnos(estado, UF, 3),
     senador: turnos(estado, UF, 5),
-    depFederal: { eleitos: so(estado[`${UF}|6|1`], c => eleito(c.sit)), maisVotados: (estado[`${UF}|6|1`] || []).slice(0, 40) },
-    depEstadual: { eleitos: so(estado[`${UF}|7|1`], c => eleito(c.sit)), maisVotados: (estado[`${UF}|7|1`] || []).slice(0, 60) }
+    depFederal: { eleitos: so(estado[`${UF}|6|1`], c => eleito(c.sit)), maisVotados: (estado[`${UF}|6|1`] || []).slice(0, 40), partidos: porPartido(estado[`${UF}|6|1`] || [], somaLeg(legenda, 6)) },
+    depEstadual: { eleitos: so(estado[`${UF}|7|1`], c => eleito(c.sit)), maisVotados: (estado[`${UF}|7|1`] || []).slice(0, 60), partidos: porPartido(estado[`${UF}|7|1`] || [], somaLeg(legenda, 7)) }
   });
 
-  const locais = await lerSecao(2026, UF, [1, 3, 5], UF);
+  const locais = await lerSecao(2026, UF, [1, 3, 5, 6, 7], UF);
   const indice = [];
   for (const [cd, nome] of Object.entries(nomesMun).sort((a, b) => a[1].localeCompare(b[1], "pt-BR"))) {
     indice.push({ cd, nome });
@@ -167,8 +204,8 @@ async function ano2026() {
       presidente: turnos(municipio, cd, 1),
       governador: turnos(municipio, cd, 3),
       senador: turnos(municipio, cd, 5),
-      depFederal: (municipio[`${cd}|6|1`] || []).slice(0, 15),
-      depEstadual: (municipio[`${cd}|7|1`] || []).slice(0, 15),
+      depFederal: { todos: (municipio[`${cd}|6|1`] || []).map(enxuto), partidos: porPartido(municipio[`${cd}|6|1`] || [], legenda[`${cd}|6`]).lista },
+      depEstadual: { todos: (municipio[`${cd}|7|1`] || []).map(enxuto), partidos: porPartido(municipio[`${cd}|7|1`] || [], legenda[`${cd}|7`]).lista },
       locais: locais[cd] || []
     });
   }
