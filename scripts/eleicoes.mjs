@@ -33,7 +33,7 @@ async function lerZip(zip, padrao, cadaLinha) {
     if (!bruta) continue;
     const campos = bruta.replace(/^"|"\r?$/g, "").split('";"');
     if (campos[0] === "DT_GERACAO") { cab = Object.fromEntries(campos.map((c, i) => [c, i])); continue; }
-    if (!cab) continue;
+    if (!cab) continue; if (n < 2) console.log("DIAG", JSON.stringify(Object.keys(cab)), JSON.stringify(campos));
     cadaLinha(c => campos[cab[c]], n++);
   }
   console.log("   ", n, "linhas de", padrao);
