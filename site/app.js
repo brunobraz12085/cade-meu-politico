@@ -17,33 +17,7 @@ const salvarMeu = (id, v) => { try { const m = meus(); m[id] = v; localStorage.s
 const TIPOS = {PL:"PL", PLP:"PLP", PEC:"PEC", PDL:"PDL", MPV:"MP"};
 const siglaDe = nome => TIPOS[(nome || "").split(" ")[0]];
 
-// estilo extra das novas telas
-document.head.insertAdjacentHTML("beforeend", `<style>
-.previa{background:var(--hi);color:#141414;border-radius:12px;padding:12px 14px;font-size:14px;margin:4px 0 14px}
-.previa b{display:block;font-size:15px}
-.tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 14px;margin-bottom:4px;border-bottom:1px solid var(--line)}
-.tabs a{flex:none;text-decoration:none;font:700 15px Archivo;padding:10px 14px;border-radius:999px;min-height:44px;display:flex;align-items:center}
-.tabs a.on{background:var(--ink);color:var(--bg)}
-.sec{font-weight:900;font-size:13px;text-transform:none;color:var(--mute);margin:22px 0 8px;letter-spacing:.02em}
-.news{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
-.news h3{font-weight:900;font-size:20px;line-height:1.15;margin:4px 0 8px}
-.news p{margin:0 0 10px}
-.lbl{font-weight:800;font-size:13px;color:var(--mute);display:block;margin-bottom:2px}
-.porque{background:light-dark(#f3f0e6,#262420);border-radius:12px;padding:12px;margin:10px 0}
-.fonte{font-size:13px;color:var(--mute)}
-.proj{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;text-decoration:none}
-.proj:hover{border-color:var(--ink)}
-.proj h3{font-weight:900;font-size:19px;line-height:1.15;margin:4px 0 6px}
-.mini{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--line);margin:10px 0 6px}
-.mini i{display:block;height:100%}
-.muda{background:light-dark(#eef3ff,#1b2233);border-left:4px solid var(--sim);border-radius:10px;padding:12px 14px;margin:12px 0}
-.oficial{font-size:14px;color:var(--mute)}
-details{margin-top:14px}summary{cursor:pointer;font-weight:700;padding:8px 0}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-select.busca,#local{width:100%;font:16px Archivo;padding:10px 14px;min-height:44px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:12px}
-.vazio{color:var(--mute);padding:14px;border:1px dashed var(--line);border-radius:12px}
-</style>`);
+
 
 async function json(url, opcional) {
   if (cache[url]) return cache[url];
@@ -77,16 +51,31 @@ function placarUF(v, deps) {
   return {s, n, tot: deps.length};
 }
 
+const TITULOS = {noticias:"Notícias", votacoes:"Votações", politicos:"Seus políticos", gastos:"Gastos", eleicoes:"Eleições"};
 function topo(uf, aba) {
-  return `<a class="back" href="#inicio">← Trocar estado</a><h1>${NOMES[uf]}</h1>
-  <div class="previa"><b>Versão de prévia</b>Os novos deputados e senadores eleitos em 2026 tomam posse em 1º de fevereiro de 2027 e vão aparecer aqui automaticamente. Até lá, você vê o mandato atual.</div>
-  <nav class="tabs">${ABAS.map(([k, t]) => `<a href="#${uf}/${k}" class="${k === aba ? "on" : ""}">${t}</a>`).join("")}</nav>`;
+  return `<h1>${TITULOS[aba] || ""}</h1>
+  ${aba === "noticias" ? `<div class="previa"><span>⏳</span><span><b>Prévia gratuita.</b> Os eleitos em 2026 tomam posse em 1º de fevereiro de 2027 e entram aqui automaticamente. Até lá, você vê o mandato atual.</span></div>` : ""}`;
+}
+const ICONES = {
+  noticias: '<path d="M4 5h13v14H6a2 2 0 0 1-2-2V5Z"/><path d="M17 9h3v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/>',
+  votacoes: '<path d="m9 12 2 2 4-4"/><rect x="3" y="4" width="18" height="16" rx="3"/>',
+  politicos: '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2A4.5 4.5 0 0 1 21 19"/>',
+  gastos: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h3"/>',
+  eleicoes: '<path d="M5 11h14l-1 9H6l-1-9Z"/><path d="M9 11V5h6v6"/><path d="M10 8h4"/>'
+};
+function menu(uf, aba) {
+  const n = $("bnav"), pill = $("ufpill");
+  if (!uf) { n.hidden = true; pill.hidden = true; return; }
+  pill.hidden = false; pill.textContent = `📍 ${NOMES[uf]} · trocar`;
+  n.hidden = false;
+  n.innerHTML = `<div class="in">${Object.keys(TITULOS).map(k => `<a href="#${uf}/${k}" class="${k === aba ? "on" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONES[k]}</svg>${k === "politicos" ? "Políticos" : TITULOS[k]}</a>`).join("")}</div>`;
 }
 
 function home() {
-  $("app").innerHTML = `<h1>Qual é o seu estado?</h1>
-  <p class="lead">O que está acontecendo na política, explicado de um jeito simples: o que muda na sua vida, como votaram e quanto gastaram os políticos que representam você.</p>
-  <div class="ufs">${Object.keys(NOMES).map(u => `<a class="uf" href="#${u}/noticias" aria-label="${NOMES[u]}">${u}</a>`).join("")}</div>`;
+  menu(null);
+  $("app").innerHTML = `<h1>Política explicada de um jeito simples.</h1>
+  <p class="lead">O que muda na sua vida, como votaram e quanto gastaram os políticos que representam você, e o resultado da eleição na sua cidade. Escolha o seu estado:</p>
+  <div class="ufs">${Object.keys(NOMES).map(u => `<a class="uf" href="#${u}/noticias"><b>${u}</b><span>${NOMES[u]}</span></a>`).join("")}</div>`;
 }
 
 function cartaoNoticia(n) {
@@ -98,22 +87,22 @@ function cartaoNoticia(n) {
 
 async function abaNoticias(uf) {
   const est = NOT.estados?.[uf] || [];
-  return `<div class="sec">BRASIL · o que pesa no bolso de todo mundo</div>
+  return `<div class="chips"><a class="chip" href="#${uf}/glossario" style="text-decoration:none">📖 Dicionário da política</a></div><div class="sec">Brasil · o que pesa no bolso de todo mundo</div>
   ${NOT.brasil?.length ? NOT.brasil.map(cartaoNoticia).join("") : '<div class="vazio">As notícias do dia chegam em breve.</div>'}
-  <div class="sec">${NOMES[uf].toUpperCase()} · o que pesa só aqui</div>
+  <div class="sec">${NOMES[uf]} · o que pesa só aqui</div>
   ${est.length ? est.map(cartaoNoticia).join("") : `<div class="vazio">Sem novidade importante em ${NOMES[uf]} nos últimos dias. Quando acontecer algo que mexa com o seu bolso ou a sua rotina, aparece aqui.</div>`}
   <p class="note">Só entram notícias que mexem com o bolso ou a rotina das pessoas. Os resumos são nossos; a notícia completa está na fonte.</p>`;
 }
 
 async function blocoPauta() {
   const P = await json("dados/pauta.json", true);
-  const it = P?.itens || [];
-  if (!it.length) return `<div class="sec">ESTA SEMANA NA CÂMARA</div><div class="vazio">Nenhuma votação marcada no plenário nos próximos dias.</div>`;
-  return `<div class="sec">VAI SER VOTADO NESTA SEMANA · ${it.length}</div>
+  const it = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
+  if (!it.length) return `<div class="sec">Esta semana na Câmara</div><div class="vazio">Nenhuma votação marcada no plenário nos próximos dias.</div>`;
+  return `<div class="sec">Vai ser votado nesta semana <span>${it.length}</span></div>
   <p class="pt" style="margin-top:0">Projetos na pauta do plenário da Câmara. Estar na pauta não garante que vai ser votado.</p>
-  ${it.slice(0, 6).map(x => `<a class="row" style="display:block;text-decoration:none" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(PROJ[x.projeto]?.apelido || x.projeto)}</b> <span class="pt">· ${dataBR(x.data)}${PROJ[x.projeto] ? " · " + esc(x.projeto) : ""}</span><br><span class="pt">${esc(PROJ[x.projeto]?.muda || limpa(x.ementa).slice(0, 170))}</span></a>`).join("")}
+  <div class="card">${it.slice(0, 6).map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(PROJ[x.projeto]?.apelido || x.projeto)}</b> <span class="pt">· ${dataBR(x.data)}${PROJ[x.projeto] ? " · " + esc(x.projeto) : ""}</span><br><span class="pt">${esc(PROJ[x.projeto]?.muda || limpa(x.ementa).slice(0, 170))}</span></a>`).join("")}</div>
   ${it.length > 6 ? `<details><summary>Ver os outros ${it.length - 6}</summary>${it.slice(6).map(x => `<a class="row" style="display:block;text-decoration:none" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.projeto)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 170))}</span></a>`).join("")}</details>` : ""}
-  <div class="sec">JÁ VOTADOS</div>`;
+  <div class="sec">Já votados</div>`;
 }
 
 async function abaVotacoes(uf, D) {
@@ -213,71 +202,128 @@ async function compartilhar(uf, nome) {
 
 async function abaPoliticos(uf, D) {
   const k = busca.toLowerCase(), r = D.deputados.filter(d => (d.nome + d.partido).toLowerCase().includes(k));
-  return `<div class="sec">SENADORES · ${D.senadores.length}</div>
+  return `<div class="sec">Senadores <span>${D.senadores.length}</span></div>
   <div class="list">${D.senadores.map(s => `<a class="dep" href="#${uf}/s/${s.id}">${foto(s)}<span><span class="nm">${esc(s.nome)}</span><br><span class="pt">${esc(s.partido)} · Senado</span></span><span class="v tag">Ver</span></a>`).join("")}</div>
-  <div class="sec">DEPUTADOS FEDERAIS · ${D.deputados.length}</div>
+  <div class="sec">Deputados federais <span>${D.deputados.length}</span></div>
   <input type="search" id="q" value="${esc(busca)}" placeholder="Buscar nome ou partido" aria-label="Buscar">
   <div class="list">${r.map(d => `<a class="dep" href="#${uf}/d/${d.id}">${foto(d)}<span><span class="nm">${esc(d.nome)}</span><br><span class="pt">${esc(d.partido)} · Câmara</span></span><span class="v tag">Ver</span></a>`).join("") || '<div class="vazio">Ninguém encontrado.</div>'}</div>
-  <div class="sec">DEPUTADOS ESTADUAIS</div><div class="vazio">Entram estado por estado, começando por Goiás.</div>`;
+  <div class="sec">Deputados estaduais</div><div class="vazio">Entram estado por estado, começando por Goiás.</div>`;
 }
 
 async function abaGastos(uf, D) {
   const r = [...D.deputados].sort((a, b) => b.gastos.total - a.gastos.total), max = r[0]?.gastos.total || 1;
   return `<p class="lead" style="margin-top:12px">Cada deputado federal recebe uma verba mensal para custos do trabalho: combustível, passagens, escritório, divulgação. Veja quanto cada um de ${NOMES[uf]} já gastou em ${D.ano}, do maior para o menor.</p>
-  ${r.map((d, i) => `<a class="rk" href="#${uf}/d/${d.id}"><b>${i + 1}º</b><span><span class="nm" style="font-size:15px">${esc(d.nome)}</span> <span class="pt">${esc(d.partido)}</span><div class="t"><i style="width:${d.gastos.total / max * 100}%"></i></div></span><span>${brl(d.gastos.total)}</span></a>`).join("")}`;
+  <div class="card">${r.map((d, i) => `<a class="rk" href="#${uf}/d/${d.id}"><b>${i + 1}º</b><span><span class="nm" style="font-size:15px">${esc(d.nome)}</span> <span class="pt">${esc(d.partido)}</span><div class="t"><i style="width:${d.gastos.total / max * 100}%"></i></div></span><span>${brl(d.gastos.total)}</span></a>`).join("")}</div>`;
 }
 
-let eleAno = "2026";
+let eleAno = "2026", cidAba = null, buscaCand = "";
 const fmtN = n => (n || 0).toLocaleString("pt-BR");
-const titulo = s => String(s || "").toLowerCase().replace(/(^|\s|-)(\S)/g, (m, a, c) => a + c.toUpperCase());
-function resultado(lista, max = 8) {
+const titulo = s => String(s || "").toLowerCase().replace(/(^|\s|-|\()(\S)/g, (m, a, c) => a + c.toUpperCase()).replace(/\b(De|Da|Do|Dos|Das|E)\b/g, m => m.toLowerCase());
+const ehBN = n => /^VOTO (BRANCO|NULO)|^BRANCO|^NULO/i.test(n || "");
+const sitTag = s => /^ELEITO POR M/i.test(s) ? '<span class="v el">Eleito por média</span>' : /^ELEITO/i.test(s) ? '<span class="v el">Eleito</span>' : /SUPLENTE/i.test(s) ? '<span class="v tag">Suplente</span>' : /2º TURNO/i.test(s) ? '<span class="v tag">Foi ao 2º turno</span>' : '<span class="v tag">Não eleito</span>';
+// Lista de candidatos com barra e porcentagem (branco e nulo ficam fora da conta)
+function resultado(lista, max = 99, opts = {}) {
   if (!lista?.length) return '<div class="vazio">Sem dados.</div>';
-  const tot = lista.reduce((t, c) => t + (c.votos ?? c[1]), 0) || 1;
-  return lista.slice(0, max).map(c => {
-    const nome = c.nome ?? c[0], v = c.votos ?? c[1], el = /^ELEITO/.test(c.sit || "");
-    return `<div class="rk"><span></span><span><span class="nm" style="font-size:15px">${esc(titulo(nome))}</span> <span class="pt">${esc(c.partido || "")}${el ? " · <b>eleito</b>" : c.sit === "2º TURNO" ? " · foi ao 2º turno" : ""}</span><div class="t"><i style="width:${v / tot * 100}%;background:${el ? "var(--sim)" : "var(--mute)"}"></i></div></span><span>${(v / tot * 100).toFixed(1)}%<br><span class="pt" style="font-weight:400">${fmtN(v)}</span></span></div>`;
-  }).join("");
+  const nm = c => c.nome ?? c[0], vt = c => c.votos ?? c[1];
+  const tot = lista.filter(c => !ehBN(nm(c))).reduce((t, c) => t + vt(c), 0) || 1;
+  return `<div class="card">${lista.slice(0, max).map((c, i) => {
+    const nome = nm(c), v = vt(c), bn = ehBN(nome), el = /^ELEITO/.test(c.sit || "");
+    const part = opts.mapa && !c.partido ? opts.mapa(nome) : c.partido;
+    return `<div class="rk"><b>${bn ? "" : i + 1}</b><span><span class="nm" style="font-size:15px">${esc(titulo(nome))}</span> <span class="pt">${esc(part || "")}${c.numero ? " · " + esc(c.numero) : ""}</span>
+    ${c.colig ? `<div class="pt" style="font-size:12.5px">Coligação: ${esc(c.colig)}</div>` : ""}
+    ${!bn ? `<div class="t"><i style="width:${v / tot * 100}%;${el ? "background:var(--ok)" : ""}"></i></div>` : ""}
+    ${c.sit && opts.sit !== false ? `<div style="margin-top:6px">${sitTag(c.sit)}</div>` : ""}</span>
+    <span>${bn ? "" : (v / tot * 100).toFixed(1).replace(".", ",") + "%"}<br><span class="pt" style="font-weight:400">${fmtN(v)} votos</span></span></div>`;
+  }).join("")}</div>`;
 }
 function blocoTurnos(t, nome) {
   if (!t || !Object.keys(t).length) return "";
-  return Object.keys(t).sort().reverse().map(n => `<div class="sec">${nome.toUpperCase()} · ${n}º TURNO</div>${resultado(t[n])}`).join("");
+  return Object.keys(t).sort().reverse().map(n => `<div class="sec">${esc(nome)} · ${n}º turno</div>${resultado(t[n])}`).join("");
+}
+// Partidos/federações com votos e cadeiras
+function blocoPartidos(P, todos, comCadeiras = true) {
+  const lista = Array.isArray(P) ? P : P?.lista;
+  if (!lista?.length) return '<div class="vazio">Sem dados por partido.</div>';
+  return lista.filter(p => p.total > 0 || p.cadeiras).map(p => {
+    const cands = (todos || []).filter(c => p.partidos.includes(c.partido));
+    return `<details><summary><span class="party" style="flex:1"><span><b>${esc(p.federacao ? p.sigla : p.sigla)}</b>${p.federacao ? ` <span class="pt">· federação (${esc(p.partidos.join(", "))})</span>` : ""}<br><span class="pt">${fmtN(p.total)} votos</span></span>${comCadeiras ? `<span class="seats ${p.cadeiras ? "" : "z"}">${p.cadeiras} ${p.cadeiras === 1 ? "cadeira" : "cadeiras"}</span>` : ""}</span></summary>
+    ${p.federacao && p.nome !== p.sigla ? `<p class="pt" style="margin:0 0 8px">${esc(p.nome)}</p>` : ""}
+    <p class="pt" style="margin:0 0 8px">${fmtN(p.nominais)} votos nos candidatos + ${fmtN(p.legenda)} votos só no número do partido (legenda)</p>
+    ${cands.length ? resultado(cands, 999, {}) : ""}</details>`;
+  }).join("");
+}
+function kpisProp(P, vagaTxt) {
+  if (!P || Array.isArray(P) || !P.vagas) return "";
+  return `<div class="kpis"><div class="kpi"><b>${P.vagas}</b><span>${vagaTxt}</span></div><div class="kpi"><b>${fmtN(P.quociente)}</b><span>votos para garantir 1 cadeira (quociente)</span></div><div class="kpi"><b>${fmtN(P.validos)}</b><span>votos válidos</span></div></div>
+  <p class="pt">Na eleição de vereador e deputado, primeiro conta o total do partido ou federação. Cada vez que ele bate o quociente, ganha uma cadeira, que vai para os seus candidatos mais votados.</p>`;
 }
 async function abaEleicoes(uf) {
-  const chips = `<div class="chips" style="margin-top:12px">${["2026", "2024"].map(a => `<button class="chip" aria-selected="${a === eleAno}" data-ano="${a}">Eleição ${a}</button>`).join("")}</div>`;
+  const chips = `<div class="seg">${["2026", "2024"].map(a => `<button aria-selected="${a === eleAno}" data-ano="${a}">${a === "2026" ? "2026 · Presidente, governador…" : "2024 · Prefeito e vereador"}</button>`).join("")}</div>`;
   const idx = await json(`eleicoes/${eleAno}/${uf}/index.json`, true);
   if (!idx) return chips + `<div class="vazio">Os resultados de ${NOMES[uf]} chegam em breve. Começamos por Goiás e vamos abrindo os outros estados.</div>`;
-  const sel = `<div class="sec">SUA CIDADE</div><select data-ir class="busca"><option value="">Escolha sua cidade…</option>${idx.map(m => `<option value="#${uf}/cidade/${eleAno}/${esc(m.cd)}">${esc(titulo(m.nome))}</option>`).join("")}</select>`;
-  if (eleAno === "2024") return chips + `<p class="lead">Eleição municipal: prefeito e vereadores de cada cidade de ${NOMES[uf]}, até o resultado da escola onde você vota.</p>` + sel;
+  const sel = `<div class="sec">Resultado na sua cidade</div><select data-ir class="busca"><option value="">Escolha sua cidade…</option>${idx.map(m => `<option value="#${uf}/cidade/${eleAno}/${esc(m.cd)}">${esc(titulo(m.nome))}</option>`).join("")}</select>`;
+  if (eleAno === "2024") return chips + `<p class="lead">Eleição municipal de ${NOMES[uf]}: prefeito, todos os vereadores, os partidos e o resultado de cada escola onde se vota.</p>` + sel;
   const E = await json(`eleicoes/2026/${uf}/estado.json`, true), BR = await json(`eleicoes/2026/brasil.json`, true);
+  const dep = (D, nome) => D ? `<div class="sec">${nome} eleitos <span>${D.eleitos?.length || 0}</span></div>${kpisProp(D.partidos, "vagas de " + nome.toLowerCase())}
+    ${D.partidos ? `<div class="sec">Cadeiras por partido</div>${blocoPartidos(D.partidos, D.maisVotados)}` : ""}
+    <details><summary>Ver os ${D.eleitos?.length || 0} eleitos</summary>${resultado(D.eleitos)}</details>` : "";
   return chips + sel + `
-  <div class="sec">PRESIDENTE · BRASIL</div>${BR ? blocoTurnos(BR.presidente, "Brasil") : ""}
+  <div class="sec">Presidente · Brasil</div>${BR ? blocoTurnos(BR.presidente, "Brasil") : ""}
   <details><summary>Presidente: como ${NOMES[uf]} votou</summary>${blocoTurnos(E?.presidente, NOMES[uf])}</details>
   ${blocoTurnos(E?.governador, "Governador")}
   ${blocoTurnos(E?.senador, "Senador")}
-  <div class="sec">DEPUTADOS FEDERAIS ELEITOS · ${E?.depFederal?.eleitos?.length || 0}</div>${resultado(E?.depFederal?.eleitos, 99)}
-  <details><summary>Deputados estaduais eleitos (${E?.depEstadual?.eleitos?.length || 0})</summary>${resultado(E?.depEstadual?.eleitos, 99)}</details>
-  <p class="note">Porcentagem calculada sobre os votos dos candidatos listados. Fonte: Portal de Dados Abertos do TSE.</p>`;
+  ${dep(E?.depFederal, "Deputados federais")}
+  ${dep(E?.depEstadual, "Deputados estaduais")}
+  <p class="note">Porcentagens sobre os votos válidos (sem brancos e nulos). Fonte: Portal de Dados Abertos do TSE.</p>`;
+}
+
+function listaBusca(todos) {
+  const k = buscaCand.toLowerCase();
+  const r = todos.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k));
+  return r.length ? resultado(r, 999) : '<div class="vazio">Ninguém encontrado.</div>';
 }
 
 async function cidade(uf, ano, cd) {
+  menu(uf, "eleicoes");
   const C = await json(`eleicoes/${ano}/${uf}/m/${cd}.json`, true);
   if (!C) { $("app").innerHTML = `<a class="back" href="#${uf}/eleicoes">← Eleições</a><div class="vazio">Não encontrei essa cidade.</div>`; return; }
   const locais = C.locais || [];
-  let corpo = ano === "2024"
-    ? blocoTurnos(C.prefeito, "Prefeito") + `<div class="sec">VEREADORES ELEITOS · ${C.vereadores.eleitos.length}</div>${resultado(C.vereadores.eleitos, 99)}`
-    : blocoTurnos(C.presidente, "Presidente") + blocoTurnos(C.governador, "Governador") + blocoTurnos(C.senador, "Senador") +
-      `<details><summary>Deputados federais mais votados aqui</summary>${resultado(C.depFederal, 15)}</details><details><summary>Deputados estaduais mais votados aqui</summary>${resultado(C.depEstadual, 15)}</details>`;
+  const arr = x => Array.isArray(x) ? { todos: x, partidos: null } : (x || { todos: [], partidos: null });
+  const DF = arr(C.depFederal), DE = arr(C.depEstadual), V = C.vereadores || {};
+  const abas = ano === "2024"
+    ? [["prefeito", "Prefeito"], ["vereadores", "Vereadores"], ["partidos", "Partidos"], ["local", "Onde você vota"]]
+    : [["presidente", "Presidente"], ["governador", "Governador"], ["senador", "Senador"], ["depFederal", "Dep. federal"], ["depEstadual", "Dep. estadual"], ["local", "Onde você vota"]];
+  cidAba ??= abas[0][0];
+  // número do partido (2 dígitos) -> sigla, para os votos de cada escola
+  const mapaNum = {};
+  for (const c of [...(V.todos || []), ...DF.todos, ...DE.todos]) if (c.numero) mapaNum[String(c.numero).slice(0, 2)] = c.partido;
+  let corpo = "", lista = null;
+  if (cidAba === "prefeito") corpo = blocoTurnos(C.prefeito, "Prefeito");
+  else if (cidAba === "vereadores") { lista = V.todos || V.maisVotados || []; corpo = kpisProp(V.partidos, "vagas de vereador") + `<div class="sec">Todos os candidatos <span>${lista.length}</span></div><input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${listaBusca(lista)}</div>`; }
+  else if (cidAba === "partidos") corpo = kpisProp(V.partidos, "vagas de vereador") + `<div class="sec">Partidos e federações</div>` + blocoPartidos(V.partidos, V.todos);
+  else if (["presidente", "governador", "senador"].includes(cidAba)) corpo = blocoTurnos(C[cidAba], titulo(cidAba));
+  else if (cidAba === "depFederal" || cidAba === "depEstadual") {
+    const D = cidAba === "depFederal" ? DF : DE; lista = D.todos;
+    corpo = (D.partidos ? `<div class="sec">Votos por partido aqui</div>${blocoPartidos(D.partidos, D.todos, false)}` : "") + `<div class="sec">Candidatos mais votados aqui <span>${lista.length}</span></div><input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${listaBusca(lista)}</div>`;
+  } else corpo = `<p class="pt">Escolha a escola (local de votação) para ver o resultado só de lá.</p>
+    <select id="local" class="busca"><option value="">Escolha o local…</option>${locais.map((l, i) => `<option value="${i}">${esc(titulo(l.nome))} (zona ${esc(l.zona)})</option>`).join("")}</select><div id="resLocal"></div>`;
   $("app").innerHTML = `<a class="back" href="#${uf}/eleicoes">← Eleições</a>
-  <div class="kick">Eleição ${ano} · ${NOMES[uf]}</div><h1>${esc(titulo(C.nome))}</h1>
+  <div class="kick" style="margin-top:10px">Eleição ${ano} · ${NOMES[uf]}</div><h1>${esc(titulo(C.nome))}</h1>
+  <div class="seg">${abas.map(([k, t]) => `<button aria-selected="${k === cidAba}" data-cab="${k}">${t}</button>`).join("")}</div>
   ${corpo}
-  <h2>Onde você vota</h2>
-  <p class="pt">Escolha a escola (local de votação) para ver o resultado só de lá.</p>
-  <select id="local" class="busca"><option value="">Escolha o local…</option>${locais.map((l, i) => `<option value="${i}">${esc(titulo(l.nome))} (zona ${esc(l.zona)})</option>`).join("")}</select>
-  <div id="resLocal"></div>
   <p class="note">Fonte: Portal de Dados Abertos do TSE.</p>`;
-  $("local").addEventListener("change", e => {
+  const q = $("qc");
+  if (q && lista) q.addEventListener("input", e => { buscaCand = e.target.value; $("lista").innerHTML = listaBusca(lista); });
+  const sl = $("local");
+  if (sl) sl.addEventListener("change", e => {
     const l = locais[e.target.value]; if (!l) { $("resLocal").innerHTML = ""; return; }
-    $("resLocal").innerHTML = `<p class="pt">${esc(titulo(l.end))} · ${l.secoes} seções</p>` + Object.entries(l.votos).sort().map(([k, lista]) => { const [cargo, t] = k.split("|"); return `<div class="sec">${cargo.toUpperCase()} · ${t}º TURNO</div>${resultado(lista)}`; }).join("");
+    const ordem = ["prefeito", "vereador", "presidente", "governador", "senador", "depFederal", "depEstadual"];
+    const nomes = {prefeito: "Prefeito", vereador: "Vereador", presidente: "Presidente", governador: "Governador", senador: "Senador", depFederal: "Deputado federal", depEstadual: "Deputado estadual"};
+    const ks = Object.keys(l.votos).sort((a, b) => ordem.indexOf(a.split("|")[0]) - ordem.indexOf(b.split("|")[0]) || a.localeCompare(b));
+    $("resLocal").innerHTML = `<p class="pt">${esc(titulo(l.end))} · ${l.secoes} seções (urnas)</p>` + ks.map(k => {
+      const [cargo, t] = k.split("|"), pp = l.partidos?.[k];
+      return `<div class="sec">${nomes[cargo] || cargo} · ${t}º turno</div>${resultado(l.votos[k], 25)}${pp ? `<details><summary>Votos por partido nesta escola</summary><div class="card">${pp.map(([n, v]) => `<div class="row"><span><b>${esc(mapaNum[n] || "Partido " + n)}</b> <span class="pt">· nº ${esc(n)}</span></span><b>${fmtN(v)}</b></div>`).join("")}</div></details>` : ""}`;
+    }).join("");
   });
   scrollTo(0, 0);
 }
@@ -286,6 +332,7 @@ async function render(uf, aba) {
   lembrar(uf);
   const D = await json(`dados/uf/${uf}.json`);
   const corpo = { noticias: abaNoticias, votacoes: abaVotacoes, politicos: abaPoliticos, gastos: abaGastos, eleicoes: abaEleicoes }[aba] || abaNoticias;
+  menu(uf, aba);
   $("app").innerHTML = topo(uf, aba) + await corpo(uf, D);
   const q = $("q");
   if (q) q.addEventListener("input", e => { busca = e.target.value; const p = e.target.selectionStart; render(uf, aba).then(() => { const n = $("q"); n.focus(); n.setSelectionRange(p, p); }); });
@@ -315,16 +362,16 @@ async function deputado(uf, id) {
   <div class="hero" style="margin-top:14px"><div class="kick">Você e ${esc(d.nome.split(" ")[0])}</div>
   ${emComum.length ? `<p style="margin:6px 0 0;font-size:18px">Vocês concordaram em <b>${concorda} de ${emComum.length}</b> projetos.</p>` : `<p style="margin:6px 0 0">Diga como você votaria nos projetos da aba Votações e veja aqui se você concorda com este deputado.</p>`}</div>
   <h2>Como votou</h2>
-  ${ps.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}" style="text-decoration:none"><span><b style="white-space:normal">${esc(p.info?.apelido || p.nome)}</b><br><span class="pt">${dataBR(p.principal.data)} · ${esc(p.nome)}${eu[p.principal.id] ? ` · você: ${esc(eu[p.principal.id])}` : ""}</span></span>${votoTag(d.votos[p.principal.id])}</a>`).join("") || '<div class="vazio">Sem votações recentes.</div>'}
+  <div class="card">${ps.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}" style="text-decoration:none"><span><b style="white-space:normal">${esc(p.info?.apelido || p.nome)}</b><br><span class="pt">${dataBR(p.principal.data)} · ${esc(p.nome)}${eu[p.principal.id] ? ` · você: ${esc(eu[p.principal.id])}` : ""}</span></span>${votoTag(d.votos[p.principal.id])}</a>`).join("") || '<div class="pt" style="padding:14px 0">Sem votações recentes.</div>'}</div>
   <h2>Projetos que assinou</h2>
   <p class="pt">${Object.entries(pj.porTipo).map(([t, q]) => `${q} ${esc(t)}`).join(" · ") || "Nenhum"}. Conta também os projetos que ele só assinou junto com outros deputados (PEC precisa de muitas assinaturas).</p>
-  ${pj.ultimos.map(x => `<a class="row" style="text-decoration:none;display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.nome)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 180))}</span></a>`).join("")}
+  <div class="card">${pj.ultimos.map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.nome)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 180))}</span></a>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum projeto.</div>'}</div>
   <h2>Quanto gastou em ${D.ano}</h2>
   <div class="big">${brl(g.total)}</div>
   <p class="pt">da verba para custos do mandato. <a href="#${uf}/glossario">O que é isso?</a></p>
-  ${Object.entries(g.porTipo).map(([t, v]) => `<div class="rk"><span></span><span><span class="pt">${esc(t.toLowerCase())}</span><div class="t"><i style="width:${v / maxT * 100}%"></i></div></span><span>${brl(v)}</span></div>`).join("")}
+  <div class="card">${Object.entries(g.porTipo).map(([t, v]) => `<div class="rk"><span></span><span><span class="pt">${esc(t.toLowerCase())}</span><div class="t"><i style="width:${v / maxT * 100}%"></i></div></span><span>${brl(v)}</span></div>`).join("")}</div>
   <h2>Maiores gastos</h2>
-  ${g.maiores.map(m => `<div class="row"><span><b style="white-space:normal">${esc(m.forn)}</b><br><span class="pt">${esc(m.tipo.toLowerCase())} · ${MESES[m.mes] ?? ""}${m.doc ? ` · <a href="${esc(m.doc)}" target="_blank" rel="noopener">ver nota</a>` : ""}</span></span><b>${brl(m.v)}</b></div>`).join("") || '<div class="vazio">Nenhum gasto registrado ainda.</div>'}`;
+  <div class="card">${g.maiores.map(m => `<div class="row"><span><b style="white-space:normal">${esc(m.forn)}</b><br><span class="pt">${esc(m.tipo.toLowerCase())} · ${MESES[m.mes] ?? ""}${m.doc ? ` · <a href="${esc(m.doc)}" target="_blank" rel="noopener">ver nota</a>` : ""}</span></span><b>${brl(m.v)}</b></div>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum gasto registrado ainda.</div>'}</div>`;
   scrollTo(0, 0);
 }
 
@@ -333,12 +380,12 @@ async function senador(uf, id) {
   const s = D.senadores.find(x => String(x.id) === id);
   if (!s) return render(uf, "politicos");
   const vs = s.votos || [];
-  const tag = v => /^Sim$/i.test(v) ? '<span class="v Sim">Sim</span>' : /^N(ã|a)o$/i.test(v) ? '<span class="v Não">Não</span>' : `<span class="v tag">${esc(v || "—")}</span>`;
+  const tag = v => /^Sim$/i.test(v) ? '<span class="v Sim">Sim</span>' : /^N(ã|a)o$/i.test(v) ? '<span class="v Não">Não</span>' : /^Presente/i.test(v) ? '<span class="v tag">Presente</span>' : /Abst/i.test(v) ? '<span class="v tag">Absteve</span>' : /^Votou$/i.test(v) ? '<span class="v tag">Votou (secreto)</span>' : `<span class="v tag">${esc(String(v || "—").slice(0, 22))}</span>`;
   $("app").innerHTML = `<a class="back" href="#${uf}/politicos">← Seus políticos</a>
   <div class="ph">${foto(s)}<div><div class="nm" style="font-size:24px">${esc(s.nome)}</div><div class="pt">Senador(a) · ${esc(s.partido)} · ${uf}</div></div></div>
   ${s.totalVotacoes ? `<div class="stats"><div class="stat"><div class="big" style="font-size:32px">${Math.round((s.participou || 0) / s.totalVotacoes * 100)}%</div><div class="pt">votou em ${s.participou} das ${s.totalVotacoes} votações nominais do Senado em ${D.ano}</div></div></div>` : ""}
   <h2>Como votou no Senado</h2>
-  ${vs.map(v => `<div class="row"><span><b style="white-space:normal">${esc(v.materia || "Votação")}</b> <span class="pt">· ${dataBR(v.data)}${v.resultado ? " · " + esc(v.resultado.toLowerCase()) : ""}${v.secreta ? " · votação secreta" : ""}</span><br><span class="pt">${esc(limpa(v.ementa).slice(0, 160))}</span></span>${tag(v.voto)}</div>`).join("") || '<div class="vazio">As votações deste senador aparecem na próxima atualização diária.</div>'}
+  <div class="card">${vs.map(v => `<div class="row"><span><b style="white-space:normal">${esc(v.materia || "Votação")}</b> <span class="pt">· ${dataBR(v.data)}${v.resultado ? " · " + esc(v.resultado.toLowerCase()) : ""}${v.secreta ? " · votação secreta" : ""}</span><br><span class="pt">${esc(limpa(v.ementa).slice(0, 160))}</span></span>${tag(v.voto)}</div>`).join("") || '<div class="pt" style="padding:14px 0">As votações deste senador aparecem na próxima atualização diária.</div>'}</div>
   <p class="note">Fonte: Dados Abertos do Senado Federal. "Votou" aparece em votações secretas, quando o voto não é divulgado.</p>`;
   scrollTo(0, 0);
 }
@@ -353,6 +400,7 @@ async function rota() {
     if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
+    menu(uf, tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" ? "votacoes" : tipo);
     if (tipo === "d") return deputado(uf, id);
     if (tipo === "s") return senador(uf, id);
     if (tipo === "p") return paginaProjeto(uf, unslug(id));
@@ -373,11 +421,13 @@ document.addEventListener("click", e => {
   if (m) { const y = scrollY; const [id, v] = m.dataset.meu.split("|"); salvarMeu(id, v); rota().then(() => scrollTo(0, y)); return; }
   const an = e.target.closest("[data-ano]");
   if (an) { eleAno = an.dataset.ano; rota(); return; }
+  const cb = e.target.closest("[data-cab]");
+  if (cb) { cidAba = cb.dataset.cab; buscaCand = ""; rota(); return; }
   const sh = e.target.closest("[data-share]");
   if (sh) { compartilhar(location.hash.slice(1).split("/")[0], sh.dataset.share); }
 });
 document.addEventListener("change", e => { if (e.target.matches("[data-ir]") && e.target.value) location.hash = e.target.value; });
-addEventListener("hashchange", () => { busca = ""; filtroVoto = "todos"; rota(); });
+addEventListener("hashchange", () => { busca = ""; filtroVoto = "todos"; cidAba = null; buscaCand = ""; rota(); });
 json("dados/resumo.json").then(r => { $("upd").textContent = "Última atualização: " + new Date(r.atualizado).toLocaleString("pt-BR") + "."; }).catch(() => {});
 rota();
 }
