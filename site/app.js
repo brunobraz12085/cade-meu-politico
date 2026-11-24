@@ -188,10 +188,10 @@ async function compartilhar(uf, nome) {
   if (n && nx > 120) g.fillText(`${n}`, 70 + sx + 20, y + 103);
   g.fillStyle = "#66625a"; g.font = "600 32px Archivo, sans-serif";
   g.fillText(`${n} não · ${tot - s - n} não votaram · Câmara toda: ${S} sim, ${N} não`, 70, y + 200);
-  g.fillStyle = "#141414"; g.font = "700 34px Archivo, sans-serif";
+  g.fillStyle = "#141414"; g.font = "700 28px Archivo, sans-serif";
   g.fillText("Veja como votou o seu deputado:", 70, 1240);
   g.fillText(location.host + location.pathname.replace(/\/$/, ""), 70, 1290);
-  c.toBlob(async b => {
+  try { await new Promise((ok, erro) => { if (window.qrcode) return ok(); const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"; sc.onload = ok; sc.onerror = erro; document.head.appendChild(sc); }); const q = qrcode(0, "M"); q.addData(location.href); q.make(); const nm = q.getModuleCount(), tam = 200, px = tam / nm, qx = 1080 - 70 - tam, qy = 1350 - 60 - tam; g.fillStyle = "#fff"; g.fillRect(qx - 10, qy - 10, tam + 20, tam + 20); g.fillStyle = "#141414"; for (let r = 0; r < nm; r++) for (let k = 0; k < nm; k++) if (q.isDark(r, k)) g.fillRect(qx + k * px, qy + r * px, Math.ceil(px), Math.ceil(px)); } catch (e) {} c.toBlob(async b => {
     const f = new File([b], `cade-meu-politico-${uf}-${p.nome.replace(/\W+/g, "-")}.png`, {type: "image/png"});
     try { if (navigator.canShare && navigator.canShare({files: [f]})) { await navigator.share({files: [f], title: p.info?.apelido || p.nome, text: `${p.info?.apelido || p.nome}: veja como votou o seu deputado: ${location.href}`}); return; } } catch (e) { if (e.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
