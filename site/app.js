@@ -193,7 +193,7 @@ async function compartilhar(uf, nome) {
   g.fillText(location.host + location.pathname.replace(/\/$/, ""), 70, 1290);
   c.toBlob(async b => {
     const f = new File([b], `cade-meu-politico-${uf}-${p.nome.replace(/\W+/g, "-")}.png`, {type: "image/png"});
-    try { if (navigator.canShare && navigator.canShare({files: [f]})) { await navigator.share({files: [f], title: p.info?.apelido || p.nome}); return; } } catch (e) { if (e.name === "AbortError") return; }
+    try { if (navigator.canShare && navigator.canShare({files: [f]})) { await navigator.share({files: [f], title: p.info?.apelido || p.nome, text: `${p.info?.apelido || p.nome}: veja como votou o seu deputado: ${location.href}`}); return; } } catch (e) { if (e.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
   }, "image/png");
 }
