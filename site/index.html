@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cadê Meu Político?</title>
+<meta name="description" content="Veja como votaram e quanto gastaram os políticos do seu estado. Dados oficiais da Câmara e do Senado.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f4ef,#121212);--card:light-dark(#fff,#1d1d1d);--ink:light-dark(#141414,#f2f0ea);
+--mute:light-dark(#66625a,#a8a49b);--line:light-dark(#e2ded4,#2e2e2e);
+--sim:light-dark(#1f56d6,#6f97ff);--nao:light-dark(#e0452b,#ff7a5f);--hi:#ffe14d}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 10px}
+.logo{font-weight:900;font-size:22px;letter-spacing:-.02em;line-height:1;text-decoration:none}
+.logo b{background:var(--hi);color:#141414;padding:0 6px;border-radius:4px}
+.by{font-size:13px;color:var(--mute)}
+h1{font-weight:900;font-size:clamp(30px,7vw,44px);line-height:1.05;margin:10px 0;text-wrap:balance}
+h2{font-weight:800;font-size:20px;margin:26px 0 10px}
+.lead{margin:0 0 18px;color:var(--mute);max-width:60ch}
+.ufs{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.uf{border:1.5px solid var(--ink);background:var(--card);color:var(--ink);font:900 20px Archivo;min-height:64px;border-radius:12px;display:grid;place-items:center;text-decoration:none}
+.uf:hover{background:var(--hi);color:#141414}
+.back{display:inline-block;font:600 15px Archivo;padding:10px 0;text-decoration:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px}
+.chip{flex:none;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:600 15px Archivo;padding:10px 16px;border-radius:999px;min-height:44px;cursor:pointer}
+.chip[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.hero{background:var(--card);border:1.5px solid var(--ink);border-radius:16px;padding:18px;box-shadow:6px 6px 0 var(--ink)}
+.kick{font-size:13px;color:var(--mute);font-weight:600}
+.hero h3{font-weight:900;font-size:clamp(22px,5vw,28px);line-height:1.1;margin:6px 0 8px}
+.ementa{margin:0;font-size:15px}
+.bar{display:flex;height:52px;border-radius:10px;overflow:hidden;border:1.5px solid var(--ink);margin-top:12px;background:var(--line)}
+.bar div{display:flex;align-items:center;padding:0 10px;font-weight:900;font-size:19px;color:#fff;white-space:nowrap;overflow:hidden}
+.bar .s{background:var(--sim)}.bar .n{background:var(--nao)}
+.legend{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:14px;color:var(--mute);flex-wrap:wrap}
+.list{display:grid;gap:10px}
+.dep{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-decoration:none}
+.dep:hover{border-color:var(--ink)}
+.av{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--line);display:grid;place-items:center;font-weight:900}
+.nm{font-weight:800;font-size:17px;line-height:1.2}
+.pt{font-size:14px;color:var(--mute)}
+.v{font-weight:900;font-size:14px;padding:6px 10px;border-radius:8px;color:#fff;white-space:nowrap;background:var(--mute)}
+.v.Sim{background:var(--sim)}.v.Não{background:var(--nao)}.v.tag{background:transparent;color:var(--ink);border:1px solid var(--line)}
+input[type=search]{width:100%;font:16px Archivo;padding:10px 14px;min-height:44px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:12px}
+:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.soon{background:var(--card);border:1.5px dashed var(--ink);border-radius:14px;padding:16px}
+.soon b{display:block;font-size:17px}
+.rk{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;text-decoration:none}
+.rk .t{height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:4px}.rk .t i{display:block;height:100%;background:var(--nao)}
+.rk>span:last-child{font-weight:800;white-space:nowrap}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row b{white-space:nowrap}
+.big{font-weight:900;font-size:clamp(30px,8vw,40px);line-height:1}
+.ph{display:flex;gap:14px;align-items:center;margin:8px 0 14px}
+.ph .av{width:72px;height:72px}
+.note{font-size:13px;color:var(--mute);margin-top:18px}
+.cta{display:inline-block;background:var(--hi);color:#141414;border:1.5px solid #141414;font:800 17px Archivo;padding:12px 20px;border-radius:12px;min-height:48px;cursor:pointer;box-shadow:3px 3px 0 #141414;text-decoration:none}
+.err{padding:20px;border:1.5px solid var(--nao);border-radius:12px}
+footer{font-size:13px;color:var(--mute);padding-top:24px;border-top:1px solid var(--line);margin-top:32px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><a class="logo" href="#">Cadê Meu <b>Político?</b></a><div class="by">por Bruno Braz</div></header>
+  <main id="app"><p class="pt">Carregando…</p></main>
+  <footer>Dados oficiais: Dados Abertos da Câmara dos Deputados e do Senado Federal, atualizados todo dia. <span id="upd"></span></footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
