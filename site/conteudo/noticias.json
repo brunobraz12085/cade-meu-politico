@@ -1,0 +1,28 @@
+{
+  "atualizado": "2026-11-24",
+  "brasil": [
+    {
+      "data": "2026-11-24T12:00:00",
+      "titulo": "Câmara aprova o pacote para ajustar as contas do governo",
+      "aconteceu": "Na segunda (23), a Câmara aprovou o PLP 299/2026, o pacote fiscal que já tinha passado no Senado. Ele freia o crescimento dos gastos do governo e limita o uso de créditos de imposto pelas empresas. Segundo o relator, Bolsa Família, BPC e abono salarial não são afetados. Como a Câmara manteve o texto do Senado, ele segue para a sanção do presidente.",
+      "porque": "Quando o governo gasta mais do que arrecada, o mercado fica inseguro, o dólar sobe e os juros ficam altos. Juro alto deixa mais caro o crediário, o financiamento e o cartão. Ajustar as contas é uma das coisas que o mercado olha para decidir se o dólar e os juros sobem ou descem.",
+      "fontes": [
+        {"nome": "Brasil de Fato", "url": "https://www.brasildefato.com.br/2026/11/16/entenda-o-que-preve-o-plp-do-ajuste-fiscal-e-quais-pontos-ainda-serao-votados/"},
+        {"nome": "A Crítica", "url": "https://acritica.net/economia/ajuste-fiscal-camara-votacao-segunda-relator-sem-mudancas-lei-kandir-ms/"},
+        {"nome": "Dados Abertos da Câmara", "url": "https://dadosabertos.camara.leg.br/"}
+      ]
+    },
+    {
+      "data": "2026-11-17T12:00:00",
+      "titulo": "Dólar dispara e chega perto de R$ 5,80",
+      "aconteceu": "O dólar subiu mais de 2% em um dia (16/11) e fechou em R$ 5,77, o maior valor desde abril de 2025. Em novembro, a alta já passa de 6%. O mercado citou a dúvida sobre as contas do governo, a indefinição da equipe econômica do próximo mandato e o cenário lá fora.",
+      "porque": "Dólar alto chega no seu bolso mesmo se você nunca comprou dólar. O petróleo é cotado em dólar e o Brasil não refina todo o combustível que usa. Então o diesel encarece, o frete encarece e o preço sobe no mercado. Também ficam mais caros os produtos importados e os que usam peças ou matéria-prima de fora, como eletrônicos, remédios e o trigo do pão.",
+      "fontes": [
+        {"nome": "Agência Brasil", "url": "https://www.acessa.com/economia/2026/11/amp/344379-dolar-sobe-para-rs-577-e-fecha-no-maior-valor-desde-abril-de-2025.html"},
+        {"nome": "O Povo", "url": "https://www.opovo.com.br/noticias/economia/2026/11/16/dolar-sobe-217-e-atinge-maior-nivel-desde-abril-de-2025.html"},
+        {"nome": "eixos", "url": "https://eixos.com.br/?p=319667"}
+      ]
+    }
+  ],
+  "estados": {}
+}
