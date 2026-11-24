@@ -66,7 +66,7 @@ const ICONES = {
 function menu(uf, aba) {
   const n = $("bnav"), pill = $("ufpill");
   if (!uf) { n.hidden = true; pill.hidden = true; return; }
-  pill.hidden = false; pill.textContent = `📍 ${NOMES[uf]} · trocar`;
+  pill.hidden = false; pill.textContent = `📍 ${uf} · trocar`;
   n.hidden = false;
   n.innerHTML = `<div class="in">${Object.keys(TITULOS).map(k => `<a href="#${uf}/${k}" class="${k === aba ? "on" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONES[k]}</svg>${k === "politicos" ? "Políticos" : TITULOS[k]}</a>`).join("")}</div>`;
 }
@@ -226,10 +226,11 @@ function resultado(lista, max = 99, opts = {}) {
   if (!lista?.length) return '<div class="vazio">Sem dados.</div>';
   const nm = c => c.nome ?? c[0], vt = c => c.votos ?? c[1];
   const tot = lista.filter(c => !ehBN(nm(c))).reduce((t, c) => t + vt(c), 0) || 1;
+  let rank = 0;
   return `<div class="card">${lista.slice(0, max).map((c, i) => {
-    const nome = nm(c), v = vt(c), bn = ehBN(nome), el = /^ELEITO/.test(c.sit || "");
+    const nome = nm(c), v = vt(c), bn = ehBN(nome), pos = bn ? "" : ++rank, el = /^ELEITO/.test(c.sit || "");
     const part = opts.mapa && !c.partido ? opts.mapa(nome) : c.partido;
-    return `<div class="rk"><b>${bn ? "" : i + 1}</b><span><span class="nm" style="font-size:15px">${esc(titulo(nome))}</span> <span class="pt">${esc(part || "")}${c.numero ? " · " + esc(c.numero) : ""}</span>
+    return `<div class="rk"><b>${pos}</b><span><span class="nm" style="font-size:15px">${esc(titulo(nome))}</span> <span class="pt">${esc(part || "")}${c.numero ? " · " + esc(c.numero) : ""}</span>
     ${c.colig ? `<div class="pt" style="font-size:12.5px">Coligação: ${esc(c.colig)}</div>` : ""}
     ${!bn ? `<div class="t"><i style="width:${v / tot * 100}%;${el ? "background:var(--ok)" : ""}"></i></div>` : ""}
     ${c.sit && opts.sit !== false ? `<div style="margin-top:6px">${sitTag(c.sit)}</div>` : ""}</span>
