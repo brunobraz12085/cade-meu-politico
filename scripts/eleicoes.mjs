@@ -23,7 +23,8 @@ function baixar(nome, url) {
   return arq;
 }
 
-const csv = l => { const o = []; let i = 0; while (i < l.length) { if (l[i] === '"') { let j = i + 1, v = ""; while (j < l.length) { if (l[j] === '"') { if (l[j + 1] === '"') { v += '"'; j += 2; continue; } break; } v += l[j++]; } o.push(v); i = j + 2; } else { let j = l.indexOf(";", i); if (j < 0) j = l.length; o.push(l.slice(i, j)); i = j + 1; } } return o; }; // Lê CSVs de dentro do zip (latin1, separador ;) linha a linha
+const csv = l => { const o = []; let i = 0; while (i < l.length) { if (l[i] === '"') { let j = i + 1, v = ""; while (j < l.length) { if (l[j] === '"') { if (l[j + 1] === '"') { v += '"'; j += 2; continue; } break; } v += l[j++]; } o.push(v); i = j + 2; } else { let j = l.indexOf(";", i); if (j < 0) j = l.length; o.push(l.slice(i, j)); i = j + 1; } } return o; };
+// Lê CSVs de dentro do zip (latin1, separador ;) linha a linha
 async function lerZip(zip, padrao, cadaLinha) {
   const p = spawn("unzip", ["-p", zip, padrao, "-x", "*BRASIL*"]);
   p.stdout.setEncoding("latin1");
@@ -31,7 +32,7 @@ async function lerZip(zip, padrao, cadaLinha) {
   let cab = null, n = 0;
   for await (const bruta of rl) {
     if (!bruta) continue;
-    const campos = bruta.replace(/^"|"\r?$/g, "").split('";"');
+    const campos = csv(bruta.replace(/\r$/, ""));
     if (campos[0] === "DT_GERACAO") { cab = Object.fromEntries(campos.map((c, i) => [c, i])); continue; }
     if (!cab) continue;
     cadaLinha(c => campos[cab[c]], n++);
