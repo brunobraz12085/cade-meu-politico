@@ -1,0 +1,39 @@
+# Todo dia busca os dados novos e publica o site no GitHub Pages.
+name: Atualizar e publicar
+
+on:
+  schedule:
+    - cron: "17 9 * * *"   # todo dia às 6h17 (horário de Brasília)
+  workflow_dispatch:        # botão "Run workflow" para rodar na hora
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Buscar dados da Câmara e do Senado
+        run: node scripts/atualizar.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
