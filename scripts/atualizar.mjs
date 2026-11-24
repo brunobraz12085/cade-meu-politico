@@ -72,6 +72,24 @@ async function main() {
   }).filter(s => s.uf);
   console.log("   ", senadores.length, "senadores");
 
+  console.log("2b/5 Votos dos senadores...");
+  await emLotes(senadores, async s => {
+    const j = await pegar(`${SENADO}/senador/${s.id}/votacoes.json?ano=${ANO}`);
+    let lista = j?.VotacaoParlamentar?.Parlamentar?.Votacoes?.Votacao ?? [];
+    if (!Array.isArray(lista)) lista = [lista];
+    lista.sort((a, b) => String(b.SessaoPlenaria?.DataSessao).localeCompare(String(a.SessaoPlenaria?.DataSessao)));
+    s.totalVotacoes = lista.length;
+    s.participou = lista.filter(v => /^(Sim|Não|Abstenção|Votou)$/i.test(v.SiglaDescricaoVoto || "")).length;
+    s.votos = lista.slice(0, 20).map(v => ({
+      data: v.SessaoPlenaria?.DataSessao,
+      materia: v.Materia ? `${v.Materia.Sigla} ${v.Materia.Numero}/${v.Materia.Ano}` : "",
+      ementa: v.Materia?.Ementa || v.DescricaoVotacao || "",
+      voto: v.DescricaoVoto || v.SiglaDescricaoVoto || "",
+      resultado: v.DescricaoResultado || "",
+      secreta: v.IndicadorVotacaoSecreta === "Sim"
+    }));
+  });
+
   console.log("3/5 Votações do plenário...");
   const fim = new Date(), ini = new Date(Date.now() - DIAS_VOTACOES * 864e5);
   const listaVot = await todasPaginas(`${CAMARA}/votacoes?idOrgao=180&dataInicio=${isoDia(ini)}&dataFim=${isoDia(fim)}&ordem=DESC&ordenarPor=dataHoraRegistro`);
@@ -142,7 +160,23 @@ async function main() {
     };
   });
 
+  console.log("4c/5 Pauta da semana no plenário...");
+  const hoje = new Date(), daqui7 = new Date(Date.now() + 7 * 864e5);
+  const eventos = (await pegar(`${CAMARA}/eventos?idOrgao=180&dataInicio=${isoDia(hoje)}&dataFim=${isoDia(daqui7)}&ordem=ASC&ordenarPor=dataHoraInicio&itens=100`))?.dados ?? [];
+  const pauta = [], vistos = new Set();
+  for (const ev of eventos.filter(e => /Deliberativa/.test(e.descricaoTipo || "") && !/Não Deliberativa/.test(e.descricaoTipo || "") && !/Cancelada/i.test(e.situacao || ""))) {
+    const itens = (await pegar(`${CAMARA}/eventos/${ev.id}/pauta`))?.dados ?? [];
+    for (const it of itens) {
+      const p = it.proposicao_; if (!p?.id || vistos.has(p.id)) continue;
+      vistos.add(p.id);
+      pauta.push({ data: ev.dataHoraInicio, situacao: ev.situacao, id: p.id, projeto: `${p.siglaTipo} ${p.numero}/${p.ano}`, ementa: p.ementa || "", regime: it.regime || "" });
+    }
+  }
+  console.log("   ", pauta.length, "itens na pauta");
+
   console.log("5/5 Gravando arquivos...");
+  await mkdir(SAIDA, { recursive: true });
+  await writeFile(`${SAIDA}/pauta.json`, JSON.stringify({ atualizado: new Date().toISOString(), itens: pauta }));
   await mkdir(`${SAIDA}/uf`, { recursive: true });
   const resumo = { atualizado: new Date().toISOString(), ano: ANO, estados: {} };
   for (const uf of UFS) {
