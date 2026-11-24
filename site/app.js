@@ -57,7 +57,7 @@ function projetos() {
   const g = new Map();
   for (const v of VOT) { if (!g.has(v.projeto)) g.set(v.projeto, []); g.get(v.projeto).push(v); }
   return [...g.entries()].map(([nome, vs]) => {
-    const principal = vs.find(v => /(Aprovad|Rejeitad)[oa] o (Projeto|texto|Substitutivo|Proposta)/i.test(v.descricao)) || vs[vs.length - 1];
+    const principal = vs.find(v => /(Aprovad|Rejeitad)[oa] [oa] (Projeto|texto|Substitutivo|Proposta|Subemenda Substitutiva|Emenda Substitutiva)/i.test(v.descricao)) || vs[vs.length - 1];
     return { nome, vs, principal, info: PROJ[nome] || null };
   });
 }
