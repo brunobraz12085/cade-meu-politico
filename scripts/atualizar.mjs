@@ -10,7 +10,8 @@ const SAIDA = "site/dados";
 const ANO = new Date().getFullYear();
 const DIAS_VOTACOES = 60;      // votações dos últimos 60 dias
 const MAX_VOTACOES = 40;       // no máximo 40 votações nominais
-const PARALELO = 4;            // pedidos ao mesmo tempo (educado com o servidor)
+const INICIO_MANDATO = "2023-02-01"; // muda para 2027-02-01 quando os novos eleitos tomarem posse
+const PARALELO = 4;           // pedidos ao mesmo tempo (educado com o servidor)
 
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
@@ -82,6 +83,8 @@ async function main() {
     if (!votos.length) continue; // votação simbólica, sem voto nominal
     const det = (await pegar(`${CAMARA}/votacoes/${v.id}`))?.dados ?? {};
     const prop = (det.proposicoesAfetadas ?? [])[0];
+    const ori = (await pegar(`${CAMARA}/votacoes/${v.id}/orientacoes`))?.dados ?? [];
+    const governo = ori.find(o => /^governo$/i.test(o.siglaPartidoBloco || ""))?.orientacaoVoto || null;
     const placar = {};
     for (const x of votos) {
       placar[x.tipoVoto] = (placar[x.tipoVoto] ?? 0) + 1;
@@ -95,6 +98,7 @@ async function main() {
       ementa: prop?.ementa || "",
       descricao: v.descricao || "",
       aprovada: v.aprovacao,
+      governo,
       placar
     });
   }
@@ -125,13 +129,27 @@ async function main() {
     if (k % 50 === 0) console.log(`    ${k}/${deps.length}`);
   });
 
+  console.log("4b/5 Projetos apresentados por cada deputado (mandato atual)...");
+  const projetosDep = {};
+  await emLotes(deps, async d => {
+    const lista = await todasPaginas(`${CAMARA}/proposicoes?idDeputadoAutor=${d.id}&siglaTipo=PL,PLP,PEC,PDL&dataApresentacaoInicio=${INICIO_MANDATO}&ordem=DESC&ordenarPor=id`);
+    const porTipo = {};
+    for (const p of lista) porTipo[p.siglaTipo] = (porTipo[p.siglaTipo] ?? 0) + 1;
+    projetosDep[d.id] = {
+      total: lista.length,
+      porTipo,
+      ultimos: lista.slice(0, 5).map(p => ({ id: p.id, nome: `${p.siglaTipo} ${p.numero}/${p.ano}`, ementa: p.ementa, data: p.dataApresentacao }))
+    };
+  });
+
   console.log("5/5 Gravando arquivos...");
   await mkdir(`${SAIDA}/uf`, { recursive: true });
   const resumo = { atualizado: new Date().toISOString(), ano: ANO, estados: {} };
   for (const uf of UFS) {
     const dUF = deps.filter(d => d.siglaUf === uf).map(d => ({
       id: d.id, nome: d.nome, partido: d.siglaPartido, foto: d.urlFoto,
-      votos: votosPorDep[d.id] ?? {}, gastos: gastos[d.id] ?? { total: 0, porTipo: {}, porMes: {}, maiores: [] }
+      votos: votosPorDep[d.id] ?? {}, gastos: gastos[d.id] ?? { total: 0, porTipo: {}, porMes: {}, maiores: [] },
+      projetos: projetosDep[d.id] ?? { total: 0, porTipo: {}, ultimos: [] }
     }));
     const sUF = senadores.filter(s => s.uf === uf);
     resumo.estados[uf] = { deputados: dUF.length, senadores: sUF.length };
