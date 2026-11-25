@@ -103,7 +103,7 @@ async function blocoPauta() {
   const P = await json("dados/pauta.json", true);
   const it = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
   if (!it.length) return "";
-  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto]?.muda, x.ementa)}
+  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px;max-width:none">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto]?.muda, x.ementa)}
     <h3 style="margin-top:12px">${esc(PROJ[x.projeto]?.apelido || x.projeto)}</h3><div class="kick">${esc(x.projeto)}</div>
     ${PROJ[x.projeto] ? `<details class="mais"><summary>Texto oficial</summary><p class="pt">${esc(limpa(x.ementa))}</p></details>` : ""}</div>`;
   return `<div class="sec">Vai ser votado nesta semana <span>${it.length}</span></div>
@@ -116,7 +116,7 @@ async function abaVotacoes(uf, D) {
   const ps = projetos();
   const votados = !ps.length ? '<div class="vazio">Nenhuma votação com voto nominal nos últimos 60 dias.</div>' : ps.map(p => {
     const v = p.principal, {s, n} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
-    return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${v.aprovada ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px">${v.aprovada == null ? "Votado" : v.aprovada ? "✅ Aprovado" : "❌ Rejeitado"} · ${dataBR(v.data)}</span>
+    return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${v.aprovada ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px;max-width:none">${v.aprovada == null ? "Votado" : v.aprovada ? "✅ Aprovado" : "❌ Rejeitado"} · ${dataBR(v.data)}</span>
     ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
     <h3 style="margin-top:12px">${esc(p.info?.apelido || p.nome)}</h3><div class="kick">${esc(p.nome)}</div>
     <div class="mini"><i style="width:${S / (S + N || 1) * 100}%;background:var(--ok)"></i><i style="width:${N / (S + N || 1) * 100}%;background:var(--nao)"></i></div>
@@ -231,7 +231,7 @@ const sitTag = s => /^ELEITO POR M/i.test(s) ? '<span class="v el">Eleito por m�
 function resultado(lista, max = 99, opts = {}) {
   if (!lista?.length) return '<div class="vazio">Sem dados.</div>';
   const nm = c => c.nome ?? c[0], vt = c => c.votos ?? c[1];
-  const tot = lista.filter(c => !ehBN(nm(c))).reduce((t, c) => t + vt(c), 0) || 1;
+  const tot = opts.tot || lista.filter(c => !ehBN(nm(c))).reduce((t, c) => t + vt(c), 0) || 1;
   let rank = opts.ini || 0;
   return `<div class="card">${lista.slice(0, max).map((c, i) => {
     const nome = nm(c), v = vt(c), bn = ehBN(nome), pos = bn ? "" : ++rank, el = /^ELEITO/.test(c.sit || "");
@@ -339,18 +339,19 @@ async function eleicao(uf, partes) {
     const eleitos = C ? todos.filter(c => /^ELEITO/.test(c.sit || "")) : (D?.eleitos || []);
     const demais = todos.filter(c => !/^ELEITO/.test(c.sit || ""));
     const comCad = !(ano === "2026" && C);
+    const totV = window.__tot = (!Array.isArray(D?.partidos) && D?.partidos?.validos) || todos.reduce((t, c) => t + c.votos, 0) || 1;
     html = cab(`${CARGO_NOME[cargo]}`) + (ano === "2026" ? selCid : "") +
       `<div class="seg"><button aria-selected="${propAba === "cand"}" data-pab="cand">Candidatos</button><button aria-selected="${propAba === "part"}" data-pab="part">Por partido</button></div>` +
       (propAba === "part"
         ? (comCad ? kpisProp(D?.partidos, `vagas de ${CARGO_NOME[cargo].toLowerCase()}`) : `<p class="pt">Votos que cada partido teve em ${esc(onde)}. As cadeiras são decididas com os votos do estado todo.</p>`) + blocoPartidos(D?.partidos, todos, comCad)
-        : `<div class="sec">Eleitos${ano === "2026" && C ? " (no estado) que tiveram voto aqui" : ""} <span>${eleitos.length}</span></div>${resultado(eleitos, 999)}
-          <div class="sec">Demais candidatos <span>${demais.length}</span></div>${demais.length ? `<input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${resultado(demais, 999, {ini: eleitos.length})}</div>` : `<div class="vazio">${C ? "Sem outros candidatos." : "Escolha uma cidade acima para ver todos os candidatos."}</div>`}`) +
+        : `<div class="sec">Eleitos${ano === "2026" && C ? " (no estado) que tiveram voto aqui" : ""} <span>${eleitos.length}</span></div>${resultado(eleitos, 999, {tot: totV})}
+          <div class="sec">Demais candidatos <span>${demais.length}</span></div>${demais.length ? `<input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${resultado(demais, 999, {ini: eleitos.length, tot: totV})}</div>` : `<div class="vazio">${C ? "Sem outros candidatos." : "Escolha uma cidade acima para ver todos os candidatos."}</div>`}`) +
       (C ? blocoLocal(C, `${cargo}|1`) : `<p class="note">Escolha uma cidade acima para ver por zona e por colégio eleitoral.</p>`);
     window.__demais = demais;
   }
   $("app").innerHTML = html + `<p class="note">Fonte: Portal de Dados Abertos do TSE. Porcentagens sobre os votos válidos (sem brancos e nulos).</p>`;
   const cs = $("cidsel"); if (cs) cs.addEventListener("change", () => { salvarCid(uf, ano, cs.value); rota(); });
-  const q = $("qc"); if (q) q.addEventListener("input", e => { buscaCand = e.target.value; const k = buscaCand.toLowerCase(), r = window.__demais.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k)); $("lista").innerHTML = r.length ? resultado(r, 999) : '<div class="vazio">Ninguém encontrado.</div>'; });
+  const q = $("qc"); if (q) q.addEventListener("input", e => { buscaCand = e.target.value; const k = buscaCand.toLowerCase(), r = window.__demais.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k)); $("lista").innerHTML = r.length ? resultado(r, 999, {tot: window.__tot}) : '<div class="vazio">Ninguém encontrado.</div>'; });
   if (C && cargo) { const mapaNum = {}; for (const c of [...(C.vereadores?.todos || []), ...(C.depFederal?.todos || []), ...(C.depEstadual?.todos || [])]) if (c.numero) mapaNum[String(c.numero).slice(0, 2)] = c.partido; ligarLocal(C, `${cargo}|${PROP.includes(cargo) ? 1 : turno}`, mapaNum); }
   scrollTo(0, 0);
 }
