@@ -68,7 +68,7 @@ new MutationObserver(() => { const b = document.querySelector("#app .back"), h =
 function menu(uf, aba) {
   const n = $("bnav"), pill = $("ufpill");
   if (!uf) { n.hidden = true; pill.hidden = true; return; }
-  pill.hidden = false; pill.textContent = `📍 ${uf} · trocar`;
+  pill.hidden = false; pill.textContent = `📍 ${uf}`;
   n.hidden = false;
   n.innerHTML = `<div class="in">${Object.keys(TITULOS).map(k => `<a href="#${uf}/${k}" class="${k === aba ? "on" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONES[k]}</svg>${k === "politicos" ? "Políticos" : TITULOS[k]}</a>`).join("")}</div>`;
 }
@@ -193,7 +193,7 @@ async function paginaProjeto(uf, nome) {
   <div class="bar"><div class="s" style="width:${S / (S + N || 1) * 100}%;background:var(--ok)">${S} a favor</div><div class="n" style="width:${N / (S + N || 1) * 100}%">${N} contra</div></div></div>
   ${blocoMeuVoto(uf, v, D)}
   <button class="cta" data-share="${esc(p.nome)}" style="margin-top:14px">Compartilhar resultado</button>
-  <details><summary>Texto oficial e outras votações deste projeto</summary><p class="oficial">${esc(limpa(v.ementa || v.descricao))}</p>${GLOS[siglaDe(p.nome)] ? `<p class="pt"><b>O que é ${esc(siglaDe(p.nome))}?</b> ${esc(GLOS[siglaDe(p.nome)])}</p>` : ""}${p.vs.filter(x => x !== v).map(x => `<div class="row"><span class="pt">${dataBR(x.data)} · ${esc(x.descricao)}</span></div>`).join("")}</details>
+  <details><summary>Texto oficial e outras votações deste projeto</summary><p class="oficial">${esc(limpa(v.ementa || v.descricao))}</p>${gdef(siglaDe(p.nome)) ? `<p class="pt"><b>O que é ${esc(siglaDe(p.nome))}?</b> ${esc(gdef(siglaDe(p.nome)))}</p>` : ""}${p.vs.filter(x => x !== v).map(x => `<div class="row"><span class="pt">${dataBR(x.data)} · ${esc(x.descricao)}</span></div>`).join("")}</details>
   ${p.info?.fontes ? `<p class="fonte">Fontes da explicação: ${p.info.fontes.map(f => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join(", ")}</p>` : ""}
   <p class="note">A explicação é um resumo neutro, sem opinião. Na dúvida, vale o texto oficial.</p>`;
   scrollTo(0, 0);
@@ -208,10 +208,28 @@ function blocoMeuVoto(uf, v, D) {
   ${eu ? `<p style="margin:6px 0 0"><b>${iguais} de ${D.deputados.length}</b> deputados de ${NOMES[uf]} votaram igual a você.</p>` : `<p class="pt" style="margin:6px 0 0">Seu voto fica só no seu celular. Ele serve para mostrar com quais deputados você mais concorda.</p>`}</div>`;
 }
 
+const gdef = k => typeof GLOS[k] === "string" ? GLOS[k] : GLOS[k]?.def;
+let buscaDic = "";
 function glossario(uf) {
-  $("app").innerHTML = `<a class="back" href="#${uf}/noticias">← Voltar</a><h1>O que é isso?</h1>
-  <p class="lead">As palavras da política explicadas de um jeito simples.</p>
-  ${Object.entries(GLOS).map(([t, d]) => `<div class="row" style="display:block"><b>${esc(t)}</b><br><span>${esc(d)}</span></div>`).join("")}`;
+  menu(NOMES[uf] ? uf : null, "");
+  const itens = Object.entries(GLOS).map(([t, g]) => typeof g === "string" ? [t, {def: g}] : [t, g]).sort((a, b) => a[0].localeCompare(b[0], "pt-BR"));
+  const cartao = ([t, g]) => `<div class="gcard"><div class="gt"><span class="gi">${g.icone || "📖"}</span><b>${esc(t)}</b></div><p>${esc(g.def)}</p>${g.pratica ? `<div class="gp"><span class="lbl">Na prática</span>${esc(g.pratica)}</div>` : ""}</div>`;
+  const filtra = () => { const k = buscaDic.toLowerCase(); return itens.filter(([t, g]) => !k || (t + " " + g.def).toLowerCase().includes(k)); };
+  $("app").innerHTML = `<a class="back" href="${NOMES[uf] ? `#${uf}/noticias` : "#inicio"}">← Voltar</a><h1>📖 Dicionário da política</h1>
+  <p class="lead" style="font-size:17px">As palavras difíceis da política, explicadas do jeito que a gente fala, com um exemplo do dia a dia.</p>
+  <input type="search" id="qd" value="${esc(buscaDic)}" placeholder="Buscar uma palavra (ex.: PEC, veto, emenda)">
+  <div id="gl">${filtra().map(cartao).join("")}</div>`;
+  $("qd").addEventListener("input", e => { buscaDic = e.target.value; $("gl").innerHTML = filtra().map(cartao).join("") || '<div class="vazio">Não achei essa palavra. Manda uma sugestão que a gente coloca!</div>'; });
+  scrollTo(0, 0);
+}
+const introVista = () => { try { return localStorage.getItem("intro") === "1"; } catch (e) { return true; } };
+function intro() {
+  menu(null);
+  $("app").innerHTML = `<div class="intro"><div class="ilogo">?</div><h1>Cadê Meu Político?</h1>
+  <p class="lead" style="font-size:18px">Política explicada na língua do povo, sem enrolação.</p>
+  <div class="opc">${[["💰", "O que muda no seu bolso", "As notícias e os projetos que mexem com a sua vida, explicados de um jeito simples."], ["🌡️", "Como votou quem você elegeu", "Veja se seu deputado votou a favor ou contra o povo e quanto ele gastou."], ["🗳️", "A eleição na sua cidade", "O resultado de cada candidato, de cada partido e até da escola onde você vota."]].map(([i, t, x]) => `<div class="opcao"><span class="ic">${i}</span><b style="font-size:20px">${t}</b><span>${x}</span></div>`).join("")}</div>
+  <button class="cta" data-intro style="margin-top:22px">Começar →</button>
+  <p class="note" style="text-align:center">Dados oficiais da Câmara, do Senado e do TSE.</p></div>`;
   scrollTo(0, 0);
 }
 
@@ -541,7 +559,8 @@ async function rota() {
     GLOS = (await json("conteudo/glossario.json", true)) || GLOS;
     const h = location.hash.slice(1);
     if (h === "sugestao") return sugestao();
-    if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
+    if (h === "dic") return glossario(lembrado());
+    if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return introVista() ? home() : intro(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
     menu(uf, tipo === "g" ? "gastos" : tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" || tipo === "vt" ? "votacoes" : tipo === "nt" ? "noticias" : tipo === "el" ? "eleicoes" : tipo);
@@ -571,6 +590,7 @@ document.addEventListener("click", e => {
   if (an) { eleAno = an.dataset.ano; rota(); return; }
   const cb = e.target.closest("[data-cab]");
   if (cb) { cidAba = cb.dataset.cab; buscaCand = ""; rota(); return; }
+  if (e.target.closest("[data-intro]")) { try { localStorage.setItem("intro", "1"); } catch (x) {} home(); scrollTo(0, 0); return; }
   const ar = e.target.closest("[data-area]");
   if (ar) { areaSel = ar.dataset.area; rota(); return; }
   const pb = e.target.closest("[data-pab]");
@@ -579,7 +599,7 @@ document.addEventListener("click", e => {
   if (sh) { compartilhar(location.hash.slice(1).split("/")[0], sh.dataset.share); }
 });
 document.addEventListener("change", e => { if (e.target.matches("[data-ir]") && e.target.value) location.hash = e.target.value; });
-addEventListener("hashchange", () => { busca = ""; buscaGasto = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; areaSel = ""; buscaCand = ""; rota(); });
+addEventListener("hashchange", () => { busca = ""; buscaGasto = ""; buscaDic = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; areaSel = ""; buscaCand = ""; rota(); });
 json("dados/resumo.json").then(r => { $("upd").textContent = "Última atualização: " + new Date(r.atualizado).toLocaleString("pt-BR") + "."; }).catch(() => {});
 rota();
 }
