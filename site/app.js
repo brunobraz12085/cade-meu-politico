@@ -219,7 +219,7 @@ async function abaPoliticos(uf, D) {
 async function abaGastos(uf, D) {
   const r = [...D.deputados].sort((a, b) => b.gastos.total - a.gastos.total), max = r[0]?.gastos.total || 1;
   return `<p class="lead" style="margin-top:12px">Cada deputado federal recebe uma verba mensal para custos do trabalho: combustível, passagens, escritório, divulgação. Veja quanto cada um de ${NOMES[uf]} já gastou em ${D.ano}, do maior para o menor.</p>
-  <div class="card">${r.map((d, i) => `<a class="rk" href="#${uf}/d/${d.id}"><b>${i + 1}º</b><span><span class="nm" style="font-size:15px">${esc(d.nome)}</span> <span class="pt">${esc(d.partido)}</span><div class="t"><i style="width:${d.gastos.total / max * 100}%"></i></div></span><span>${brl(d.gastos.total)}</span></a>`).join("")}</div>`;
+  <div class="card">${r.map((d, i) => `<a class="rk" href="#${uf}/g/${d.id}"><b>${i + 1}º</b><span><span class="nm" style="font-size:15px">${esc(d.nome)}</span> <span class="pt">${esc(d.partido)}</span><div class="t"><i style="width:${d.gastos.total / max * 100}%"></i></div></span><span>${brl(d.gastos.total)}</span></a>`).join("")}</div>`;
 }
 
 let eleAno = "2026", cidAba = null, buscaCand = "";
@@ -371,6 +371,34 @@ async function render(uf, aba) {
   if (q) q.addEventListener("input", e => { busca = e.target.value; const p = e.target.selectionStart; render(uf, aba).then(() => { const n = $("q"); n.focus(); n.setSelectionRange(p, p); }); });
 }
 
+let buscaGasto = "";
+async function paginaGastos(uf, id) {
+  const D = await json(`dados/uf/${uf}.json`);
+  const d = D.deputados.find(x => String(x.id) === id);
+  if (!d) return render(uf, "gastos");
+  const g = d.gastos, G = await json(`dados/gastos/${id}.json`, true);
+  const itens = G?.itens || g.maiores.map(m => ({ ...m, data: "" }));
+  const maxT = Math.max(1, ...Object.values(g.porTipo)), meses = Object.entries(g.porMes).sort((a, b) => a[0] - b[0]), maxM = Math.max(1, ...meses.map(m => m[1]));
+  const media = D.deputados.reduce((t, x) => t + x.gastos.total, 0) / (D.deputados.length || 1);
+  const linha = m => `<div class="row"><span><b style="white-space:normal">${esc(titulo(m.forn || "Sem nome"))}</b><br><span class="pt">${esc(m.tipo.toLowerCase())}${m.data ? " · " + dataBR(m.data) : ""}${m.doc ? ` · <a href="${esc(m.doc)}" target="_blank" rel="noopener">ver nota</a>` : ""}</span></span><b>${brl(m.v)}</b></div>`;
+  const filtra = () => { const k = buscaGasto.toLowerCase(); return itens.filter(m => !k || (m.forn + " " + m.tipo).toLowerCase().includes(k)); };
+  $("app").innerHTML = `<a class="back" href="#${uf}/gastos">← Gastos</a>
+  <div class="ph">${foto(d)}<div><div class="nm" style="font-size:22px">${esc(d.nome)}</div><div class="pt">Deputado(a) federal · ${esc(d.partido)} · ${uf}</div></div></div>
+  <div class="hero"><div class="kick">Gastou em ${D.ano}</div><div class="big" style="margin-top:6px">${brl(g.total)}</div>
+  <p class="pt" style="margin:8px 0 0">da verba para custos do mandato. A média dos deputados de ${NOMES[uf]} é ${brl(media)}. <a href="#${uf}/glossario">O que é essa verba?</a></p></div>
+  <h2>Com o que gastou</h2>
+  <div class="card">${Object.entries(g.porTipo).map(([t, v]) => `<div class="rk"><span></span><span><span style="font-size:14px">${esc(t.charAt(0) + t.slice(1).toLowerCase())}</span><div class="t"><i style="width:${v / maxT * 100}%"></i></div></span><span>${brl(v)}</span></div>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum gasto ainda.</div>'}</div>
+  ${meses.length ? `<h2>Mês a mês</h2><div class="card">${meses.map(([m, v]) => `<div class="rk"><b>${MESES[m] || m}</b><span><div class="t" style="margin:0"><i style="width:${v / maxM * 100}%"></i></div></span><span>${brl(v)}</span></div>`).join("")}</div>` : ""}
+  <h2>Cada gasto <span class="pt" style="font-family:Inter">(${itens.length})</span></h2>
+  <input type="search" id="qg" value="${esc(buscaGasto)}" placeholder="Buscar empresa ou tipo de gasto">
+  <div class="card" id="lg">${filtra().map(linha).join("") || '<div class="pt" style="padding:14px 0">Nada encontrado.</div>'}</div>
+  ${G ? "" : '<p class="note">Por enquanto aparecem só os maiores gastos. A lista completa entra na próxima atualização diária.</p>'}
+  <p class="note">Fonte: Dados Abertos da Câmara dos Deputados. A nota fiscal abre no site da Câmara.</p>
+  <a class="cta" href="#${uf}/d/${d.id}" style="margin-top:16px;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:var(--sh)">Ver como ${esc(d.nome.split(" ")[0])} votou →</a>`;
+  $("qg").addEventListener("input", e => { buscaGasto = e.target.value; $("lg").innerHTML = filtra().map(linha).join("") || '<div class="pt" style="padding:14px 0">Nada encontrado.</div>'; });
+  scrollTo(0, 0);
+}
+
 async function deputado(uf, id) {
   const D = await json(`dados/uf/${uf}.json`);
   const d = D.deputados.find(x => String(x.id) === id);
@@ -390,7 +418,6 @@ async function deputado(uf, id) {
     ${card(pct(votou, VOT.length), `votou em ${votou} das ${VOT.length} últimas votações nominais`)}
     ${card(pct(igualGov, comGov.length), `das vezes votou igual à orientação do governo`)}
     ${card(pj.total, `projetos de lei e PECs assinados no mandato (como autor ou coautor)`)}
-    ${card(brl(g.total), `gastos da verba do mandato em ${D.ano}`)}
   </div>
   <div class="hero" style="margin-top:14px"><div class="kick">Você e ${esc(d.nome.split(" ")[0])}</div>
   ${emComum.length ? `<p style="margin:6px 0 0;font-size:18px">Vocês concordaram em <b>${concorda} de ${emComum.length}</b> projetos.</p>` : `<p style="margin:6px 0 0">Diga como você votaria nos projetos da aba Votações e veja aqui se você concorda com este deputado.</p>`}</div>
@@ -399,12 +426,7 @@ async function deputado(uf, id) {
   <h2>Projetos que assinou</h2>
   <p class="pt">${Object.entries(pj.porTipo).map(([t, q]) => `${q} ${esc(t)}`).join(" · ") || "Nenhum"}. Conta também os projetos que ele só assinou junto com outros deputados (PEC precisa de muitas assinaturas).</p>
   <div class="card">${pj.ultimos.map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.nome)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 180))}</span></a>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum projeto.</div>'}</div>
-  <h2>Quanto gastou em ${D.ano}</h2>
-  <div class="big">${brl(g.total)}</div>
-  <p class="pt">da verba para custos do mandato. <a href="#${uf}/glossario">O que é isso?</a></p>
-  <div class="card">${Object.entries(g.porTipo).map(([t, v]) => `<div class="rk"><span></span><span><span class="pt">${esc(t.toLowerCase())}</span><div class="t"><i style="width:${v / maxT * 100}%"></i></div></span><span>${brl(v)}</span></div>`).join("")}</div>
-  <h2>Maiores gastos</h2>
-  <div class="card">${g.maiores.map(m => `<div class="row"><span><b style="white-space:normal">${esc(m.forn)}</b><br><span class="pt">${esc(m.tipo.toLowerCase())} · ${MESES[m.mes] ?? ""}${m.doc ? ` · <a href="${esc(m.doc)}" target="_blank" rel="noopener">ver nota</a>` : ""}</span></span><b>${brl(m.v)}</b></div>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum gasto registrado ainda.</div>'}</div>`;
+  <a class="cta" href="#${uf}/g/${d.id}" style="margin-top:22px">💸 Ver os gastos de ${esc(d.nome.split(" ")[0])} (${brl(g.total)} em ${D.ano})</a>`;
   scrollTo(0, 0);
 }
 
@@ -433,8 +455,9 @@ async function rota() {
     if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
-    menu(uf, tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" ? "votacoes" : tipo === "el" ? "eleicoes" : tipo);
+    menu(uf, tipo === "g" ? "gastos" : tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" ? "votacoes" : tipo === "el" ? "eleicoes" : tipo);
     if (tipo === "d") return deputado(uf, id);
+    if (tipo === "g") return paginaGastos(uf, id);
     if (tipo === "s") return senador(uf, id);
     if (tipo === "p") return paginaProjeto(uf, unslug(id));
     if (tipo === "glossario") return glossario(uf);
@@ -463,7 +486,7 @@ document.addEventListener("click", e => {
   if (sh) { compartilhar(location.hash.slice(1).split("/")[0], sh.dataset.share); }
 });
 document.addEventListener("change", e => { if (e.target.matches("[data-ir]") && e.target.value) location.hash = e.target.value; });
-addEventListener("hashchange", () => { busca = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; buscaCand = ""; rota(); });
+addEventListener("hashchange", () => { busca = ""; buscaGasto = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; buscaCand = ""; rota(); });
 json("dados/resumo.json").then(r => { $("upd").textContent = "Última atualização: " + new Date(r.atualizado).toLocaleString("pt-BR") + "."; }).catch(() => {});
 rota();
 }
