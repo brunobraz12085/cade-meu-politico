@@ -8,8 +8,7 @@ const CAMARA = "https://dadosabertos.camara.leg.br/api/v2";
 const SENADO = "https://legis.senado.leg.br/dadosabertos";
 const SAIDA = "site/dados";
 const ANO = new Date().getFullYear();
-const DIAS_VOTACOES = 60;      // votações dos últimos 60 dias
-const MAX_VOTACOES = 40;       // no máximo 40 votações nominais
+const MAX_VOTACOES = 250;      // votações nominais do ano todo (no máximo 250)
 const INICIO_MANDATO = "2023-02-01"; // muda para 2027-02-01 quando os novos eleitos tomarem posse
 const PARALELO = 4;           // pedidos ao mesmo tempo (educado com o servidor)
 
@@ -91,8 +90,12 @@ async function main() {
   });
 
   console.log("3/5 Votações do plenário...");
-  const fim = new Date(), ini = new Date(Date.now() - DIAS_VOTACOES * 864e5);
-  const listaVot = await todasPaginas(`${CAMARA}/votacoes?idOrgao=180&dataInicio=${isoDia(ini)}&dataFim=${isoDia(fim)}&ordem=DESC&ordenarPor=dataHoraRegistro`);
+  // a API aceita no máximo uns 3 meses por consulta: busca o ano em janelas de 80 dias
+  const listaVot = [];
+  for (let fim = new Date(), lim = new Date(`${ANO}-01-01`); fim >= lim; fim = new Date(fim.getTime() - 81 * 864e5)) {
+    const ini = new Date(Math.max(lim.getTime(), fim.getTime() - 80 * 864e5));
+    listaVot.push(...await todasPaginas(`${CAMARA}/votacoes?idOrgao=180&dataInicio=${isoDia(ini)}&dataFim=${isoDia(fim)}&ordem=DESC&ordenarPor=dataHoraRegistro`));
+  }
   const votacoes = [];
   const votosPorDep = {}; // idDeputado -> { idVotacao: "Sim" | "Não" | ... }
   for (const v of listaVot) {
