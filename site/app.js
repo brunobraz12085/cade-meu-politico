@@ -518,7 +518,7 @@ async function deputado(uf, id) {
   <p class="pt" style="margin:0 0 6px">Toque num projeto para ver a explicação, se é bom ou ruim e quem votou a favor e contra.</p>
   <div class="card" style="box-shadow:none">${ps.map(p => { const vd = d.votos[p.principal.id], gv = p.principal.governo, ladoG = ["Sim", "Não"].includes(gv) && ["Sim", "Não"].includes(vd) ? (gv === vd ? "com o governo" : "contra o governo") : "";
     return `<a class="row" href="#${uf}/p/${slug(p.nome)}/${d.id}" style="text-decoration:none"><span>${p.info?.veredito ? `<span class="pt">${VEREDITO[p.info.veredito][0]} ${esc(VEREDITO[p.info.veredito][1])}</span><br>` : ""}<b style="white-space:normal">${esc(p.info?.apelido || p.nome)}</b><br><span class="pt">${dataBR(p.principal.data)} · ${esc(p.nome)}${ladoG ? ` · votou ${ladoG}` : ""}${eu[p.principal.id] ? ` · você: ${esc(eu[p.principal.id])}` : ""}</span></span>${votoTag(vd)}</a>`; }).join("") || '<div class="pt" style="padding:14px 0">Sem votações recentes.</div>'}</div></details>
-  <details class="aba"><summary><span>💰 Emendas que mandou pras cidades</span></summary><div id="emendas" data-tipo="d" data-id="${d.id}" data-nome="${esc(d.nome)}"><p class="pt">Carregando…</p></div></details>
+  <details class="aba"><summary><span>💰 Emendas pras cidades</span></summary><div id="emendas" data-tipo="d" data-id="${d.id}" data-nome="${esc(d.nome)}"><p class="pt">Carregando…</p></div></details>
   <details class="aba"><summary><span>📝 Projetos que assinou <span class="pt">(${pj.total})</span></span></summary>
   <p class="pt">${Object.entries(pj.porTipo).map(([t, q]) => `${q} ${esc(t)}`).join(" · ") || "Nenhum"}. Conta também os projetos que ele só assinou junto com outros deputados (PEC precisa de muitas assinaturas).</p>
   <div class="card" style="box-shadow:none">${pj.ultimos.map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.nome)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 180))}</span></a>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum projeto.</div>'}</div></details>
@@ -534,13 +534,15 @@ async function ligarEmendas(uf) {
     if (box.dataset.ok) return; box.dataset.ok = 1;
     const E = await json(`dados/emendas/${box.dataset.tipo}${box.dataset.id}.json`, true);
     if (!E || !E.cidades?.length) { box.innerHTML = `<p class="pt" style="margin:0 0 10px">Não encontramos emendas individuais de ${esc(box.dataset.nome.split(" ")[0])} no Portal da Transparência neste mandato.</p>`; return; }
-    const lin = c => `<div class="row"><span><b style="white-space:normal">${esc(titulo(c.m))}${c.uf && c.uf !== uf ? " - " + esc(c.uf) : ""}</b><br><span class="pt">${esc((c.areas || []).join(", "))}</span></span><span style="text-align:right">${brl(c.e)}<br><span class="pt" style="font-weight:400">pago: ${brl(c.p)}</span></span></div>`;
+    const lin = c => `<div class="row"><span><b style="white-space:normal">${esc(titulo(c.m))}${c.uf && c.uf !== uf ? " - " + esc(c.uf) : ""}</b><br><span class="pt">${esc((c.quem || []).map(titulo).join(" · "))}</span></span><span style="text-align:right">${brl(c.p)}<br><span class="pt" style="font-weight:400">recebido</span></span></div>`;
     const sem = x => String(x).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-    box.innerHTML = `<div class="kpis" style="margin:0 0 10px"><div class="kpi"><b>${brl(E.empenhado)}</b><span>reservado (empenhado)</span></div><div class="kpi"><b>${brl(E.pago)}</b><span>já pago de verdade</span></div><div class="kpi"><b>${E.cidades.length}</b><span>lugares que receberam</span></div></div>
-    <p class="pt" style="margin:0 0 8px">Emenda é o dinheiro do orçamento federal que o parlamentar escolhe pra onde vai. "Empenhado" é o valor reservado; "pago" é o que já saiu de fato. Período: ${esc(E.periodo || "")}.</p>
+    const mi = v => v >= 1e6 ? "R$ " + (v / 1e6).toLocaleString("pt-BR", {maximumFractionDigits: 1}) + " mi" : v >= 1e3 ? "R$ " + Math.round(v / 1e3) + " mil" : brl(v);
+    box.innerHTML = `<div class="kpis" style="margin:0 0 10px"><div class="kpi"><b>${mi(E.empenhado)}</b><span>reservado (empenhado)</span></div><div class="kpi"><b>${mi(E.pago)}</b><span>já pago de verdade</span></div><div class="kpi"><b>${E.cidades.length}</b><span>cidades que receberam</span></div></div>
+    <p class="pt" style="margin:0 0 8px">Emenda é o dinheiro do orçamento federal que o parlamentar escolhe pra onde vai. "Empenhado" é o valor reservado; "pago" é o que já saiu de fato. ${E.areas?.length ? `Mais usado em: ${esc(E.areas.join(", "))}. ` : ""}Período: ${esc(E.periodo || "")}.</p>
+    <div class="sec" style="margin-top:6px">Quanto cada cidade recebeu</div>
     <input type="search" id="qe" placeholder="Digite o nome da sua cidade">
     <div id="le" class="card" style="box-shadow:none">${E.cidades.slice(0, 15).map(lin).join("")}</div>
-    ${E.cidades.length > 15 ? `<p class="pt" id="lemais">Mostrando os 15 lugares que mais receberam. Digite acima pra achar a sua cidade.</p>` : ""}
+    ${E.cidades.length > 15 ? `<p class="pt" id="lemais">Mostrando as 15 cidades que mais receberam. Digite acima pra achar a sua.</p>` : ""}
     <p class="fonte">Fonte: Portal da Transparência (CGU). Só emendas individuais deste parlamentar; emendas de bancada e de comissão não entram.</p>`;
     $("qe").addEventListener("input", e => { const k = sem(e.target.value.trim()); const r = k ? E.cidades.filter(c => sem(c.m).includes(k)) : E.cidades.slice(0, 15); $("le").innerHTML = r.map(lin).join("") || `<div class="pt" style="padding:12px 0">${esc(box.dataset.nome.split(" ")[0])} não mandou emenda individual pra essa cidade neste mandato.</div>`; const m = $("lemais"); if (m) m.hidden = !!k; });
   };
@@ -569,7 +571,7 @@ async function senador(uf, id) {
   ${termoSen(s)}
   <details class="aba" style="margin-top:18px"><summary><span>🗳️ Como votou no Senado <span class="pt">(${vs.length})</span></span></summary>
   <div class="card" style="box-shadow:none">${vs.map(v => `<div class="row"><span><b style="white-space:normal">${esc(v.materia || "Votação")}</b> <span class="pt">· ${dataBR(v.data)}${v.resultado ? " · " + esc(v.resultado.toLowerCase()) : ""}${v.secreta ? " · votação secreta" : ""}</span><br><span class="pt">${esc(limpa(v.ementa).slice(0, 160))}</span></span>${tag(v.voto)}</div>`).join("") || '<div class="pt" style="padding:14px 0">As votações deste senador aparecem na próxima atualização diária.</div>'}</div></details>
-  <details class="aba"><summary><span>💰 Emendas que mandou pras cidades</span></summary><div id="emendas" data-tipo="s" data-id="${s.id}" data-nome="${esc(s.nome)}"><p class="pt">Carregando…</p></div></details>
+  <details class="aba"><summary><span>💰 Emendas pras cidades</span></summary><div id="emendas" data-tipo="s" data-id="${s.id}" data-nome="${esc(s.nome)}"><p class="pt">Carregando…</p></div></details>
   <p class="note">Fonte: Dados Abertos do Senado Federal. "Votou" aparece em votações secretas, quando o voto não é divulgado.</p>`;
   ligarEmendas(uf);
   scrollTo(0, 0);
