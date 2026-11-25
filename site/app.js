@@ -78,11 +78,15 @@ function home() {
   <div class="ufs">${Object.keys(NOMES).map(u => `<a class="uf" href="#${u}/noticias"><b>${u}</b><span>${NOMES[u]}</span></a>`).join("")}</div>`;
 }
 
+const TEMAS = {Bolso: "💰", "Preços": "🛒", Trabalho: "💼", "Saúde": "🏥", Aposentadoria: "👵", Transporte: "🚌", Impostos: "🧾", "Educação": "🎒", "Segurança": "🛡️", Moradia: "🏠"};
 function cartaoNoticia(n) {
-  return `<article class="news"><div class="kick">${dataBR(n.data)}</div><h3>${esc(n.titulo)}</h3>
+  const tema = TEMAS[n.tema] ? n.tema : "Bolso";
+  return `<article class="news"><div class="impacto t-${tema.normalize("NFD").replace(/[^A-Za-z]/g, "")}"><span class="ic">${TEMAS[tema]}</span><div><span class="lbl">${esc(tema)} · o que muda pra você</span><b>${esc(n.impacto || n.porque)}</b></div></div>
+  <div class="kick" style="margin-top:14px">${dataBR(n.data)}</div><h3>${esc(n.titulo)}</h3>
+  <details class="mais"><summary>Ler mais</summary>
   <span class="lbl">O que aconteceu</span><p>${esc(n.aconteceu)}</p>
-  ${n.porque ? `<div class="porque"><span class="lbl">Por que isso chega em você</span>${esc(n.porque)}</div>` : ""}
-  <div class="fonte">Fonte: ${(n.fontes || []).map(f => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join(", ")}</div></article>`;
+  ${n.porque && n.impacto ? `<div class="porque"><span class="lbl">Por que isso chega em você</span>${esc(n.porque)}</div>` : ""}
+  <div class="fonte">Fonte: ${(n.fontes || []).map(f => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join(", ")}</div></details></article>`;
 }
 
 async function abaNoticias(uf) {
