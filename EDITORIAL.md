@@ -28,7 +28,8 @@ O app é para quem NÃO entende de política. Tudo em linguagem do povo, curto e
 
 Chave = nome do projeto como aparece nos dados (ex.: `"PLP 299/2026"`).
 - `apelido`: nome popular do projeto.
-- `muda`: "O que muda na sua vida" em 2–3 linhas, neutro, sem dizer se é bom ou ruim.
+- `muda`: "O que muda na sua vida": 1–2 frases curtas sobre o efeito na vida da pessoa (bolso, direitos, rotina), não sobre o que o projeto é. Começar por quem é afetado ("Se você é MEI: …"). Neutro, sem dizer se é bom ou ruim.
+- `oque`: o que o projeto é, em linguagem simples (aparece em "O que é esse projeto").
 - `detalhe`: (opcional) mais uma linha de contexto.
 - `fontes`: de onde veio a explicação.
 
