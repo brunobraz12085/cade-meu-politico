@@ -1,32 +1,62 @@
 {
   "PLP 299/2026": {
     "apelido": "Pacote para ajustar as contas do governo",
-    "muda": "Freia o crescimento dos gastos do governo federal e limita o uso de créditos de imposto pelas empresas, para equilibrar as contas públicas. Segundo o relator, Bolsa Família, BPC e abono salarial não são afetados.",
+    "muda": "Bolsa Família, BPC e abono salarial não mudam. O governo vai ter que segurar os próprios gastos, e a ideia é acalmar o mercado para o dólar e os juros não subirem.",
     "detalhe": "Também deixa até R$ 10,5 bilhões do subsídio ao diesel fora da meta de gastos de 2026. Como passou pelo Senado e pela Câmara sem mudanças no texto, segue para a sanção do presidente.",
     "fontes": [
-      {"nome": "Brasil de Fato", "url": "https://www.brasildefato.com.br/2026/11/16/entenda-o-que-preve-o-plp-do-ajuste-fiscal-e-quais-pontos-ainda-serao-votados/"},
-      {"nome": "A Crítica", "url": "https://acritica.net/economia/ajuste-fiscal-camara-votacao-segunda-relator-sem-mudancas-lei-kandir-ms/"},
-      {"nome": "BP Money", "url": "https://bpmoney.com.br/politica/senado-aprova-texto-principal-ajuste-fiscal-governo/"}
-    ]
+      {
+        "nome": "Brasil de Fato",
+        "url": "https://www.brasildefato.com.br/2026/11/16/entenda-o-que-preve-o-plp-do-ajuste-fiscal-e-quais-pontos-ainda-serao-votados/"
+      },
+      {
+        "nome": "A Crítica",
+        "url": "https://acritica.net/economia/ajuste-fiscal-camara-votacao-segunda-relator-sem-mudancas-lei-kandir-ms/"
+      },
+      {
+        "nome": "BP Money",
+        "url": "https://bpmoney.com.br/politica/senado-aprova-texto-principal-ajuste-fiscal-governo/"
+      }
+    ],
+    "oque": "Freia o crescimento dos gastos do governo federal e limita o uso de créditos de imposto pelas empresas, para equilibrar as contas públicas. Segundo o relator, Bolsa Família, BPC e abono salarial não são afetados."
   },
   "PLP 186/2026": {
     "apelido": "MEI pode faturar mais e ter dívidas perdoadas",
-    "muda": "Quem é MEI vai poder faturar mais sem deixar de ser MEI: o limite sobe de R$ 81 mil por ano para R$ 110 mil em 2027 e R$ 140 mil a partir de 2028. O MEI também vai poder contratar até dois funcionários.",
+    "muda": "Se você é MEI: vai poder faturar até R$ 140 mil por ano (hoje o limite é R$ 81 mil), contratar até 2 funcionários e ter as dívidas com a União perdoadas.",
     "detalhe": "O projeto ainda perdoa as dívidas de MEIs inscritas na Dívida Ativa da União até 13 de outubro de 2026, incluindo juros e multas. Para manter o perdão, é preciso pagar as contribuições em dia nos seis meses seguintes. Passou na Câmara por 461 a 4 e no Senado por 78 a 0, e foi para a sanção do presidente.",
     "fontes": [
-      {"nome": "Agência Brasil", "url": "https://www.acessa.com/politica/2026/10/amp/342280-camara-aprova-aumento-no-limite-de-receita-bruta-do-mei.html"},
-      {"nome": "Reforma Tributária", "url": "https://www.reformatributaria.com/reforma-tributaria-congresso-nacional/senado-aprova-novo-teto-de-r-140-mil-para-o-mei-e-perdao-de-dividas-texto-vai-a-sancao-de-lula/"},
-      {"nome": "Atlas Público", "url": "https://atlaspublico.com.br/senado/noticias/senado-aprova-projeto-que-atualiza-limite-do-mei-e-perdoa-92698"}
-    ]
+      {
+        "nome": "Agência Brasil",
+        "url": "https://www.acessa.com/politica/2026/10/amp/342280-camara-aprova-aumento-no-limite-de-receita-bruta-do-mei.html"
+      },
+      {
+        "nome": "Reforma Tributária",
+        "url": "https://www.reformatributaria.com/reforma-tributaria-congresso-nacional/senado-aprova-novo-teto-de-r-140-mil-para-o-mei-e-perdao-de-dividas-texto-vai-a-sancao-de-lula/"
+      },
+      {
+        "nome": "Atlas Público",
+        "url": "https://atlaspublico.com.br/senado/noticias/senado-aprova-projeto-que-atualiza-limite-do-mei-e-perdoa-92698"
+      }
+    ],
+    "oque": "Quem é MEI vai poder faturar mais sem deixar de ser MEI: o limite sobe de R$ 81 mil por ano para R$ 110 mil em 2027 e R$ 140 mil a partir de 2028. O MEI também vai poder contratar até dois funcionários."
   },
   "PLP 281/2019": {
     "apelido": "Regras para quando um banco quebra",
-    "muda": "No dia a dia, não muda nada por enquanto. O projeto cria regras novas para o Banco Central agir quando um banco, seguradora ou corretora entra em crise. A ideia é que os donos e credores do banco arquem com as perdas antes de qualquer dinheiro público, e que a quebra de um banco não contamine os outros.",
+    "muda": "Nada muda pra você por enquanto: o projeto foi rejeitado. Ele dizia que, se um banco quebrasse, os donos e credores pagariam a conta antes de qualquer dinheiro público.",
     "detalhe": "Em 14 de outubro, a Câmara rejeitou o texto do relator: foram 252 votos a favor, mas eram necessários 257. O tema ganhou força depois do caso do Banco Master.",
     "fontes": [
-      {"nome": "Congresso em Foco", "url": "https://www.congressoemfoco.com.br/noticia/123233/camara-pode-votar-nesta-quarta-novo-regime-para-bancos-em-crise"},
-      {"nome": "Atlas Público", "url": "https://atlaspublico.com.br/camara/noticias/plenario-da-camara-rejeita-subemenda-substitutiva-do-plp-92385"},
-      {"nome": "brapi", "url": "https://brapi.dev/news/camara-trava-por-cinco-votos-lei-de-resolucao-bancaria-cobrada-pelo-fmi-ada4e1ed"}
-    ]
+      {
+        "nome": "Congresso em Foco",
+        "url": "https://www.congressoemfoco.com.br/noticia/123233/camara-pode-votar-nesta-quarta-novo-regime-para-bancos-em-crise"
+      },
+      {
+        "nome": "Atlas Público",
+        "url": "https://atlaspublico.com.br/camara/noticias/plenario-da-camara-rejeita-subemenda-substitutiva-do-plp-92385"
+      },
+      {
+        "nome": "brapi",
+        "url": "https://brapi.dev/news/camara-trava-por-cinco-votos-lei-de-resolucao-bancaria-cobrada-pelo-fmi-ada4e1ed"
+      }
+    ],
+    "oque": "O projeto criava regras novas para o Banco Central agir quando um banco, seguradora ou corretora entra em crise. A ideia era que os donos e credores do banco arcassem com as perdas antes de qualquer dinheiro público, e que a quebra de um banco não contaminasse os outros."
   }
 }
