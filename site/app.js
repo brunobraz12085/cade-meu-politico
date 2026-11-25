@@ -379,7 +379,8 @@ async function eleicao(uf, partes) {
   const E = ano === "2026" ? await json(`eleicoes/2026/${uf}/estado.json`, true) : null;
   const BR = ano === "2026" && cargo === "presidente" ? await json(`eleicoes/2026/brasil.json`, true) : null;
   const onde = C ? titulo(C.nome) : NOMES[uf];
-  const selCid = `<select id="cidsel" class="busca"><option value="">${ano === "2024" ? "Escolha sua cidade…" : `Todo o estado (${NOMES[uf]})`}</option>${idx.map(m => `<option value="${esc(m.cd)}"${m.cd === cd ? " selected" : ""}>${esc(titulo(m.nome))}</option>`).join("")}</select>`;
+  const nomeCd = cd ? titulo(idx.find(m => m.cd === cd)?.nome || "") : "";
+  const selCid = `${cd ? `<div class="chips"><span class="chip" aria-selected="true">📍 ${esc(nomeCd)}</span>${ano === "2026" ? `<button class="chip" data-cid="">Ver todo o estado</button>` : ""}</div>` : ""}<input type="search" id="cq" class="busca" autocomplete="off" placeholder="${cd ? "🔎 Trocar de cidade: digite o nome" : ano === "2024" ? "🔎 Digite o nome da sua cidade" : `🔎 Todo o estado (${NOMES[uf]}) · ou digite uma cidade`}"><div id="cres" class="cres"></div>`;
   let html = "";
   if (!turno) {
     const tem2 = ano === "2024" ? !!C?.prefeito?.[2] : true;
@@ -415,7 +416,8 @@ async function eleicao(uf, partes) {
     window.__demais = demais;
   }
   $("app").innerHTML = html + `<p class="note">Fonte: Portal de Dados Abertos do TSE. Porcentagens sobre os votos válidos (sem brancos e nulos).</p>`;
-  const cs = $("cidsel"); if (cs) cs.addEventListener("change", () => { salvarCid(uf, ano, cs.value); rota(); });
+  const sem = x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const cq = $("cq"); if (cq) cq.addEventListener("input", () => { const k = sem(cq.value.trim()); $("cres").innerHTML = !k ? "" : (idx.filter(m => sem(m.nome).includes(k)).slice(0, 8).map(m => `<button data-cid="${esc(m.cd)}">📍 ${esc(titulo(m.nome))}</button>`).join("") || '<div class="pt">Nenhuma cidade com esse nome.</div>'); });
   const q = $("qc"); if (q) q.addEventListener("input", e => { buscaCand = e.target.value; const k = buscaCand.toLowerCase(), r = window.__demais.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k)); $("lista").innerHTML = r.length ? resultado(r, 999, {tot: window.__tot}) : '<div class="vazio">Ninguém encontrado.</div>'; });
   if (C && cargo) { const mapaNum = {}; for (const c of [...(C.vereadores?.todos || []), ...(C.depFederal?.todos || []), ...(C.depEstadual?.todos || [])]) if (c.numero) mapaNum[String(c.numero).slice(0, 2)] = c.partido; ligarLocal(C, `${cargo}|${PROP.includes(cargo) ? 1 : turno}`, mapaNum); }
   scrollTo(0, 0);
@@ -477,15 +479,18 @@ async function deputado(uf, id) {
   const eu = meus(), emComum = ps.filter(p => eu[p.principal.id] && ["Sim", "Não"].includes(d.votos[p.principal.id]));
   const concorda = emComum.filter(p => eu[p.principal.id] === d.votos[p.principal.id]).length;
   const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
-  const aval = ps.filter(p => ["bom", "ruim"].includes(p.info?.veredito) && ["Sim", "Não"].includes(d.votos[p.principal.id]));
+  const avalT = ps.filter(p => ["bom", "ruim"].includes(p.info?.veredito));
   const ehFav = p => (p.info.veredito === "bom") === (d.votos[p.principal.id] === "Sim");
-  const fav = aval.filter(ehFav).length, pF = aval.length ? Math.round(fav / aval.length * 100) : null;
-  const termo = `<div class="hero"><div class="kick">🌡️ Termômetro do povo</div>${pF == null ? `<p style="margin:8px 0 0">Ainda não votou em nenhum projeto avaliado como bom ou ruim pro povo.</p>` : `
-    <div class="big" style="margin-top:6px;color:${pF >= 50 ? "var(--ok)" : "var(--nao)"}">${pF}% <span style="font-size:18px">a favor do povo</span></div>
-    <p class="pt" style="margin:4px 0 12px">Votou a favor do povo em ${fav} de ${aval.length} projetos avaliados. Contra o povo: ${100 - pF}%.</p>
+  const votouA = avalT.filter(p => ["Sim", "Não"].includes(d.votos[p.principal.id]));
+  const fav = votouA.filter(ehFav).length, contra = votouA.length - fav, faltou = avalT.length - votouA.length;
+  const pF = avalT.length ? Math.round(fav / avalT.length * 100) : null;
+  const tagT = p => !["Sim", "Não"].includes(d.votos[p.principal.id]) ? '<span class="v tag">Faltou / não votou</span>' : ehFav(p) ? '<span class="v el">A favor do povo</span>' : '<span class="v Não">Contra o povo</span>';
+  const termo = `<div class="hero"><div class="kick">🌡️ Termômetro do povo</div>${pF == null ? `<p style="margin:8px 0 0">Ainda não há projetos avaliados como bons ou ruins pro povo.</p>` : `
+    <div class="big" style="margin-top:6px;color:${pF >= 60 ? "var(--ok)" : pF >= 40 ? "#d99a00" : "var(--nao)"}">${pF}% <span style="font-size:18px">a favor do povo</span></div>
+    <div class="kpis" style="margin:12px 0"><div class="kpi"><b style="color:var(--ok)">${fav}</b><span>votou a favor do povo</span></div><div class="kpi"><b style="color:var(--nao)">${contra}</b><span>votou contra o povo</span></div><div class="kpi"><b>${faltou}</b><span>faltou ou não votou</span></div></div>
     <div class="termo"><i style="left:${pF}%"></i></div><div class="legend"><span>Contra o povo</span><span>A favor do povo</span></div>
-    <details class="mais"><summary>Ver quais projetos contaram</summary>${aval.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}"><span><b style="white-space:normal">${esc(p.info.apelido || p.nome)}</b><br><span class="pt">${p.info.veredito === "bom" ? "👍 bom pro povo" : "👎 ruim pro povo"} · votou ${d.votos[p.principal.id] === "Sim" ? "a favor" : "contra"}</span></span>${ehFav(p) ? '<span class="v el">A favor do povo</span>' : '<span class="v Não">Contra o povo</span>'}</a>`).join("")}</details>`}
-    ${aval.length < 5 ? '<p class="note" style="margin-top:10px">Ainda são poucos projetos avaliados. O termômetro fica mais certeiro com os novos deputados, a partir de fevereiro.</p>' : ""}</div>`;
+    <p class="pt" style="margin:10px 0 0">Conta só os ${avalT.length} projetos que mexem direto com o povo (de ${ps.length} votados). Faltar na votação conta como não ajudar.</p>
+    <details class="mais"><summary>Ver quais projetos contaram</summary>${avalT.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}"><span><b style="white-space:normal">${esc(p.info.apelido || p.nome)}</b><br><span class="pt">${p.info.veredito === "bom" ? "👍 bom pro povo" : "👎 ruim pro povo"} · ${d.votos[p.principal.id] === "Sim" ? "votou a favor" : d.votos[p.principal.id] === "Não" ? "votou contra" : "não votou"}</span></span>${tagT(p)}</a>`).join("")}</details>`}</div>`;
   const card = (num, txt) => `<div class="stat"><div class="big" style="font-size:32px">${num}</div><div class="pt">${txt}</div></div>`;
   $("app").innerHTML = `<a class="back" href="#${uf}/politicos">← Seus políticos</a>
   <div class="ph">${foto(d)}<div><div class="nm" style="font-size:24px">${esc(d.nome)}</div><div class="pt">Deputado(a) federal · ${esc(d.partido)} · ${uf}</div></div></div>
@@ -591,6 +596,8 @@ document.addEventListener("click", e => {
   const cb = e.target.closest("[data-cab]");
   if (cb) { cidAba = cb.dataset.cab; buscaCand = ""; rota(); return; }
   if (e.target.closest("[data-intro]")) { try { localStorage.setItem("intro", "1"); } catch (x) {} home(); scrollTo(0, 0); return; }
+  const ci = e.target.closest("[data-cid]");
+  if (ci) { const [u, , a] = location.hash.slice(1).split("/"); salvarCid(u, a, ci.dataset.cid); rota(); return; }
   const ar = e.target.closest("[data-area]");
   if (ar) { areaSel = ar.dataset.area; rota(); return; }
   const pb = e.target.closest("[data-pab]");
