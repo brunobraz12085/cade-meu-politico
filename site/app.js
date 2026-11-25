@@ -512,6 +512,16 @@ async function deputado(uf, id) {
   scrollTo(0, 0);
 }
 
+function termoSen(s) {
+  const g = s.governo; if (!g || !g.total) return "";
+  const vot = g.com + g.contra, pG = vot ? Math.round(g.com / vot * 100) : null;
+  return `<div class="hero"><div class="kick">🌡️ Termômetro: com ou contra o governo</div>${pG == null ? `<p style="margin:8px 0 0">Ainda não votou em nenhuma votação com orientação do governo.</p>` : `
+    <div class="big" style="margin-top:6px">${pG}% <span style="font-size:18px">das vezes votou com o governo</span></div>
+    <div class="kpis" style="margin:12px 0"><div class="kpi"><b>${g.com}</b><span>votou com o governo</span></div><div class="kpi"><b>${g.contra}</b><span>votou contra o governo</span></div><div class="kpi"><b>${g.faltou}</b><span>faltou ou não votou</span></div></div>
+    <div class="termo neutro"><i style="left:${100 - pG}%"></i></div><div class="legend"><span>Com o governo</span><span>Contra o governo</span></div>
+    <p class="pt" style="margin:10px 0 0">Em cada votação, o líder do governo diz se é pra votar Sim ou Não. Aqui você vê se ${esc(s.nome.split(" ")[0])} costuma seguir ou não. Não diz se isso é bom ou ruim: é pra você saber de que lado ele costuma ficar. Conta ${g.total} votações do Senado de ${new Date().getFullYear()}.</p>`}</div>`;
+}
+
 async function senador(uf, id) {
   const D = await json(`dados/uf/${uf}.json`);
   const s = D.senadores.find(x => String(x.id) === id);
@@ -521,7 +531,8 @@ async function senador(uf, id) {
   $("app").innerHTML = `<a class="back" href="#${uf}/politicos">← Seus políticos</a>
   <div class="ph">${foto(s)}<div><div class="nm" style="font-size:24px">${esc(s.nome)}</div><div class="pt">Senador(a) · ${esc(s.partido)} · ${uf}</div></div></div>
   ${s.totalVotacoes ? `<div class="stats"><div class="stat"><div class="big" style="font-size:32px">${Math.round((s.participou || 0) / s.totalVotacoes * 100)}%</div><div class="pt">votou em ${s.participou} das ${s.totalVotacoes} votações nominais do Senado em ${D.ano}</div></div></div>` : ""}
-  <h2>Como votou no Senado</h2>
+  ${termoSen(s)}
+  <h2 style="margin-top:18px">Como votou no Senado</h2>
   <div class="card">${vs.map(v => `<div class="row"><span><b style="white-space:normal">${esc(v.materia || "Votação")}</b> <span class="pt">· ${dataBR(v.data)}${v.resultado ? " · " + esc(v.resultado.toLowerCase()) : ""}${v.secreta ? " · votação secreta" : ""}</span><br><span class="pt">${esc(limpa(v.ementa).slice(0, 160))}</span></span>${tag(v.voto)}</div>`).join("") || '<div class="pt" style="padding:14px 0">As votações deste senador aparecem na próxima atualização diária.</div>'}</div>
   <p class="note">Fonte: Dados Abertos do Senado Federal. "Votou" aparece em votações secretas, quando o voto não é divulgado.</p>`;
   scrollTo(0, 0);
