@@ -89,6 +89,24 @@ async function main() {
     }));
   });
 
+  console.log("2c/5 Senado: votou com ou contra o governo...");
+  {
+    const hoje = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const jo = await pegar(`${SENADO}/plenario/votacao/orientacaoBancada/${ANO}0101/${hoje}.json`);
+    const norm = t => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const comOri = (jo?.votacoes ?? []).map(v => ({ v, g: (v.orientacoesLideranca || []).find(o => o.partido === "Governo")?.voto }))
+      .filter(x => x.g === "SIM" || x.g === "NÃO");
+    for (const s of senadores) {
+      let com = 0, contra = 0;
+      for (const { v, g } of comOri) {
+        const p = (v.votosParlamentar || []).find(p => p.uf === s.uf && norm(p.nomeParlamentar) === norm(s.nome));
+        if (p?.voto === "SIM" || p?.voto === "NÃO") p.voto === g ? com++ : contra++;
+      }
+      s.governo = { com, contra, faltou: comOri.length - com - contra, total: comOri.length };
+    }
+    console.log("   ", comOri.length, "votações com orientação do governo");
+  }
+
   console.log("3/5 Votações do plenário...");
   // a API aceita no máximo uns 3 meses por consulta: busca o ano em janelas de 80 dias
   const listaVot = [];
