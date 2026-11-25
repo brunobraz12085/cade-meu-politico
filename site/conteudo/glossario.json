@@ -1,25 +1,132 @@
 {
-  "PL": "Projeto de Lei. É a proposta de uma lei nova ou de uma mudança numa lei que já existe. Precisa passar pela Câmara e pelo Senado e depois ser sancionada pelo presidente.",
-  "PLP": "Projeto de Lei Complementar. Parecido com o PL, mas trata de assuntos que a Constituição manda regular por lei complementar, como impostos e contas públicas. Precisa de mais votos: 257 deputados e 41 senadores.",
-  "PEC": "Proposta de Emenda à Constituição. Muda a Constituição, a lei mais importante do país. É a mais difícil de aprovar: precisa de 3/5 dos votos (308 deputados e 49 senadores), em dois turnos em cada Casa.",
-  "PDL": "Projeto de Decreto Legislativo. Usado pelo Congresso para assuntos que são só dele, como derrubar uma decisão do governo ou aprovar um acordo internacional. Não vai para sanção do presidente.",
-  "MP": "Medida Provisória. Uma regra que o presidente cria e que já vale na hora, por até 120 dias. Nesse prazo, o Congresso precisa aprovar, senão ela perde a validade.",
-  "Texto-base": "A versão principal do projeto que vai a voto. Depois de aprovar o texto-base, os deputados ainda podem votar mudanças em partes dele (os destaques).",
-  "Destaque": "Um pedido para votar separado um pedaço do projeto. Serve para tentar tirar, manter ou mudar um trecho específico depois que o texto-base foi aprovado.",
-  "Emenda": "Uma sugestão de mudança no texto de um projeto, feita por um deputado ou senador. Se aprovada, entra no texto.",
-  "Emenda parlamentar": "Dinheiro do orçamento que cada deputado e senador pode indicar para uma obra ou serviço, geralmente na sua região: posto de saúde, asfalto, equipamento. É diferente da emenda que muda o texto de um projeto.",
-  "Substitutivo": "Quando o relator reescreve o projeto inteiro com as mudanças que achou necessárias. Esse novo texto substitui o original na votação.",
-  "Relator": "O parlamentar escolhido para estudar o projeto, ouvir os lados e dar o parecer: recomendar aprovar, mudar ou rejeitar.",
-  "Urgência": "Um pedido aprovado em votação para o projeto andar mais rápido, pulando etapas nas comissões e indo direto para o plenário.",
-  "Plenário": "A reunião com todos os deputados (ou todos os senadores) juntos, onde acontecem as votações principais.",
-  "Comissão": "Um grupo menor de parlamentares, organizado por assunto (saúde, educação, economia), que analisa os projetos antes do plenário.",
-  "Sanção": "Quando o presidente assina e o projeto aprovado pelo Congresso vira lei.",
-  "Veto": "Quando o presidente recusa um projeto aprovado, inteiro ou só uma parte. O Congresso pode derrubar o veto em votação.",
-  "Obstrução": "Uma estratégia em que deputados não registram voto ou atrasam a sessão de propósito, para tentar impedir ou adiar uma votação.",
-  "Abstenção": "Quando o parlamentar está presente, mas escolhe não votar nem sim nem não.",
-  "Orientação de bancada": "A recomendação que o líder de um partido (ou do governo) dá sobre como os deputados devem votar. Não é obrigatória.",
-  "Cota parlamentar": "Uma verba mensal que cada deputado recebe para pagar custos do trabalho, como combustível, passagens, escritório e divulgação. Não é salário. Cada gasto precisa de nota fiscal, que fica pública.",
-  "Maioria absoluta": "Mais da metade de todos os membros da Casa, mesmo quem faltou. Na Câmara são 257 deputados, e no Senado, 41 senadores.",
-  "Arcabouço fiscal": "A regra que limita quanto os gastos do governo federal podem crescer a cada ano, para manter as contas sob controle.",
-  "Dívida Ativa": "A lista de quem deve impostos ou outras cobranças ao governo e não pagou no prazo. Quem está nela pode ser cobrado na Justiça."
+  "PL": {
+    "icone": "📄",
+    "def": "Projeto de Lei. É a proposta de uma lei nova ou de uma mudança numa lei que já existe. Precisa passar pela Câmara e pelo Senado e depois ser sancionada pelo presidente.",
+    "pratica": "Um deputado quer obrigar escolas a terem psicólogo: ele apresenta um PL. Se passar na Câmara, no Senado e o presidente assinar, vira lei."
+  },
+  "PLP": {
+    "icone": "📑",
+    "def": "Projeto de Lei Complementar. Parecido com o PL, mas trata de assuntos que a Constituição manda regular por lei complementar, como impostos e contas públicas. Precisa de mais votos: 257 deputados e 41 senadores.",
+    "pratica": "Mudar o limite de faturamento do MEI foi feito por PLP, porque mexe com imposto."
+  },
+  "PEC": {
+    "icone": "📜",
+    "def": "Proposta de Emenda à Constituição. Muda a Constituição, a lei mais importante do país. É a mais difícil de aprovar: precisa de 3/5 dos votos (308 deputados e 49 senadores), em dois turnos em cada Casa.",
+    "pratica": "A proposta de reduzir a jornada de trabalho para 36 horas por semana é uma PEC, porque a jornada está escrita na Constituição."
+  },
+  "PDL": {
+    "icone": "🧾",
+    "def": "Projeto de Decreto Legislativo. Usado pelo Congresso para assuntos que são só dele, como derrubar uma decisão do governo ou aprovar um acordo internacional. Não vai para sanção do presidente.",
+    "pratica": "Se o governo cria uma regra que o Congresso acha que passou do limite, os deputados podem derrubar com um PDL."
+  },
+  "MP": {
+    "icone": "⚡",
+    "def": "Medida Provisória. Uma regra que o presidente cria e que já vale na hora, por até 120 dias. Nesse prazo, o Congresso precisa aprovar, senão ela perde a validade.",
+    "pratica": "O presidente cria uma MP mudando um auxílio. A regra vale no mesmo dia, mas se o Congresso não aprovar em 120 dias, ela cai."
+  },
+  "Texto-base": {
+    "icone": "📝",
+    "def": "A versão principal do projeto que vai a voto. Depois de aprovar o texto-base, os deputados ainda podem votar mudanças em partes dele (os destaques).",
+    "pratica": "A Câmara aprova o texto-base de um projeto de imposto e, logo depois, vota destaques pra tirar um trecho polêmico."
+  },
+  "Destaque": {
+    "icone": "✂️",
+    "def": "Um pedido para votar separado um pedaço do projeto. Serve para tentar tirar, manter ou mudar um trecho específico depois que o texto-base foi aprovado.",
+    "pratica": "O texto-base foi aprovado, mas um partido pede destaque pra votar separado o trecho que aumentava uma taxa."
+  },
+  "Emenda": {
+    "icone": "✏️",
+    "def": "Uma sugestão de mudança no texto de um projeto, feita por um deputado ou senador. Se aprovada, entra no texto.",
+    "pratica": "Um deputado propõe uma emenda pra incluir os autônomos num benefício. Se aprovarem, isso entra no texto."
+  },
+  "Emenda parlamentar": {
+    "icone": "🏗️",
+    "def": "Dinheiro do orçamento que cada deputado e senador pode indicar para uma obra ou serviço, geralmente na sua região: posto de saúde, asfalto, equipamento. É diferente da emenda que muda o texto de um projeto.",
+    "pratica": "O asfalto de uma rua do seu bairro pode ter vindo de uma emenda parlamentar de um deputado da sua região."
+  },
+  "Substitutivo": {
+    "icone": "🔄",
+    "def": "Quando o relator reescreve o projeto inteiro com as mudanças que achou necessárias. Esse novo texto substitui o original na votação.",
+    "pratica": "O projeto original tinha 10 artigos. O relator reescreveu tudo num substitutivo de 25 artigos, e é esse novo texto que vai a voto."
+  },
+  "Relator": {
+    "icone": "🧑‍⚖️",
+    "def": "O parlamentar escolhido para estudar o projeto, ouvir os lados e dar o parecer: recomendar aprovar, mudar ou rejeitar.",
+    "pratica": "Antes da votação, o relator lê o parecer dizendo se recomenda aprovar e com quais mudanças."
+  },
+  "Urgência": {
+    "icone": "🚨",
+    "def": "Um pedido aprovado em votação para o projeto andar mais rápido, pulando etapas nas comissões e indo direto para o plenário.",
+    "pratica": "Com a urgência aprovada, um projeto que levaria meses nas comissões é votado no plenário na mesma semana."
+  },
+  "Plenário": {
+    "icone": "🏛️",
+    "def": "A reunião com todos os deputados (ou todos os senadores) juntos, onde acontecem as votações principais.",
+    "pratica": "Quando você vê na TV o painel com os votos dos 513 deputados, aquilo é o plenário."
+  },
+  "Comissão": {
+    "icone": "👥",
+    "def": "Um grupo menor de parlamentares, organizado por assunto (saúde, educação, economia), que analisa os projetos antes do plenário.",
+    "pratica": "Um projeto sobre remédio passa primeiro pela Comissão de Saúde antes de ir pro plenário."
+  },
+  "Sanção": {
+    "icone": "✍️",
+    "def": "Quando o presidente assina e o projeto aprovado pelo Congresso vira lei.",
+    "pratica": "O Congresso aprovou o novo limite do MEI; quando o presidente sanciona, a regra passa a valer como lei."
+  },
+  "Veto": {
+    "icone": "🚫",
+    "def": "Quando o presidente recusa um projeto aprovado, inteiro ou só uma parte. O Congresso pode derrubar o veto em votação.",
+    "pratica": "O presidente pode vetar só um artigo de uma lei e sancionar o resto."
+  },
+  "Obstrução": {
+    "icone": "⏸️",
+    "def": "Uma estratégia em que deputados não registram voto ou atrasam a sessão de propósito, para tentar impedir ou adiar uma votação.",
+    "pratica": "Deputados que são contra um projeto ficam sem votar pra não dar o número mínimo de presentes e adiar a votação."
+  },
+  "Abstenção": {
+    "icone": "🤷",
+    "def": "Quando o parlamentar está presente, mas escolhe não votar nem sim nem não.",
+    "pratica": "No painel aparece \"abstenção\": o deputado estava lá, mas não quis votar sim nem não."
+  },
+  "Orientação de bancada": {
+    "icone": "📣",
+    "def": "A recomendação que o líder de um partido (ou do governo) dá sobre como os deputados devem votar. Não é obrigatória.",
+    "pratica": "O líder do governo orienta \"Sim\", mas alguns deputados do partido votam \"Não\" mesmo assim."
+  },
+  "Cota parlamentar": {
+    "icone": "⛽",
+    "def": "Uma verba mensal que cada deputado recebe para pagar custos do trabalho, como combustível, passagens, escritório e divulgação. Não é salário. Cada gasto precisa de nota fiscal, que fica pública.",
+    "pratica": "O combustível do carro que o deputado usa pra visitar as cidades é pago com a cota, e a nota fica pública no app."
+  },
+  "Maioria absoluta": {
+    "icone": "🔢",
+    "def": "Mais da metade de todos os membros da Casa, mesmo quem faltou. Na Câmara são 257 deputados, e no Senado, 41 senadores.",
+    "pratica": "Se só 300 deputados estiverem presentes, ainda assim um PLP precisa de 257 votos a favor pra passar."
+  },
+  "Arcabouço fiscal": {
+    "icone": "📊",
+    "def": "A regra que limita quanto os gastos do governo federal podem crescer a cada ano, para manter as contas sob controle.",
+    "pratica": "Se a arrecadação sobe muito, o governo ainda assim só pode aumentar os gastos até o limite do arcabouço."
+  },
+  "Dívida Ativa": {
+    "icone": "📛",
+    "def": "A lista de quem deve impostos ou outras cobranças ao governo e não pagou no prazo. Quem está nela pode ser cobrado na Justiça.",
+    "pratica": "Quem não pagou o imposto do MEI pode entrar na Dívida Ativa e ter o nome cobrado na Justiça."
+  },
+  "Quociente eleitoral": {
+    "icone": "🗳️",
+    "def": "O número de votos que um partido ou federação precisa juntar pra ganhar uma cadeira de vereador ou deputado. É o total de votos válidos dividido pelo número de vagas.",
+    "pratica": "Numa cidade com 30 mil votos válidos e 15 vagas, cada 2 mil votos do partido garantem uma cadeira."
+  },
+  "Federação": {
+    "icone": "🤝",
+    "def": "Quando dois ou mais partidos se juntam e funcionam como se fossem um só por pelo menos 4 anos, nas eleições e no Congresso.",
+    "pratica": "PT, PCdoB e PV formam uma federação: os votos dos três são somados pra calcular as cadeiras."
+  },
+  "Suplente": {
+    "icone": "🪑",
+    "def": "O candidato que não foi eleito, mas ficou na fila do partido. Assume se um eleito sair, por exemplo, pra virar secretário.",
+    "pratica": "Um vereador eleito vira secretário da prefeitura, e o primeiro suplente do partido assume a cadeira."
+  }
 }
