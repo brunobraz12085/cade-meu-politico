@@ -1,15 +1,22 @@
-# Todo dia busca os dados novos e publica o site no GitHub Pages.
+# Publica o site no GitHub Pages.
+# - De madrugada (e no botão "Run workflow"): busca TODOS os dados de novo (demora ~35 min) e guarda no ramo "dados".
+# - Quando muda o código (push): só reaproveita os dados guardados e publica (2-3 min).
 name: Atualizar e publicar
 
 on:
   schedule:
     - cron: "17 9 * * *"   # todo dia às 6h17 (horário de Brasília)
-  workflow_dispatch:        # botão "Run workflow" para rodar na hora
+  workflow_dispatch:
+    inputs:
+      rapido:
+        description: "Só publicar, sem buscar os dados de novo"
+        type: boolean
+        default: false
   push:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -20,14 +27,32 @@ concurrency:
 jobs:
   montar:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Buscar dados da Câmara e do Senado
-        run: node scripts/atualizar.mjs
+      - name: Dados (reaproveita ou busca tudo)
+        env:
+          RAPIDO: ${{ github.event_name == 'push' || inputs.rapido == true }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$RAPIDO" = "true" ] && git fetch -q origin dados 2>/dev/null; then
+            echo "Publicação rápida: usando os dados guardados"
+            mkdir -p site/dados
+            git --work-tree=site/dados checkout FETCH_HEAD -- .
+            git reset -q
+          else
+            echo "Buscando todos os dados (demora)"
+            node scripts/atualizar.mjs
+            cd site/dados
+            git init -q -b dados
+            git add -A
+            git -c user.name=cade-meu-politico-bot -c user.email=actions@users.noreply.github.com commit -qm "dados $(date -u +%F)"
+            git push -fq "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" dados
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v5
         with:
