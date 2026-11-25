@@ -92,12 +92,21 @@ function cartaoNoticia(n) {
 }
 
 async function abaNoticias(uf) {
-  const est = NOT.estados?.[uf] || [];
-  return `<div class="chips"><a class="chip" href="#${uf}/glossario" style="text-decoration:none">📖 Dicionário da política</a></div><div class="sec">Brasil · o que pesa no bolso de todo mundo</div>
-  ${NOT.brasil?.length ? NOT.brasil.map(cartaoNoticia).join("") : '<div class="vazio">As notícias do dia chegam em breve.</div>'}
-  <div class="sec">${NOMES[uf]} · o que pesa só aqui</div>
-  ${est.length ? est.map(cartaoNoticia).join("") : `<div class="vazio">Sem novidade importante em ${NOMES[uf]} nos últimos dias. Quando acontecer algo que mexa com o seu bolso ou a sua rotina, aparece aqui.</div>`}
-  <p class="note">Só entram notícias que mexem com o bolso ou a rotina das pessoas. Os resumos são nossos; a notícia completa está na fonte.</p>`;
+  const br = NOT.brasil || [], est = NOT.estados?.[uf] || [];
+  const qtd = n => n ? `${n} notícia${n === 1 ? "" : "s"} que mexe${n === 1 ? "" : "m"} com o seu bolso ou a sua rotina` : "Sem novidade importante agora";
+  return `<p class="lead">Só o que mexe com o bolso e a rotina do povo, explicado sem enrolação.</p><div class="opc">
+  ${opcao(`#${uf}/nt/br`, "🇧🇷", "Brasil", qtd(br.length))}
+  ${opcao(`#${uf}/nt/uf`, "📍", esc(NOMES[uf]), qtd(est.length))}</div>
+  <div class="chips" style="margin-top:14px"><a class="chip" href="#${uf}/glossario" style="text-decoration:none">📖 Dicionário da política</a></div>`;
+}
+function listaNoticias(uf, qual) {
+  menu(uf, "noticias");
+  const br = qual !== "uf", lista = br ? (NOT.brasil || []) : (NOT.estados?.[uf] || []);
+  $("app").innerHTML = `<a class="back" href="#${uf}/noticias">← Notícias</a><h1>${br ? "🇧🇷 Brasil" : "📍 " + esc(NOMES[uf])}</h1>
+  <p class="lead">${br ? "O que pesa no bolso de todo mundo." : `O que pesa só em ${esc(NOMES[uf])}.`}</p>
+  ${lista.length ? lista.map(cartaoNoticia).join("") : `<div class="vazio">Sem novidade importante ${br ? "no Brasil" : "em " + esc(NOMES[uf])} nos últimos dias. Quando acontecer algo que mexa com o seu bolso ou a sua rotina, aparece aqui.</div>`}
+  <p class="note">Os resumos são nossos; a notícia completa está na fonte.</p>`;
+  scrollTo(0, 0);
 }
 
 const VEREDITO = {bom: ["👍", "Bom pro povo", "t-Saude"], ruim: ["👎", "Ruim pro povo", "t-Impostos"], misto: ["⚖️", "Tem lado bom e lado ruim", "t-Bolso"]};
@@ -535,8 +544,9 @@ async function rota() {
     if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
-    menu(uf, tipo === "g" ? "gastos" : tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" || tipo === "vt" ? "votacoes" : tipo === "el" ? "eleicoes" : tipo);
+    menu(uf, tipo === "g" ? "gastos" : tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" || tipo === "vt" ? "votacoes" : tipo === "nt" ? "noticias" : tipo === "el" ? "eleicoes" : tipo);
     if (tipo === "vt") return listaVotacoes(uf, id);
+    if (tipo === "nt") return listaNoticias(uf, id);
     if (tipo === "d") return deputado(uf, id);
     if (tipo === "g") return paginaGastos(uf, id);
     if (tipo === "s") return senador(uf, id);
