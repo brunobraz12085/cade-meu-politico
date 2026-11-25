@@ -12,6 +12,8 @@ O app é para quem NÃO entende de política. Tudo em linguagem do povo, curto e
 - Estados (`"estados": {"GO": [...]}`): só quando houver algo que pese naquele estado. Todo dia: só as grandes. Uma vez por semana: varredura estado por estado (prioridade: SP, MG, RJ, BA, PR, RS e GO).
 
 **Formato de cada notícia:**
+- `impacto`: UMA frase curta, o que muda na vida da pessoa. É a primeira coisa que aparece, em destaque.
+- `tema`: Bolso, Preços, Trabalho, Saúde, Aposentadoria, Transporte, Impostos, Educação, Segurança ou Moradia (define a cor e o ícone).
 - `titulo`: curto, direto, nosso.
 - `aconteceu`: 2–3 linhas, linguagem simples.
 - `porque`: a corrente de causa e efeito até o bolso da pessoa (ex.: dólar sobe → petróleo é cotado em dólar → diesel sobe → frete sobe → preço no mercado sobe).
