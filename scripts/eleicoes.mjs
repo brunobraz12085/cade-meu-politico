@@ -218,8 +218,8 @@ async function ano2026() {
     presidente: turnos(estado, UF, 1),
     governador: turnos(estado, UF, 3),
     senador: turnos(estado, UF, 5),
-    depFederal: { eleitos: so(estado[`${UF}|6|1`], c => eleito(c.sit)), maisVotados: (estado[`${UF}|6|1`] || []).slice(0, 40), partidos: porPartido(estado[`${UF}|6|1`] || [], somaLeg(legenda, 6)) },
-    depEstadual: { eleitos: so(estado[`${UF}|7|1`], c => eleito(c.sit)), maisVotados: (estado[`${UF}|7|1`] || []).slice(0, 60), partidos: porPartido(estado[`${UF}|7|1`] || [], somaLeg(legenda, 7)) }
+    depFederal: { eleitos: so(estado[`${UF}|6|1`], c => eleito(c.sit)), todos: (estado[`${UF}|6|1`] || []).map(enxuto), partidos: porPartido(estado[`${UF}|6|1`] || [], somaLeg(legenda, 6)) },
+    depEstadual: { eleitos: so(estado[`${UF}|7|1`], c => eleito(c.sit)), todos: (estado[`${UF}|7|1`] || []).map(enxuto), partidos: porPartido(estado[`${UF}|7|1`] || [], somaLeg(legenda, 7)) }
   });
 
   const locais = await lerSecao(2026, UF, [1, 3, 5, 6, 7], UF);
