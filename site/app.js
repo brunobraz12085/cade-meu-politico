@@ -98,30 +98,32 @@ async function abaNoticias(uf) {
   <p class="note">Só entram notícias que mexem com o bolso ou a rotina das pessoas. Os resumos são nossos; a notícia completa está na fonte.</p>`;
 }
 
+const caixaMuda = (txt, oficial) => `<div class="impacto t-Trabalho"><span class="ic">💡</span><div><span class="lbl">O que muda na sua vida</span><b>${txt ? esc(txt) : `<span style="font-weight:500">Explicação simples chegando. Texto oficial: ${esc(limpa(oficial).slice(0, 140))}…</span>`}</b></div></div>`;
 async function blocoPauta() {
   const P = await json("dados/pauta.json", true);
   const it = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
-  if (!it.length) return `<div class="sec">Esta semana na Câmara</div><div class="vazio">Nenhuma votação marcada no plenário nos próximos dias.</div>`;
+  if (!it.length) return "";
+  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto]?.muda, x.ementa)}
+    <h3 style="margin-top:12px">${esc(PROJ[x.projeto]?.apelido || x.projeto)}</h3><div class="kick">${esc(x.projeto)}</div>
+    ${PROJ[x.projeto] ? `<details class="mais"><summary>Texto oficial</summary><p class="pt">${esc(limpa(x.ementa))}</p></details>` : ""}</div>`;
   return `<div class="sec">Vai ser votado nesta semana <span>${it.length}</span></div>
-  <p class="pt" style="margin-top:0">Projetos na pauta do plenário da Câmara. Estar na pauta não garante que vai ser votado.</p>
-  <div class="card">${it.slice(0, 6).map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(PROJ[x.projeto]?.apelido || x.projeto)}</b> <span class="pt">· ${dataBR(x.data)}${PROJ[x.projeto] ? " · " + esc(x.projeto) : ""}</span><br><span class="pt">${esc(PROJ[x.projeto]?.muda || limpa(x.ementa).slice(0, 170))}</span></a>`).join("")}</div>
-  ${it.length > 6 ? `<details><summary>Ver os outros ${it.length - 6}</summary>${it.slice(6).map(x => `<a class="row" style="display:block;text-decoration:none" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.projeto)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 170))}</span></a>`).join("")}</details>` : ""}
-  <div class="sec">Já votados</div>`;
+  <p class="pt" style="margin-top:0">Estão na pauta da Câmara. Quando forem votados, aparece aqui quem votou a favor e contra.</p>
+  ${it.slice(0, 3).map(cartao).join("")}
+  ${it.length > 3 ? `<details><summary>Ver os outros ${it.length - 3} da pauta</summary>${it.slice(3).map(cartao).join("")}</details>` : ""}`;
 }
 
 async function abaVotacoes(uf, D) {
-  const pautaHtml = await blocoPauta();
   const ps = projetos();
-  if (!ps.length) return pautaHtml + '<div class="vazio">Nenhuma votação com voto nominal nos últimos 60 dias.</div>';
-  return pautaHtml + `<p class="lead" style="margin-top:4px">Os projetos que os deputados votaram por último. Toque em um para ver o que muda na sua vida e como votou cada deputado de ${NOMES[uf]}.</p>
-  ${ps.map(p => {
-    const v = p.principal, {s, n, tot} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
-    return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><div class="kick">${dataBR(v.data)} · ${esc(p.nome)}</div>
-    <h3>${esc(p.info?.apelido || limpa(v.ementa || v.descricao).slice(0, 120))}</h3>
-    ${p.info?.muda ? `<p class="pt" style="margin:0">${esc(p.info.muda)}</p>` : ""}
-    <div class="mini"><i style="width:${S / (S + N || 1) * 100}%;background:var(--sim)"></i><i style="width:${N / (S + N || 1) * 100}%;background:var(--nao)"></i></div>
-    <div class="pt">Câmara: ${S} sim, ${N} não · ${NOMES[uf]}: ${s} sim, ${n} não</div></a>`;
-  }).join("")}`;
+  const votados = !ps.length ? '<div class="vazio">Nenhuma votação com voto nominal nos últimos 60 dias.</div>' : ps.map(p => {
+    const v = p.principal, {s, n} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
+    return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${v.aprovada ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px">${v.aprovada == null ? "Votado" : v.aprovada ? "✅ Aprovado" : "❌ Rejeitado"} · ${dataBR(v.data)}</span>
+    ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
+    <h3 style="margin-top:12px">${esc(p.info?.apelido || p.nome)}</h3><div class="kick">${esc(p.nome)}</div>
+    <div class="mini"><i style="width:${S / (S + N || 1) * 100}%;background:var(--ok)"></i><i style="width:${N / (S + N || 1) * 100}%;background:var(--nao)"></i></div>
+    <div class="pt">${NOMES[uf]}: <b style="color:var(--ok)">${s} a favor</b> · <b style="color:var(--nao)">${n} contra</b> · Câmara toda: ${S} a ${N}</div>
+    <div style="margin-top:10px;font-weight:700;color:var(--sim)">Ver quem votou a favor e contra →</div></a>`;
+  }).join("");
+  return `<div class="sec">Já votados</div>${votados}` + await blocoPauta();
 }
 
 async function paginaProjeto(uf, nome) {
@@ -129,26 +131,26 @@ async function paginaProjeto(uf, nome) {
   const p = projetos().find(x => x.nome === nome);
   if (!p) return render(uf, "votacoes");
   const v = p.principal, {s, n, tot} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
-  const deps = D.deputados.filter(d => filtroVoto === "todos" || (d.votos[v.id] || "Não votou") === filtroVoto);
+  const grupo = t => D.deputados.filter(d => t === "outro" ? !["Sim", "Não"].includes(d.votos[v.id]) : d.votos[v.id] === t);
+  const lista = (ds, tag) => `<div class="list">${ds.map(d => `<a class="dep" href="#${uf}/d/${d.id}">${foto(d)}<span><span class="nm">${esc(d.nome)}</span><br><span class="pt">${esc(d.partido)}</span></span>${tag(d)}</a>`).join("") || '<div class="pt" style="padding:14px 16px">Ninguém.</div>'}</div>`;
+  const outros = grupo("outro");
   $("app").innerHTML = `<a class="back" href="#${uf}/votacoes">← Votações</a>
-  <div class="kick">${esc(p.nome)} · votado em ${dataBR(v.data)}</div>
+  <div class="kick" style="margin-top:10px">${esc(p.nome)} · votado em ${dataBR(v.data)}${v.aprovada == null ? "" : v.aprovada ? " · aprovado" : " · rejeitado"}</div>
   <h1 style="font-size:clamp(26px,6vw,36px)">${esc(p.info?.apelido || p.nome)}</h1>
-  ${GLOS[siglaDe(p.nome)] ? `<p class="pt" style="margin:0"><b>O que é ${esc(siglaDe(p.nome))}?</b> ${esc(GLOS[siglaDe(p.nome)])}</p>` : ""}
-  <div class="muda"><span class="lbl">O que muda na sua vida</span>${p.info ? esc(p.info.muda) : "A explicação simples deste projeto chega em breve."}
-  ${p.info?.detalhe ? `<p style="margin:8px 0 0">${esc(p.info.detalhe)}</p>` : ""}</div>
-  <p class="oficial"><b>Texto oficial:</b> ${esc(limpa(v.ementa || v.descricao))}</p>
-  <div class="hero"><div class="kick">Resultado na Câmara</div>
-  <div class="bar"><div class="s" style="width:${S / (S + N || 1) * 100}%">${S} sim</div><div class="n" style="width:${N / (S + N || 1) * 100}%">${N} não</div></div>
-  <div class="legend"><span>${esc(v.descricao.split(".")[0])}</span></div></div>
+  ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
+  ${p.info?.detalhe ? `<p style="margin:12px 0 0">${esc(p.info.detalhe)}</p>` : ""}
+  <h2>Como votaram os deputados de ${NOMES[uf]}</h2>
+  <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><b style="color:var(--ok)">${s}</b><span>a favor</span></div><div class="kpi"><b style="color:var(--nao)">${n}</b><span>contra</span></div><div class="kpi"><b>${tot - s - n}</b><span>não votaram</span></div></div>
+  <div class="sec" style="color:var(--ok)">✅ Votaram a favor <span>${s}</span></div>${lista(grupo("Sim"), () => '<span class="v Sim" style="background:var(--ok)">A favor</span>')}
+  <div class="sec" style="color:var(--nao)">❌ Votaram contra <span>${n}</span></div>${lista(grupo("Não"), () => '<span class="v Não">Contra</span>')}
+  ${outros.length ? `<details><summary>Não votaram ou se abstiveram (${outros.length})</summary>${lista(outros, d => votoTag(d.votos[v.id]))}</details>` : ""}
+  <div class="hero" style="margin-top:18px"><div class="kick">Resultado na Câmara toda</div>
+  <div class="bar"><div class="s" style="width:${S / (S + N || 1) * 100}%;background:var(--ok)">${S} a favor</div><div class="n" style="width:${N / (S + N || 1) * 100}%">${N} contra</div></div></div>
   ${blocoMeuVoto(uf, v, D)}
   <button class="cta" data-share="${esc(p.nome)}" style="margin-top:14px">Compartilhar resultado</button>
-  <h2>Como votaram os deputados de ${NOMES[uf]}</h2>
-  <p class="pt">${s} votaram sim, ${n} votaram não, ${tot - s - n} não votaram ou se abstiveram.</p>
-  <div class="chips">${["todos", "Sim", "Não", "Não votou"].map(f => `<button class="chip" aria-selected="${f === filtroVoto}" data-voto="${f}">${f === "todos" ? "Todos" : f}</button>`).join("")}</div>
-  <div class="list">${deps.map(d => `<a class="dep" href="#${uf}/d/${d.id}">${foto(d)}<span><span class="nm">${esc(d.nome)}</span><br><span class="pt">${esc(d.partido)}</span></span>${votoTag(d.votos[v.id])}</a>`).join("") || '<div class="vazio">Ninguém neste filtro.</div>'}</div>
-  ${p.vs.length > 1 ? `<details><summary>Outras ${p.vs.length - 1} votações deste projeto (mudanças no texto)</summary>${p.vs.filter(x => x !== v).map(x => `<div class="row"><span class="pt">${dataBR(x.data)} · ${esc(x.descricao)}</span></div>`).join("")}</details>` : ""}
+  <details><summary>Texto oficial e outras votações deste projeto</summary><p class="oficial">${esc(limpa(v.ementa || v.descricao))}</p>${GLOS[siglaDe(p.nome)] ? `<p class="pt"><b>O que é ${esc(siglaDe(p.nome))}?</b> ${esc(GLOS[siglaDe(p.nome)])}</p>` : ""}${p.vs.filter(x => x !== v).map(x => `<div class="row"><span class="pt">${dataBR(x.data)} · ${esc(x.descricao)}</span></div>`).join("")}</details>
   ${p.info?.fontes ? `<p class="fonte">Fontes da explicação: ${p.info.fontes.map(f => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.nome)}</a>`).join(", ")}</p>` : ""}
-  <p class="note">A explicação é um resumo neutro, sem opinião. Na dúvida, vale o texto oficial. Não entendeu alguma palavra? <a href="#${uf}/glossario">Veja o dicionário</a>.</p>`;
+  <p class="note">A explicação é um resumo neutro, sem opinião. Na dúvida, vale o texto oficial.</p>`;
   scrollTo(0, 0);
 }
 
