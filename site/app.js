@@ -226,7 +226,7 @@ function resultado(lista, max = 99, opts = {}) {
   if (!lista?.length) return '<div class="vazio">Sem dados.</div>';
   const nm = c => c.nome ?? c[0], vt = c => c.votos ?? c[1];
   const tot = lista.filter(c => !ehBN(nm(c))).reduce((t, c) => t + vt(c), 0) || 1;
-  let rank = 0;
+  let rank = opts.ini || 0;
   return `<div class="card">${lista.slice(0, max).map((c, i) => {
     const nome = nm(c), v = vt(c), bn = ehBN(nome), pos = bn ? "" : ++rank, el = /^ELEITO/.test(c.sit || "");
     const part = opts.mapa && !c.partido ? opts.mapa(nome) : c.partido;
@@ -258,75 +258,101 @@ function kpisProp(P, vagaTxt) {
   return `<div class="kpis"><div class="kpi"><b>${P.vagas}</b><span>${vagaTxt}</span></div><div class="kpi"><b>${fmtN(P.quociente)}</b><span>votos para garantir 1 cadeira (quociente)</span></div><div class="kpi"><b>${fmtN(P.validos)}</b><span>votos válidos</span></div></div>
   <p class="pt">Na eleição de vereador e deputado, primeiro conta o total do partido ou federação. Cada vez que ele bate o quociente, ganha uma cadeira, que vai para os seus candidatos mais votados.</p>`;
 }
+const CARGO_NOME = {prefeito: "Prefeito", vereador: "Vereador", presidente: "Presidente", governador: "Governador", senador: "Senador", depFederal: "Deputado federal", depEstadual: "Deputado estadual"};
+const PROP = ["vereador", "depFederal", "depEstadual"];
+let propAba = "cand";
+const lerCid = (uf, ano) => { try { return localStorage.getItem(`cid${ano}${uf}`) || ""; } catch (e) { return ""; } };
+const salvarCid = (uf, ano, cd) => { try { localStorage.setItem(`cid${ano}${uf}`, cd || ""); } catch (e) {} };
+const opcao = (href, ic, tit, sub, off) => off ? `<div class="opcao off"><span class="ic">${ic}</span><b>${tit}</b><span>${sub}</span></div>` : `<a class="opcao" href="${href}"><span class="ic">${ic}</span><b>${tit}</b><span>${sub}</span></a>`;
+
 async function abaEleicoes(uf) {
-  const chips = `<div class="seg">${["2026", "2024"].map(a => `<button aria-selected="${a === eleAno}" data-ano="${a}">${a === "2026" ? "2026 · Presidente, governador…" : "2024 · Prefeito e vereador"}</button>`).join("")}</div>`;
-  const idx = await json(`eleicoes/${eleAno}/${uf}/index.json`, true);
-  if (!idx) return chips + `<div class="vazio">Os resultados de ${NOMES[uf]} chegam em breve. Começamos por Goiás e vamos abrindo os outros estados.</div>`;
-  const sel = `<div class="sec">Resultado na sua cidade</div><select data-ir class="busca"><option value="">Escolha sua cidade…</option>${idx.map(m => `<option value="#${uf}/cidade/${eleAno}/${esc(m.cd)}">${esc(titulo(m.nome))}</option>`).join("")}</select>`;
-  if (eleAno === "2024") return chips + `<p class="lead">Eleição municipal de ${NOMES[uf]}: prefeito, todos os vereadores, os partidos e o resultado de cada escola onde se vota.</p>` + sel;
-  const E = await json(`eleicoes/2026/${uf}/estado.json`, true), BR = await json(`eleicoes/2026/brasil.json`, true);
-  const dep = (D, nome) => D ? `<div class="sec">${nome} eleitos <span>${D.eleitos?.length || 0}</span></div>${kpisProp(D.partidos, "vagas de " + nome.toLowerCase())}
-    ${D.partidos ? `<div class="sec">Cadeiras por partido</div>${blocoPartidos(D.partidos, D.maisVotados)}` : ""}
-    <details><summary>Ver os ${D.eleitos?.length || 0} eleitos</summary>${resultado(D.eleitos)}</details>` : "";
-  return chips + sel + `
-  <div class="sec">Presidente · Brasil</div>${BR ? blocoTurnos(BR.presidente, "Brasil") : ""}
-  <details><summary>Presidente: como ${NOMES[uf]} votou</summary>${blocoTurnos(E?.presidente, NOMES[uf])}</details>
-  ${blocoTurnos(E?.governador, "Governador")}
-  ${blocoTurnos(E?.senador, "Senador")}
-  ${dep(E?.depFederal, "Deputados federais")}
-  ${dep(E?.depEstadual, "Deputados estaduais")}
-  <p class="note">Porcentagens sobre os votos válidos (sem brancos e nulos). Fonte: Portal de Dados Abertos do TSE.</p>`;
+  return `<p class="lead">Qual eleição você quer ver?</p><div class="opc">
+  ${opcao(`#${uf}/el/2026`, "🗳️", "2026", "Presidente, governador, senador e deputados")}
+  ${opcao(`#${uf}/el/2024`, "🏙️", "2024", "Prefeito e vereadores da sua cidade")}</div>`;
+}
+
+function blocoLocal(C, chave, mapaNum) {
+  const zonas = [...new Set((C.locais || []).filter(l => l.votos[chave]).map(l => l.zona))].sort((a, b) => a - b);
+  if (!zonas.length) return "";
+  return `<div class="sec">Por zona e colégio eleitoral</div>
+  <select id="zsel" class="busca"><option value="">Escolha a zona eleitoral…</option>${zonas.map(z => `<option value="${esc(z)}">Zona ${esc(z)}</option>`).join("")}</select>
+  <select id="lsel" class="busca" hidden></select><div id="resLocal"></div>`;
+}
+function ligarLocal(C, chave, mapaNum) {
+  const z = $("zsel"), ls = $("lsel"); if (!z) return;
+  const locs = (C.locais || []).filter(l => l.votos[chave]);
+  z.addEventListener("change", () => {
+    const daZona = locs.filter(l => l.zona === z.value);
+    ls.hidden = !z.value; $("resLocal").innerHTML = "";
+    ls.innerHTML = `<option value="">Escolha o colégio (local de votação)…</option>` + daZona.map(l => `<option value="${locs.indexOf(l)}">${esc(titulo(l.nome))}</option>`).join("");
+  });
+  ls.addEventListener("change", () => {
+    const l = locs[ls.value]; if (!l) { $("resLocal").innerHTML = ""; return; }
+    const pp = l.partidos?.[chave];
+    $("resLocal").innerHTML = `<p class="pt">${esc(titulo(l.end))} · ${l.secoes} seções (urnas)</p>${resultado(l.votos[chave], 25)}
+    ${pp ? `<div class="sec">Votos por partido neste colégio</div><div class="card">${pp.map(([n, v]) => `<div class="row"><span><b>${esc(mapaNum[n] || "Partido " + n)}</b> <span class="pt">· nº ${esc(n)}</span></span><b>${fmtN(v)}</b></div>`).join("")}</div>` : ""}`;
+  });
+}
+
+async function eleicao(uf, partes) {
+  menu(uf, "eleicoes");
+  const [ano, turno, cargo] = partes;
+  if (!["2024", "2026"].includes(ano)) return render(uf, "eleicoes");
+  const idx = await json(`eleicoes/${ano}/${uf}/index.json`, true);
+  const base = `#${uf}/el/${ano}`;
+  const voltar = cargo ? [`${base}/${turno}`, `${turno}º turno`] : turno ? [base, `Eleição ${ano}`] : [`#${uf}/eleicoes`, "Eleições"];
+  const cab = (tit) => `<a class="back" href="${voltar[0]}">← ${voltar[1]}</a><div class="kick" style="margin-top:10px">Eleição ${ano}${turno ? ` · ${turno}º turno` : ""}</div><h1>${tit}</h1>`;
+  if (!idx) { $("app").innerHTML = cab(`Eleição ${ano}`) + `<div class="vazio">Os resultados de ${NOMES[uf]} chegam em breve. Começamos por Goiás e vamos abrindo os outros estados.</div>`; return; }
+  let cd = lerCid(uf, ano); if (cd && !idx.some(m => m.cd === cd)) cd = "";
+  const C = cd ? await json(`eleicoes/${ano}/${uf}/m/${cd}.json`, true) : null;
+  const E = ano === "2026" ? await json(`eleicoes/2026/${uf}/estado.json`, true) : null;
+  const BR = ano === "2026" && cargo === "presidente" ? await json(`eleicoes/2026/brasil.json`, true) : null;
+  const onde = C ? titulo(C.nome) : NOMES[uf];
+  const selCid = `<select id="cidsel" class="busca"><option value="">${ano === "2024" ? "Escolha sua cidade…" : `Todo o estado (${NOMES[uf]})`}</option>${idx.map(m => `<option value="${esc(m.cd)}"${m.cd === cd ? " selected" : ""}>${esc(titulo(m.nome))}</option>`).join("")}</select>`;
+  let html = "";
+  if (!turno) {
+    const tem2 = ano === "2024" ? !!C?.prefeito?.[2] : true;
+    html = cab(`Eleição ${ano}`) + `<div class="sec">${ano === "2024" ? "Sua cidade" : "Ver resultado de"}</div>${selCid}` +
+      (ano === "2024" && !C ? `<div class="vazio">Escolha sua cidade para ver o resultado.</div>` :
+      `<div class="opc">${opcao(`${base}/1`, "1º", "1º turno", ano === "2024" ? "Prefeito e vereador" : "Presidente, governador, senador e deputados")}
+      ${opcao(`${base}/2`, "2º", "2º turno", tem2 ? (ano === "2024" ? "Prefeito" : "Presidente e governador") : `Não teve 2º turno em ${onde}`, !tem2)}</div>`);
+  } else if (!cargo) {
+    let cargos = turno === "2" ? (ano === "2024" ? ["prefeito"] : ["presidente", ...((C || E)?.governador?.[2] ? ["governador"] : [])]) : (ano === "2024" ? ["prefeito", "vereador"] : ["presidente", "governador", "senador", "depFederal", "depEstadual"]);
+    const icones = {prefeito: "🏛️", vereador: "👥", presidente: "🇧🇷", governador: "🏢", senador: "⚖️", depFederal: "🏛️", depEstadual: "📋"};
+    html = cab(`${turno}º turno`) + (ano === "2026" ? `<div class="sec">Ver resultado de</div>${selCid}` : `<p class="lead">${esc(onde)}</p>`) +
+      `<div class="opc">${cargos.map(k => opcao(`${base}/${turno}/${k}`, icones[k], CARGO_NOME[k], esc(onde))).join("")}</div>`;
+  } else if (!PROP.includes(cargo)) {
+    const fonte = C ? C[cargo] : E?.[cargo];
+    html = cab(`${CARGO_NOME[cargo]}`) + (ano === "2026" ? selCid : "") +
+      (cargo === "presidente" && BR && !C ? `<div class="sec">Brasil</div>${resultado(BR.presidente?.[turno])}` : "") +
+      `<div class="sec">${esc(onde)}</div>${resultado(fonte?.[turno])}` +
+      (C ? blocoLocal(C, `${cargo}|${turno}`) : `<p class="note">Escolha uma cidade acima para ver o resultado por zona e por colégio eleitoral.</p>`);
+  } else {
+    const D = C ? (cargo === "vereador" ? C.vereadores : (Array.isArray(C[cargo]) ? { todos: C[cargo] } : C[cargo])) : E?.[cargo];
+    const todos = D?.todos || D?.maisVotados || [];
+    const eleitos = C ? todos.filter(c => /^ELEITO/.test(c.sit || "")) : (D?.eleitos || []);
+    const demais = todos.filter(c => !/^ELEITO/.test(c.sit || ""));
+    const comCad = !(ano === "2026" && C);
+    html = cab(`${CARGO_NOME[cargo]}`) + (ano === "2026" ? selCid : "") +
+      `<div class="seg"><button aria-selected="${propAba === "cand"}" data-pab="cand">Candidatos</button><button aria-selected="${propAba === "part"}" data-pab="part">Por partido</button></div>` +
+      (propAba === "part"
+        ? (comCad ? kpisProp(D?.partidos, `vagas de ${CARGO_NOME[cargo].toLowerCase()}`) : `<p class="pt">Votos que cada partido teve em ${esc(onde)}. As cadeiras são decididas com os votos do estado todo.</p>`) + blocoPartidos(D?.partidos, todos, comCad)
+        : `<div class="sec">Eleitos${ano === "2026" && C ? " (no estado) que tiveram voto aqui" : ""} <span>${eleitos.length}</span></div>${resultado(eleitos, 999)}
+          <div class="sec">Demais candidatos <span>${demais.length}</span></div>${demais.length ? `<input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${resultado(demais, 999, {ini: eleitos.length})}</div>` : `<div class="vazio">${C ? "Sem outros candidatos." : "Escolha uma cidade acima para ver todos os candidatos."}</div>`}`) +
+      (C ? blocoLocal(C, `${cargo}|1`) : `<p class="note">Escolha uma cidade acima para ver por zona e por colégio eleitoral.</p>`);
+    window.__demais = demais;
+  }
+  $("app").innerHTML = html + `<p class="note">Fonte: Portal de Dados Abertos do TSE. Porcentagens sobre os votos válidos (sem brancos e nulos).</p>`;
+  const cs = $("cidsel"); if (cs) cs.addEventListener("change", () => { salvarCid(uf, ano, cs.value); rota(); });
+  const q = $("qc"); if (q) q.addEventListener("input", e => { buscaCand = e.target.value; const k = buscaCand.toLowerCase(), r = window.__demais.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k)); $("lista").innerHTML = r.length ? resultado(r, 999) : '<div class="vazio">Ninguém encontrado.</div>'; });
+  if (C && cargo) { const mapaNum = {}; for (const c of [...(C.vereadores?.todos || []), ...(C.depFederal?.todos || []), ...(C.depEstadual?.todos || [])]) if (c.numero) mapaNum[String(c.numero).slice(0, 2)] = c.partido; ligarLocal(C, `${cargo}|${PROP.includes(cargo) ? 1 : turno}`, mapaNum); }
+  scrollTo(0, 0);
 }
 
 function listaBusca(todos) {
   const k = buscaCand.toLowerCase();
   const r = todos.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k));
   return r.length ? resultado(r, 999) : '<div class="vazio">Ninguém encontrado.</div>';
-}
-
-async function cidade(uf, ano, cd) {
-  menu(uf, "eleicoes");
-  const C = await json(`eleicoes/${ano}/${uf}/m/${cd}.json`, true);
-  if (!C) { $("app").innerHTML = `<a class="back" href="#${uf}/eleicoes">← Eleições</a><div class="vazio">Não encontrei essa cidade.</div>`; return; }
-  const locais = C.locais || [];
-  const arr = x => Array.isArray(x) ? { todos: x, partidos: null } : (x || { todos: [], partidos: null });
-  const DF = arr(C.depFederal), DE = arr(C.depEstadual), V = C.vereadores || {};
-  const abas = ano === "2024"
-    ? [["prefeito", "Prefeito"], ["vereadores", "Vereadores"], ["partidos", "Partidos"], ["local", "Onde você vota"]]
-    : [["presidente", "Presidente"], ["governador", "Governador"], ["senador", "Senador"], ["depFederal", "Dep. federal"], ["depEstadual", "Dep. estadual"], ["local", "Onde você vota"]];
-  cidAba ??= abas[0][0];
-  // número do partido (2 dígitos) -> sigla, para os votos de cada escola
-  const mapaNum = {};
-  for (const c of [...(V.todos || []), ...DF.todos, ...DE.todos]) if (c.numero) mapaNum[String(c.numero).slice(0, 2)] = c.partido;
-  let corpo = "", lista = null;
-  if (cidAba === "prefeito") corpo = blocoTurnos(C.prefeito, "Prefeito");
-  else if (cidAba === "vereadores") { lista = V.todos || V.maisVotados || []; corpo = kpisProp(V.partidos, "vagas de vereador") + `<div class="sec">Todos os candidatos <span>${lista.length}</span></div><input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${listaBusca(lista)}</div>`; }
-  else if (cidAba === "partidos") corpo = kpisProp(V.partidos, "vagas de vereador") + `<div class="sec">Partidos e federações</div>` + blocoPartidos(V.partidos, V.todos);
-  else if (["presidente", "governador", "senador"].includes(cidAba)) corpo = blocoTurnos(C[cidAba], titulo(cidAba));
-  else if (cidAba === "depFederal" || cidAba === "depEstadual") {
-    const D = cidAba === "depFederal" ? DF : DE; lista = D.todos;
-    corpo = (D.partidos ? `<div class="sec">Votos por partido aqui</div>${blocoPartidos(D.partidos, D.todos, false)}` : "") + `<div class="sec">Candidatos mais votados aqui <span>${lista.length}</span></div><input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${listaBusca(lista)}</div>`;
-  } else corpo = `<p class="pt">Escolha a escola (local de votação) para ver o resultado só de lá.</p>
-    <select id="local" class="busca"><option value="">Escolha o local…</option>${locais.map((l, i) => `<option value="${i}">${esc(titulo(l.nome))} (zona ${esc(l.zona)})</option>`).join("")}</select><div id="resLocal"></div>`;
-  $("app").innerHTML = `<a class="back" href="#${uf}/eleicoes">← Eleições</a>
-  <div class="kick" style="margin-top:10px">Eleição ${ano} · ${NOMES[uf]}</div><h1>${esc(titulo(C.nome))}</h1>
-  <div class="seg">${abas.map(([k, t]) => `<button aria-selected="${k === cidAba}" data-cab="${k}">${t}</button>`).join("")}</div>
-  ${corpo}
-  <p class="note">Fonte: Portal de Dados Abertos do TSE.</p>`;
-  const q = $("qc");
-  if (q && lista) q.addEventListener("input", e => { buscaCand = e.target.value; $("lista").innerHTML = listaBusca(lista); });
-  const sl = $("local");
-  if (sl) sl.addEventListener("change", e => {
-    const l = locais[e.target.value]; if (!l) { $("resLocal").innerHTML = ""; return; }
-    const ordem = ["prefeito", "vereador", "presidente", "governador", "senador", "depFederal", "depEstadual"];
-    const nomes = {prefeito: "Prefeito", vereador: "Vereador", presidente: "Presidente", governador: "Governador", senador: "Senador", depFederal: "Deputado federal", depEstadual: "Deputado estadual"};
-    const ks = Object.keys(l.votos).sort((a, b) => ordem.indexOf(a.split("|")[0]) - ordem.indexOf(b.split("|")[0]) || a.localeCompare(b));
-    $("resLocal").innerHTML = `<p class="pt">${esc(titulo(l.end))} · ${l.secoes} seções (urnas)</p>` + ks.map(k => {
-      const [cargo, t] = k.split("|"), pp = l.partidos?.[k];
-      return `<div class="sec">${nomes[cargo] || cargo} · ${t}º turno</div>${resultado(l.votos[k], 25)}${pp ? `<details><summary>Votos por partido nesta escola</summary><div class="card">${pp.map(([n, v]) => `<div class="row"><span><b>${esc(mapaNum[n] || "Partido " + n)}</b> <span class="pt">· nº ${esc(n)}</span></span><b>${fmtN(v)}</b></div>`).join("")}</div></details>` : ""}`;
-    }).join("");
-  });
-  scrollTo(0, 0);
 }
 
 async function render(uf, aba) {
@@ -401,12 +427,13 @@ async function rota() {
     if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
-    menu(uf, tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" ? "votacoes" : tipo);
+    menu(uf, tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" ? "votacoes" : tipo === "el" ? "eleicoes" : tipo);
     if (tipo === "d") return deputado(uf, id);
     if (tipo === "s") return senador(uf, id);
     if (tipo === "p") return paginaProjeto(uf, unslug(id));
     if (tipo === "glossario") return glossario(uf);
-    if (tipo === "cidade") { const [, , ano, cd] = h.split("/"); return cidade(uf, ano, cd); }
+    if (tipo === "el") return eleicao(uf, h.split("/").slice(2));
+    if (tipo === "cidade") { const [, , ano, cd] = h.split("/"); salvarCid(uf, ano, cd); location.replace(`#${uf}/el/${ano}`); return; }
     await render(uf, tipo || "noticias");
     scrollTo(0, 0);
   } catch (e) {
@@ -424,11 +451,13 @@ document.addEventListener("click", e => {
   if (an) { eleAno = an.dataset.ano; rota(); return; }
   const cb = e.target.closest("[data-cab]");
   if (cb) { cidAba = cb.dataset.cab; buscaCand = ""; rota(); return; }
+  const pb = e.target.closest("[data-pab]");
+  if (pb) { propAba = pb.dataset.pab; buscaCand = ""; rota(); return; }
   const sh = e.target.closest("[data-share]");
   if (sh) { compartilhar(location.hash.slice(1).split("/")[0], sh.dataset.share); }
 });
 document.addEventListener("change", e => { if (e.target.matches("[data-ir]") && e.target.value) location.hash = e.target.value; });
-addEventListener("hashchange", () => { busca = ""; filtroVoto = "todos"; cidAba = null; buscaCand = ""; rota(); });
+addEventListener("hashchange", () => { busca = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; buscaCand = ""; rota(); });
 json("dados/resumo.json").then(r => { $("upd").textContent = "Última atualização: " + new Date(r.atualizado).toLocaleString("pt-BR") + "."; }).catch(() => {});
 rota();
 }
