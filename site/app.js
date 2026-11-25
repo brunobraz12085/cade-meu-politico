@@ -100,12 +100,15 @@ async function abaNoticias(uf) {
   <p class="note">Só entram notícias que mexem com o bolso ou a rotina das pessoas. Os resumos são nossos; a notícia completa está na fonte.</p>`;
 }
 
-const caixaMuda = (txt, oficial) => `<div class="impacto t-Trabalho"><span class="ic">💡</span><div><span class="lbl">O que muda na sua vida</span><b>${txt ? esc(txt) : `<span style="font-weight:500">Explicação simples chegando. Texto oficial: ${esc(limpa(oficial).slice(0, 140))}…</span>`}</b></div></div>`;
+const VEREDITO = {bom: ["👍", "Bom pro povo", "t-Saude"], ruim: ["👎", "Ruim pro povo", "t-Impostos"], misto: ["⚖️", "Tem lado bom e lado ruim", "t-Bolso"]};
+const caixaMuda = (info, oficial, completo) => { const vv = VEREDITO[info?.veredito];
+  return `<div class="impacto ${vv ? vv[2] : "t-Trabalho"}"><span class="ic">${vv ? vv[0] : "💡"}</span><div><span class="lbl">${vv ? vv[1] : "O que muda na sua vida"}</span><b>${info?.muda ? esc(info.muda) : `<span style="font-weight:500">Explicação simples chegando. Texto oficial: ${esc(limpa(oficial).slice(0, 140))}…</span>`}</b></div></div>` +
+  (completo && (info?.melhora?.length || info?.piora?.length) ? `<div class="card" style="margin-top:10px">${(info.melhora || []).map(t => `<div class="row" style="grid-template-columns:26px minmax(0,1fr)"><span>✅</span><span>${esc(t)}</span></div>`).join("")}${(info.piora || []).map(t => `<div class="row" style="grid-template-columns:26px minmax(0,1fr)"><span>❌</span><span>${esc(t)}</span></div>`).join("")}</div>` : ""); };
 async function blocoPauta() {
   const P = await json("dados/pauta.json", true);
   const it = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
   if (!it.length) return "";
-  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px;max-width:none">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto]?.muda, x.ementa)}
+  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px;max-width:none">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto], x.ementa)}
     <h3 style="margin-top:12px">${esc(PROJ[x.projeto]?.apelido || x.projeto)}</h3><div class="kick">${esc(x.projeto)}</div>
     ${PROJ[x.projeto] ? `<details class="mais"><summary>Texto oficial</summary><p class="pt">${esc(limpa(x.ementa))}</p></details>` : ""}</div>`;
   return `<div class="sec">Vai ser votado nesta semana <span>${it.length}</span></div>
@@ -119,7 +122,7 @@ async function abaVotacoes(uf, D) {
   const cartaoV = p => {
     const v = p.principal, {s, n} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
     return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${v.aprovada ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px;max-width:none">${v.aprovada == null ? "Votado" : v.aprovada ? "✅ Aprovado" : "❌ Rejeitado"} · ${dataBR(v.data)}</span>
-    ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
+    ${caixaMuda(p.info, v.ementa || v.descricao)}
     <h3 style="margin-top:12px">${esc(p.info?.apelido || p.nome)}</h3><div class="kick">${esc(p.nome)}</div>
     <div class="mini"><i style="width:${S / (S + N || 1) * 100}%;background:var(--ok)"></i><i style="width:${N / (S + N || 1) * 100}%;background:var(--nao)"></i></div>
     <div class="pt">${NOMES[uf]}: <b style="color:var(--ok)">${s} a favor</b> · <b style="color:var(--nao)">${n} contra</b> · Câmara toda: ${S} a ${N}</div>
@@ -140,7 +143,7 @@ async function paginaProjeto(uf, nome) {
   $("app").innerHTML = `<a class="back" href="#${uf}/votacoes">← Votações</a>
   <div class="kick" style="margin-top:10px">${esc(p.nome)} · votado em ${dataBR(v.data)}${v.aprovada == null ? "" : v.aprovada ? " · aprovado" : " · rejeitado"}</div>
   <h1 style="font-size:clamp(26px,6vw,36px)">${esc(p.info?.apelido || p.nome)}</h1>
-  ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
+  ${caixaMuda(p.info, v.ementa || v.descricao, true)}
   ${p.info?.oque || p.info?.detalhe ? `<details open style="margin-top:12px"><summary>O que é esse projeto</summary>${p.info.oque ? `<p style="margin:0 0 10px">${esc(p.info.oque)}</p>` : ""}${p.info.detalhe ? `<p class="pt" style="margin:0 0 10px">${esc(p.info.detalhe)}</p>` : ""}</details>` : ""}
   <h2>Como votaram os deputados de ${NOMES[uf]}</h2>
   <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><b style="color:var(--ok)">${s}</b><span>a favor</span></div><div class="kpi"><b style="color:var(--nao)">${n}</b><span>contra</span></div><div class="kpi"><b>${tot - s - n}</b><span>não votaram</span></div></div>
@@ -415,10 +418,20 @@ async function deputado(uf, id) {
   const eu = meus(), emComum = ps.filter(p => eu[p.principal.id] && ["Sim", "Não"].includes(d.votos[p.principal.id]));
   const concorda = emComum.filter(p => eu[p.principal.id] === d.votos[p.principal.id]).length;
   const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
+  const aval = ps.filter(p => ["bom", "ruim"].includes(p.info?.veredito) && ["Sim", "Não"].includes(d.votos[p.principal.id]));
+  const ehFav = p => (p.info.veredito === "bom") === (d.votos[p.principal.id] === "Sim");
+  const fav = aval.filter(ehFav).length, pF = aval.length ? Math.round(fav / aval.length * 100) : null;
+  const termo = `<div class="hero"><div class="kick">🌡️ Termômetro do povo</div>${pF == null ? `<p style="margin:8px 0 0">Ainda não votou em nenhum projeto avaliado como bom ou ruim pro povo.</p>` : `
+    <div class="big" style="margin-top:6px;color:${pF >= 50 ? "var(--ok)" : "var(--nao)"}">${pF}% <span style="font-size:18px">a favor do povo</span></div>
+    <p class="pt" style="margin:4px 0 12px">Votou a favor do povo em ${fav} de ${aval.length} projetos avaliados. Contra o povo: ${100 - pF}%.</p>
+    <div class="termo"><i style="left:${pF}%"></i></div><div class="legend"><span>Contra o povo</span><span>A favor do povo</span></div>
+    <details class="mais"><summary>Ver quais projetos contaram</summary>${aval.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}"><span><b style="white-space:normal">${esc(p.info.apelido || p.nome)}</b><br><span class="pt">${p.info.veredito === "bom" ? "👍 bom pro povo" : "👎 ruim pro povo"} · votou ${d.votos[p.principal.id] === "Sim" ? "a favor" : "contra"}</span></span>${ehFav(p) ? '<span class="v el">A favor do povo</span>' : '<span class="v Não">Contra o povo</span>'}</a>`).join("")}</details>`}
+    ${aval.length < 5 ? '<p class="note" style="margin-top:10px">Ainda são poucos projetos avaliados. O termômetro fica mais certeiro com os novos deputados, a partir de fevereiro.</p>' : ""}</div>`;
   const card = (num, txt) => `<div class="stat"><div class="big" style="font-size:32px">${num}</div><div class="pt">${txt}</div></div>`;
   $("app").innerHTML = `<a class="back" href="#${uf}/politicos">← Seus políticos</a>
   <div class="ph">${foto(d)}<div><div class="nm" style="font-size:24px">${esc(d.nome)}</div><div class="pt">Deputado(a) federal · ${esc(d.partido)} · ${uf}</div></div></div>
-  <div class="stats">
+  ${termo}
+  <div class="stats" style="margin-top:12px">
     ${card(pct(votou, VOT.length), `votou em ${votou} das ${VOT.length} últimas votações nominais`)}
     ${card(pct(igualGov, comGov.length), `das vezes votou igual à orientação do governo`)}
     ${card(pj.total, `projetos de lei e PECs assinados no mandato (como autor ou coautor)`)}
