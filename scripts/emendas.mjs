@@ -5,7 +5,7 @@ import { createInterface } from "node:readline";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 
 const ZIP = process.argv[2] || "/tmp/emendas.zip";
-const SAIDA = "site/emendas";
+const SAIDA = process.argv[3] || "site/dados/emendas";
 const DESDE = 2023; // mandato atual
 const norm = t => String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z ]/g, " ").replace(/\s+/g, " ").trim();
 const num = t => +String(t || "0").replace(/\./g, "").replace(",", ".") || 0;
