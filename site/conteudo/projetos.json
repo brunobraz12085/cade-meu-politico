@@ -1,7 +1,7 @@
 {
   "PLP 299/2026": {
     "apelido": "Pacote para ajustar as contas do governo",
-    "muda": "Bolsa Família, BPC e abono salarial não mudam. O governo vai ter que segurar os próprios gastos, e a ideia é acalmar o mercado para o dólar e os juros não subirem.",
+    "muda": "Bolsa Família, BPC e abono continuam iguais. O governo vai ter que apertar o cinto pra tentar segurar o dólar e os juros, que pesam no crediário e no cartão.",
     "detalhe": "Também deixa até R$ 10,5 bilhões do subsídio ao diesel fora da meta de gastos de 2026. Como passou pelo Senado e pela Câmara sem mudanças no texto, segue para a sanção do presidente.",
     "fontes": [
       {
@@ -17,7 +17,15 @@
         "url": "https://bpmoney.com.br/politica/senado-aprova-texto-principal-ajuste-fiscal-governo/"
       }
     ],
-    "oque": "Freia o crescimento dos gastos do governo federal e limita o uso de créditos de imposto pelas empresas, para equilibrar as contas públicas. Segundo o relator, Bolsa Família, BPC e abono salarial não são afetados."
+    "oque": "Freia o crescimento dos gastos do governo federal e limita o uso de créditos de imposto pelas empresas, para equilibrar as contas públicas. Segundo o relator, Bolsa Família, BPC e abono salarial não são afetados.",
+    "veredito": "misto",
+    "melhora": [
+      "Bolsa Família, BPC e abono salarial não são cortados",
+      "Governo gastando menos ajuda a segurar o dólar e os juros, e isso deixa crediário, financiamento e cartão menos caros"
+    ],
+    "piora": [
+      "Com o freio nos gastos, sobra menos dinheiro para o governo gastar em coisas novas, como obras e serviços"
+    ]
   },
   "PLP 186/2026": {
     "apelido": "MEI pode faturar mais e ter dívidas perdoadas",
@@ -37,7 +45,16 @@
         "url": "https://atlaspublico.com.br/senado/noticias/senado-aprova-projeto-que-atualiza-limite-do-mei-e-perdoa-92698"
       }
     ],
-    "oque": "Quem é MEI vai poder faturar mais sem deixar de ser MEI: o limite sobe de R$ 81 mil por ano para R$ 110 mil em 2027 e R$ 140 mil a partir de 2028. O MEI também vai poder contratar até dois funcionários."
+    "oque": "Quem é MEI vai poder faturar mais sem deixar de ser MEI: o limite sobe de R$ 81 mil por ano para R$ 110 mil em 2027 e R$ 140 mil a partir de 2028. O MEI também vai poder contratar até dois funcionários.",
+    "veredito": "bom",
+    "melhora": [
+      "MEI pode faturar até R$ 140 mil por ano sem virar empresa maior (hoje o limite é R$ 81 mil)",
+      "MEI pode contratar até 2 funcionários",
+      "Dívidas de MEI com a União são perdoadas, com juros e multas"
+    ],
+    "piora": [
+      "O governo deixa de cobrar essas dívidas"
+    ]
   },
   "PLP 281/2019": {
     "apelido": "Regras para quando um banco quebra",
@@ -57,6 +74,11 @@
         "url": "https://brapi.dev/news/camara-trava-por-cinco-votos-lei-de-resolucao-bancaria-cobrada-pelo-fmi-ada4e1ed"
       }
     ],
-    "oque": "O projeto criava regras novas para o Banco Central agir quando um banco, seguradora ou corretora entra em crise. A ideia era que os donos e credores do banco arcassem com as perdas antes de qualquer dinheiro público, e que a quebra de um banco não contaminasse os outros."
+    "oque": "O projeto criava regras novas para o Banco Central agir quando um banco, seguradora ou corretora entra em crise. A ideia era que os donos e credores do banco arcassem com as perdas antes de qualquer dinheiro público, e que a quebra de um banco não contaminasse os outros.",
+    "veredito": "bom",
+    "melhora": [
+      "Se um banco quebrasse, quem pagaria a conta seriam os donos e credores, não o dinheiro dos seus impostos"
+    ],
+    "piora": []
   }
 }
