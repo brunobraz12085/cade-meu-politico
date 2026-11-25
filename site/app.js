@@ -547,7 +547,7 @@ async function ligarEmendas(uf) {
       exterior: "O dinheiro foi usado fora do Brasil."
     };
     // "Município" com o nome de verdade (o Portal escreve tudo em maiúsculo)
-    const cidades = E.cidades.filter(c => !c.g && !/^(m[uú]ltiplo|nacional|sem local)/i.test(c.m));
+    const cidades = E.cidades.filter(c => !c.g && !/^(m[uú]ltiplo|nacional|sem local|sem cidade)/i.test(c.m));
     const outros = E.cidades.filter(c => !cidades.includes(c));
     const nomeCid = c => `${esc(titulo(c.m))}${c.uf && c.uf !== uf ? " - " + esc(c.uf) : ""}`;
     const lin = c => `<div class="row"><span><b style="white-space:normal">${nomeCid(c)}</b><br><span class="pt">${esc((c.quem || []).map(titulo).join(" · ") || (c.areas || []).join(", "))}</span></span><span style="text-align:right">${brl(c.p)}<br><span class="pt" style="font-weight:400">já recebeu</span></span></div>`;
