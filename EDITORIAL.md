@@ -28,8 +28,11 @@ O app é para quem NÃO entende de política. Tudo em linguagem do povo, curto e
 
 Chave = nome do projeto como aparece nos dados (ex.: `"PLP 299/2026"`).
 - `apelido`: nome popular do projeto.
-- `muda`: "O que muda na sua vida": 1–2 frases curtas sobre o efeito na vida da pessoa (bolso, direitos, rotina), não sobre o que o projeto é. Começar por quem é afetado ("Se você é MEI: …"). Neutro, sem dizer se é bom ou ruim.
+- `muda`: "O que muda na sua vida": 1–2 frases curtas sobre o efeito na vida da pessoa (bolso, direitos, rotina), não sobre o que o projeto é. Começar por quem é afetado ("Se você é MEI: …"). Direto, na língua do povo, sem termo técnico.
 - `oque`: o que o projeto é, em linguagem simples (aparece em "O que é esse projeto").
+- `veredito`: "bom", "ruim" ou "misto" (pro povo). Critério: o efeito direto no bolso, nos direitos e nos serviços da pessoa comum. Ex.: aumenta imposto pra população = ruim; tem efeito bom e ruim relevante = misto. Sempre dizer o porquê.
+- `melhora` / `piora`: listas curtas, na língua do povo, do que melhora e do que piora na vida da pessoa.
+- Termômetro do político: % de votos a favor do povo (votou Sim em projeto "bom" ou Não em projeto "ruim"). Projetos "misto" não contam. Falar do projeto, nunca xingar o político.
 - `detalhe`: (opcional) mais uma linha de contexto.
 - `fontes`: de onde veio a explicação.
 
