@@ -86,5 +86,136 @@
     "piora": [],
     "area": "Bolso",
     "resultado": "rejeitado"
+  },
+  "PEC 221/2019": {
+    "apelido": "Fim da escala 6x1: trabalhar menos sem ganhar menos",
+    "area": "Trabalho",
+    "veredito": "bom",
+    "resultado": "aprovado",
+    "muda": "Se você trabalha de carteira assinada: a jornada máxima cai de 44 para 40 horas por semana, com 2 dias de folga e sem cortar o seu salário. Ainda falta o Senado aprovar.",
+    "oque": "Proposta que muda a Constituição para acabar com a escala de 6 dias de trabalho e 1 de folga. O texto aprovado reuniu duas PECs (uma pedia 36 horas) e fechou em 40 horas semanais, com transição.",
+    "melhora": [
+      "Mais um dia de descanso por semana pra quem hoje trabalha 6x1",
+      "Jornada máxima cai de 44 para 40 horas",
+      "Proíbe reduzir o salário por causa da mudança"
+    ],
+    "piora": [
+      "Empresas dizem que o custo de manter funcionário sobe, o que pode pesar em preço e em contratação"
+    ],
+    "detalhe": "Aprovada na Câmara em 27 de maio de 2026, em dois turnos (461 a 19 no segundo). Vai para o Senado, que também precisa votar duas vezes.",
+    "fontes": [
+      {
+        "nome": "Agência Senado",
+        "url": "https://www12.senado.leg.br/noticias/materias/2026/05/28/apos-aprovacao-na-camara-senado-analisara-fim-da-escala-6x1"
+      },
+      {
+        "nome": "Congresso em Foco",
+        "url": "https://www.congressoemfoco.com.br/noticia/119240/saiba-o-que-muda-para-o-trabalhador-com-a-aprovacao-do-fim-da-6x1"
+      }
+    ]
+  },
+  "MPV 1313/2025": {
+    "apelido": "Gás do Povo: botijão de graça pra baixa renda",
+    "area": "Bolso",
+    "veredito": "bom",
+    "resultado": "aprovado",
+    "muda": "Se sua família está no CadÚnico e tem renda baixa: em vez de receber dinheiro, você pega o botijão de 13 kg de graça. O programa pode chegar a cerca de 15 milhões de famílias.",
+    "oque": "Medida provisória que trocou o Auxílio Gás (pago em dinheiro) pelo programa Gás do Povo, com entrega direta do botijão, prioridade pra quem recebe Bolsa Família.",
+    "melhora": [
+      "Botijão de gás de cozinha de graça pras famílias de baixa renda do CadÚnico",
+      "Mais famílias atendidas do que no Auxílio Gás antigo"
+    ],
+    "piora": [
+      "Custa dinheiro público: o governo paga os botijões"
+    ],
+    "detalhe": "A Câmara aprovou em 2 de fevereiro de 2026 (415 a 29), o Senado aprovou no dia seguinte e virou lei, com alguns trechos vetados pelo presidente.",
+    "fontes": [
+      {
+        "nome": "Bahia Notícias",
+        "url": "https://www.bahianoticias.com.br/noticia/313251-camara-aprova-com-mais-de-400-votos-a-medida-provisoria-do-governo-lula-que-cria-o-programa-gas-do-povo"
+      },
+      {
+        "nome": "Exame",
+        "url": "https://exame.com/brasil/senado-aprova-mp-que-cria-o-programa-gas-do-povo-texto-vai-para-sancao-de-lula/"
+      }
+    ]
+  },
+  "PL 1625/2026": {
+    "apelido": "Vira crime aumentar o combustível sem motivo",
+    "area": "Bolso",
+    "veredito": "bom",
+    "resultado": "aprovado",
+    "muda": "Quem subir o preço da gasolina, do diesel ou do gás sem um motivo real (custo, imposto, frete) pode pegar de 2 a 4 anos de detenção, mais multa. Ainda falta o Senado.",
+    "oque": "Projeto do governo que cria um crime específico pra punir aumento abusivo e artificial no preço dos combustíveis, feito só pra lucrar mais.",
+    "melhora": [
+      "Dá uma arma contra posto e distribuidora que se aproveitam de crise pra subir o preço",
+      "Protege o bolso de quem abastece e de quem depende de frete"
+    ],
+    "piora": [
+      "A lei não deixa 100% claro o que é \"sem justa causa\", e isso pode gerar briga na Justiça"
+    ],
+    "detalhe": "Aprovado na Câmara em 20 de maio de 2026, no meio da alta do petróleo causada pela guerra no Oriente Médio. Foi para o Senado.",
+    "fontes": [
+      {
+        "nome": "Canal Rural",
+        "url": "https://www.canalrural.com.br/politica/camara-aprova-projeto-que-criminaliza-aumento-abusivo-de-precos-de-combustiveis/"
+      },
+      {
+        "nome": "Congresso em Foco",
+        "url": "https://www.congressoemfoco.com.br/noticia/119068/camara-aprova-projeto-que-criminaliza-alta-abusiva-dos-combustiveis"
+      }
+    ]
+  },
+  "PEC 18/2025": {
+    "apelido": "PEC da Segurança: polícias trabalhando juntas",
+    "area": "Segurança",
+    "veredito": "bom",
+    "resultado": "aprovado",
+    "muda": "Polícia Federal, polícias dos estados e guardas das cidades passam a ter regra na Constituição pra agir juntas contra o crime organizado. Ainda falta o Senado.",
+    "oque": "Proposta do governo que coloca na Constituição o Sistema Único de Segurança Pública (Susp), divide melhor o papel da União, dos estados e das cidades e muda funções de polícias como a PF e a PRF.",
+    "melhora": [
+      "Mais integração entre as polícias no combate a facções",
+      "Regras mais claras de quem faz o quê na segurança"
+    ],
+    "piora": [
+      "O efeito na rua depende de dinheiro e de leis que ainda vão ser feitas"
+    ],
+    "detalhe": "Aprovada na Câmara em 4 de março de 2026, por 461 a 14 no segundo turno. A redução da maioridade penal foi retirada do texto antes da votação. Foi para o Senado.",
+    "fontes": [
+      {
+        "nome": "Diário do Nordeste",
+        "url": "https://diariodonordeste.verdesmares.com.br/pontopoder/camara-aprova-em-segundo-turno-pec-da-seguranca-publica-1.3747722"
+      },
+      {
+        "nome": "Congresso em Foco",
+        "url": "https://www.congressoemfoco.com.br/noticia/116961/camara-aprova-pec-da-seguranca-publica-em-primeiro-turno"
+      }
+    ]
+  },
+  "PL 3278/2021": {
+    "apelido": "\"SUS do transporte\": ônibus pode ficar mais barato",
+    "area": "Trânsito",
+    "veredito": "bom",
+    "resultado": "aprovado",
+    "muda": "Se você anda de ônibus: a passagem deixa de bancar sozinha o sistema, e o governo pode usar dinheiro do imposto do combustível (Cide) pra segurar o preço da tarifa.",
+    "oque": "Novo marco legal do transporte público coletivo. Separa o valor que o passageiro paga do quanto as empresas recebem e cria formas de financiar o sistema além da tarifa.",
+    "melhora": [
+      "Abre caminho pra passagem mais barata",
+      "Cria regras nacionais de qualidade pro transporte coletivo"
+    ],
+    "piora": [
+      "Passagem mais barata não é automática: depende de cada cidade e do dinheiro disponível"
+    ],
+    "detalhe": "A votação mostrada aqui é a de 9 de fevereiro de 2026, que acelerou o projeto (urgência, 304 a 113). A aprovação final na Câmara foi em 13 de maio, e o texto foi para a sanção do presidente.",
+    "fontes": [
+      {
+        "nome": "Agência Senado",
+        "url": "https://www12.senado.leg.br/noticias/materias/2026/05/14/marco-legal-do-transporte-publico-coletivo-vai-a-sancao-presidencial"
+      },
+      {
+        "nome": "Diário do Transporte",
+        "url": "https://diariodotransporte.com.br/2026/02/09/urgente-camara-aprova-regime-de-urgencia-para-votacao-do-marco-legal-do-transporte-publico/"
+      }
+    ]
   }
 }
