@@ -217,5 +217,182 @@
         "url": "https://diariodotransporte.com.br/2026/02/09/urgente-camara-aprova-regime-de-urgencia-para-votacao-do-marco-legal-do-transporte-publico/"
       }
     ]
-  }
+  },
+ "PL 5542/2026": {
+  "apelido": "Tornozeleira do agressor com alarme pra vítima",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Se você tem medida protetiva contra um agressor, a tornozeleira dele vai ter regras mínimas pra funcionar de verdade, com alarme de som e luz avisando quando ele chegar perto.",
+  "oque": "Muda a Lei Maria da Penha pra fixar garantias mínimas no uso da tornozeleira eletrônica como medida protetiva: alertas sonoros e luminosos, proteção da vítima e, em casos excepcionais, um mecanismo de contenção física à distância.",
+  "melhora": [
+   "A vítima é avisada na hora quando o agressor se aproxima",
+   "Cria um padrão mínimo pra tornozeleira funcionar em todo o país"
+  ],
+  "piora": [
+   "A contenção física à distância é polêmica e ainda gera dúvida sobre como seria usada",
+   "Mais equipamento e monitoramento custam dinheiro para os estados"
+  ],
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2647427"
+   }
+  ]
+ },
+ "PL 479/2015": {
+  "apelido": "Escola em tempo integral (7 horas por dia)",
+  "area": "Educação",
+  "veredito": "bom",
+  "muda": "Se seu filho estuda em escola pública, cria regras fixas pra escola em tempo integral: pelo menos 7 horas por dia, com currículo de verdade, não só turno a mais.",
+  "oque": "Cria o Marco Nacional da Educação Integral em Tempo Integral. Pelo texto aprovado na comissão, escola integral é a que tem 7 horas por dia ou 35 por semana, o professor fica lotado numa escola só e os programas federais de apoio são corrigidos pela inflação todo ano.",
+  "melhora": [
+   "Mais tempo de aula e atividade pro aluno, com regra que vale pro país todo",
+   "Pai e mãe que trabalham o dia todo têm onde deixar o filho",
+   "Professor numa escola só, sem correr de uma pra outra"
+  ],
+  "piora": [
+   "Prefeituras e estados precisam de dinheiro pra ampliar escolas e contratar"
+  ],
+  "detalhe": "O texto ainda pode mudar no plenário. Também tramita junto um projeto parecido já aprovado pelo Senado.",
+  "fontes": [
+   {
+    "nome": "Atlas Público",
+    "url": "https://atlaspublico.com.br/camara/noticias/comissao-de-educacao-da-camara-aprova-substitutivo-que-cria-98327"
+   },
+   {
+    "nome": "Sou Brasília",
+    "url": "https://soubrasilia.com/camara-comissao-educacao-aprova-marco-educacao-integral-tempo-integral-7-horas-pl-479-2015/"
+   }
+  ]
+ },
+ "PL 3965/2024": {
+  "apelido": "Dia do Professor vira feriado escolar por lei",
+  "area": "Educação",
+  "veredito": "misto",
+  "muda": "O dia 15 de outubro sem aula passa a estar garantido em lei para professores, funcionários e alunos. Pra quem não trabalha em escola, nada muda.",
+  "oque": "Hoje o feriado escolar do Dia do Professor existe só por um decreto de 1963. O projeto coloca isso em lei e cria o dia nacional dos professores e profissionais da educação.",
+  "melhora": [
+   "Professor e funcionário da escola têm a folga garantida, sem depender de cada governo"
+  ],
+  "piora": [
+   "Pai e mãe que trabalham nesse dia precisam arrumar com quem deixar o filho"
+  ],
+  "fontes": [
+   {
+    "nome": "CNN Brasil",
+    "url": "https://www.cnnbrasil.com.br/nacional/dia-dos-professores-e-feriado-confira/"
+   }
+  ]
+ },
+ "PL 294/2015": {
+  "apelido": "Pai e mãe de santo podem contribuir com o INSS",
+  "area": "Aposentadoria",
+  "veredito": "bom",
+  "muda": "Se você é líder religioso de matriz africana (umbanda, candomblé), passa a poder contribuir com o INSS como os outros religiosos e ter direito a aposentadoria e auxílios.",
+  "oque": "Inclui o ministro de confissão religiosa de matriz africana como segurado individual da Previdência, do mesmo jeito que padres e pastores.",
+  "melhora": [
+   "Garante aposentadoria, auxílio-doença e pensão pra quem contribuir",
+   "Trata todas as religiões do mesmo jeito no INSS"
+  ],
+  "piora": [],
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=946429"
+   }
+  ]
+ },
+ "PL 2559/2022": {
+  "apelido": "Racismo sem acordo pra escapar do processo",
+  "area": "Direitos",
+  "veredito": "misto",
+  "muda": "Quem for acusado de racismo ou injúria racial não vai mais poder fechar acordo com o Ministério Público pra encerrar o caso sem julgamento.",
+  "oque": "Proíbe o acordo de não persecução penal, a transação penal e a suspensão do processo em crimes de racismo e injúria racial.",
+  "melhora": [
+   "Quem pratica racismo não escapa só pagando cesta básica ou prestando serviço",
+   "Mostra que racismo é crime grave"
+  ],
+  "piora": [
+   "Mais casos vão a julgamento, e a Justiça, que já é lenta, fica mais cheia",
+   "Críticos dizem que tira do juiz e do promotor a chance de avaliar caso a caso"
+  ],
+  "fontes": [
+   {
+    "nome": "Rota Jurídica",
+    "url": "https://www.rotajuridica.com.br/?p=123267"
+   },
+   {
+    "nome": "Alma Preta",
+    "url": "https://almapreta.com.br/sessao/politica/camara-avalia-proibir-medidas-alternativas-em-casos-de-racismo/"
+   }
+  ]
+ },
+ "PL 4887/2023": {
+  "apelido": "Escola com protocolo pra aluno vítima de racismo",
+  "area": "Educação",
+  "veredito": "bom",
+  "muda": "Se seu filho sofrer racismo na escola, a escola vai ter que seguir um passo a passo pra acolher, atender e encaminhar o caso, em vez de deixar pra lá.",
+  "oque": "Cria um protocolo de acolhimento e atendimento às vítimas de discriminação racial nas escolas do país e muda o ECA e a lei de escuta de crianças vítimas de violência.",
+  "melhora": [
+   "A criança tem apoio e o caso não é abafado",
+   "Professor e diretor sabem o que fazer"
+  ],
+  "piora": [
+   "Escolas precisam treinar a equipe pra aplicar o protocolo"
+  ],
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2394518"
+   }
+  ]
+ },
+ "PL 3944/2023": {
+  "apelido": "Calor e enchente pesam mais na saúde da população negra",
+  "area": "Saúde",
+  "muda": "Não muda nada direto no seu dia a dia. Coloca no Estatuto da Igualdade Racial que a crise do clima afeta mais a saúde da população negra, o que serve de base pra políticas de saúde.",
+  "oque": "Muda o Estatuto da Igualdade Racial pra reconhecer que calor extremo, enchentes e outros efeitos do clima atingem mais a população negra, principalmente mulheres e quem mora em áreas de risco.",
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2380144"
+   }
+  ]
+ },
+ "PL 724/2003": {
+  "apelido": "Carroça no trânsito e crimes de trânsito",
+  "area": "Trânsito",
+  "muda": "Muda as regras do Código de Trânsito pra carroças e charretes e pra crimes de trânsito. É um projeto antigo, de 2003, e o texto final que vai a voto ainda não foi divulgado. Quando for votado, a gente explica ponto a ponto.",
+  "oque": "Altera o Código de Trânsito Brasileiro pra tratar da circulação de veículos de tração animal e de crimes de trânsito.",
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=110593"
+   }
+  ]
+ },
+ "PDL 235/2025": {
+  "apelido": "Acordo com a Guiana pra processos na Justiça",
+  "area": "Direitos",
+  "muda": "Quase nada no seu dia a dia. Facilita processos que envolvem gente dos dois países, como cobrar pensão alimentícia de quem mora na Guiana.",
+  "oque": "Aprova um tratado de cooperação jurídica entre Brasil e Guiana em assuntos civis, como família, dívidas e contratos.",
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2516578"
+   }
+  ]
+ },
+ "PDL 366/2025": {
+  "apelido": "Acordo com a Guiana contra o crime",
+  "area": "Segurança",
+  "muda": "Quase nada no seu dia a dia. Ajuda a polícia e a Justiça dos dois países a trocar provas e informações em crimes na fronteira, como tráfico e contrabando.",
+  "oque": "Aprova um tratado de ajuda mútua entre Brasil e Guiana em investigações e processos criminais.",
+  "fontes": [
+   {
+    "nome": "Câmara dos Deputados",
+    "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2532113"
+   }
+  ]
+ }
 }
