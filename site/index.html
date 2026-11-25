@@ -119,6 +119,12 @@ details[open]{padding-bottom:8px}
 .bnav a.on svg{color:var(--navy2)}
 @media (prefers-color-scheme:dark){.bnav a.on svg{color:var(--gold)}}
 .bnav[hidden],.ufpill[hidden]{display:none}
+.opc{display:grid;gap:12px;margin-top:8px}
+.opcao{display:grid;grid-template-columns:54px minmax(0,1fr);column-gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--sh);text-decoration:none}
+.opcao .ic{grid-row:1/3;width:54px;height:54px;border-radius:16px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font:900 22px Archivo}
+.opcao b{font:900 24px/1.1 Archivo;letter-spacing:-.01em}
+.opcao span:last-child{color:var(--mute);font-size:14px}
+.opcao.off{opacity:.45}
 footer{font-size:12.5px;color:var(--mute);padding:22px 0 8px;border-top:1px solid var(--line);margin-top:34px}
 </style>
 </head>
@@ -129,6 +135,6 @@ footer{font-size:12.5px;color:var(--mute);padding:22px 0 8px;border-top:1px soli
   <footer>Dados oficiais da Câmara dos Deputados, do Senado Federal e do TSE, atualizados todo dia. Um projeto de Bruno Braz. <span id="upd"></span></footer>
 </div>
 <nav class="bnav" id="bnav" hidden></nav>
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
