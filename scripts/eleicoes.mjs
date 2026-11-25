@@ -70,9 +70,9 @@ function agrupar(porMun) {
     const [uf, cargo, turno, mun, sq] = k.split("|");
     if (uf === UF) nomesMun[mun] = r.mun;
     const ke = `${uf}|${cargo}|${turno}`;
-    ((estado[ke] ??= {})[sq] ??= { nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, fed: r.fed, fedNome: r.fedNome, colig: r.colig, votos: 0 }).votos += r.votos;
+    ((estado[ke] ??= {})[sq] ??= { sq, nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, fed: r.fed, fedNome: r.fedNome, colig: r.colig, votos: 0 }).votos += r.votos;
     const km = `${mun}|${cargo}|${turno}`;
-    ((municipio[km] ??= {})[sq] ??= { nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, fed: r.fed, fedNome: r.fedNome, colig: r.colig, votos: 0 }).votos += r.votos;
+    ((municipio[km] ??= {})[sq] ??= { sq, nome: r.nome, partido: r.partido, numero: r.numero, sit: r.sit, fed: r.fed, fedNome: r.fedNome, colig: r.colig, votos: 0 }).votos += r.votos;
   }
   const lista = o => ordena(Object.values(o));
   return { estado: Object.fromEntries(Object.entries(estado).map(([k, v]) => [k, lista(v)])), municipio: Object.fromEntries(Object.entries(municipio).map(([k, v]) => [k, lista(v)])), nomesMun };
@@ -133,7 +133,30 @@ function porPartido(cands, legenda = {}) {
   const qe = vagas ? Math.round(validos / vagas) : 0;
   return { validos, vagas, quociente: qe, lista };
 }
-const enxuto = c => { const o = { nome: c.nome, partido: c.partido, numero: c.numero, sit: c.sit, votos: c.votos }; if (c.fed) o.fed = c.fed; return o; };
+const enxuto = c => { const o = { nome: c.nome, partido: c.partido, numero: c.numero, sit: c.sit, votos: c.votos }; if (c.fed) o.fed = c.fed; if (c.foto) o.foto = c.foto; return o; };
+
+// ---------- Fotos oficiais dos candidatos (arquivo do TSE) ----------
+// Baixa o zip de fotos do estado, pega só quem a gente quer, diminui pra 96px e marca c.foto
+async function fotos(ano, mapa, quer) {
+  // mapa: { "chave|cargo|turno": [candidatos] }; quer(cargo, c) diz se queremos a foto
+  const sqs = new Set(), todas = [];
+  for (const [k, l] of Object.entries(mapa)) { const cargo = +k.split("|")[1]; for (const c of l) { todas.push(c); if (quer(cargo, c)) sqs.add(String(c.sq)); } }
+  if (!sqs.size) return;
+  const ok = new Set();
+  try {
+    const zip = baixar(`fotos_${ano}_${UF}.zip`, `https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes${ano}/fotos/foto_cand${ano}_${UF}_div.zip`);
+    const nomes = execSync(`unzip -Z1 ${zip}`, { maxBuffer: 1 << 28 }).toString().split("\n");
+    const pasta = `${SAIDA}/fotos/${ano}`;
+    execSync(`mkdir -p ${pasta}`);
+    for (const n of nomes) {
+      const m = n.match(/(\d{6,})/); if (!m || !sqs.has(m[1]) || ok.has(m[1])) continue;
+      try { execSync(`unzip -p ${zip} "${n}" | convert - -resize 96x96^ -gravity north -extent 96x96 -strip -quality 72 ${pasta}/${m[1]}.jpg`); ok.add(m[1]); } catch (e) {}
+    }
+  } catch (e) { console.warn("Sem fotos de", ano, e.message); }
+  for (const c of todas) if (ok.has(String(c.sq))) c.foto = `${ano}/${c.sq}.jpg`;
+  console.log("   ", ok.size, "fotos de", sqs.size, "pedidas");
+}
+
 
 const turnos = (fonte, chave, cargo) => {
   const t = {};
@@ -153,6 +176,8 @@ async function ano2024() {
   const { municipio, nomesMun } = agrupar(await lerMunzona(2024, [11, 13], [UF]));
   const locais = await lerSecao(2024, UF, [11, 13], UF);
   const legenda = await lerLegenda(2024, [13], UF);
+  // foto: todos os candidatos a prefeito e os vereadores eleitos
+  await fotos(2024, municipio, (cargo, c) => cargo === 11 || eleito(c.sit));
   const indice = [];
   for (const [cd, nome] of Object.entries(nomesMun).sort((a, b) => a[1].localeCompare(b[1], "pt-BR"))) {
     const prefeito = turnos(municipio, cd, 11);
@@ -186,6 +211,8 @@ async function ano2026() {
   const legenda = await lerLegenda(2026, [6, 7], UF);
   const somaLeg = (L, cargo) => { const o = {}; for (const [k, v] of Object.entries(L)) if (k.endsWith(`|${cargo}`)) for (const [p, q] of Object.entries(v)) soma(o, p, q); return o; };
 
+  // foto: presidente, governador, senador (todos) e deputados eleitos
+  await fotos(2026, { ...Object.fromEntries(Object.entries(estado).filter(([k]) => k.startsWith(UF + "|") || k.split("|")[1] === "1")), ...municipio }, (cargo, c) => cargo <= 5 || eleito(c.sit));
   await gravar(`${SAIDA}/2026/${UF}/estado.json`, {
     uf: UF,
     presidente: turnos(estado, UF, 1),
