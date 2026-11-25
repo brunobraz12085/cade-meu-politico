@@ -394,5 +394,648 @@
     "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2532113"
    }
   ]
+ },
+ "PL 1969/2022": {
+  "apelido": "Reparação às famílias da Chacina de Acari",
+  "area": "Direitos",
+  "muda": "Não muda nada direto no seu dia a dia. O Estado reconhece culpa pelo sumiço de 11 jovens em Acari (RJ), em 1990, e cria medidas de reparação pras famílias.",
+  "oque": "Reconhece a responsabilidade do Estado pelo desaparecimento forçado das 11 vítimas da Chacina de Acari e prevê reparação e medidas pra que isso não se repita."
+ },
+ "PLP 74/2026": {
+  "apelido": "Corte em incentivos de imposto pra fechar as contas de 2026",
+  "area": "Bolso",
+  "veredito": "misto",
+  "muda": "Mexe nos descontos de imposto que algumas empresas e setores recebem e nas despesas obrigatórias do governo em 2026, pra ajudar a fechar as contas.",
+  "oque": "Projeto de lei complementar com regras sobre benefícios tributários e despesas obrigatórias no ano de 2026.",
+  "melhora": [
+   "Governo arrecada mais sem criar imposto novo pra todo mundo"
+  ],
+  "piora": [
+   "Setores que perdem desconto podem repassar o custo pro preço"
+  ]
+ },
+ "PLP 77/2026": {
+  "apelido": "Regras pra incentivos de imposto e gastos de 2026",
+  "area": "Bolso",
+  "veredito": "misto",
+  "muda": "Mexe nos descontos de imposto que algumas empresas e setores recebem e nas despesas obrigatórias do governo em 2026, pra ajudar a fechar as contas.",
+  "oque": "Projeto de lei complementar com regras sobre benefícios tributários e despesas obrigatórias no ano de 2026.",
+  "melhora": [
+   "Governo arrecada mais sem criar imposto novo pra todo mundo"
+  ],
+  "piora": [
+   "Setores que perdem desconto podem repassar o custo pro preço"
+  ]
+ },
+ "PDL 995/2026": {
+  "apelido": "Rodrigo Pacheco vira ministro do TCU",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra você. A Câmara aprovou o nome do ex-presidente do Senado Rodrigo Pacheco pra ministro do Tribunal de Contas da União, que fiscaliza os gastos do governo.",
+  "oque": "Aprova a indicação de Rodrigo Pacheco para o cargo de ministro do TCU."
+ },
+ "PL 4921/2026": {
+  "apelido": "Reorganiza cargos do TRT de Goiás",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Transforma cargos vagos do Tribunal Regional do Trabalho de Goiás (18ª Região) em outros cargos, sem aumentar o gasto.",
+  "oque": "Transforma cargos vagos do quadro do TRT da 18ª Região, sem aumento de despesa."
+ },
+ "PLP 230/2025": {
+  "apelido": "Proíbe congelar o dinheiro do fundo de internet e telefonia",
+  "area": "Educação",
+  "muda": "O dinheiro do fundo de telecomunicações (Fust), que paga internet em escola e em lugar afastado, não pode mais ser congelado pelo governo pra fechar as contas.",
+  "oque": "Proíbe o bloqueio (contingenciamento) das verbas do Fundo de Universalização dos Serviços de Telecomunicações."
+ },
+ "PLP 80/2026": {
+  "apelido": "Frete de navio mais barato no Norte e Nordeste",
+  "area": "Bolso",
+  "muda": "Prorroga o fim de uma taxa sobre o frete de navios no Norte e Nordeste, o que ajuda a baratear o transporte de mercadorias nessas regiões.",
+  "oque": "Prorroga a não cobrança do Adicional ao Frete para Renovação da Marinha Mercante (AFRMM) na navegação de cabotagem nessas regiões."
+ },
+ "PLP 114/2026": {
+  "apelido": "Menos imposto pra segurar o preço da energia e do combustível",
+  "area": "Bolso",
+  "veredito": "bom",
+  "muda": "Permite cortar impostos pra segurar o preço do combustível e da energia, que subiram por causa da guerra no Oriente Médio.",
+  "oque": "Cria regras pra o governo abrir mão de receita (reduzir tributos) e diminuir o impacto da alta internacional da energia.",
+  "melhora": [
+   "Ajuda a segurar o preço do combustível, do gás e da energia"
+  ],
+  "piora": [
+   "O governo arrecada menos e precisa compensar em outro lugar"
+  ]
+ },
+ "PL 3085/2026": {
+  "apelido": "Filtro pra processos chegarem ao STJ",
+  "area": "Direitos",
+  "muda": "Só as causas consideradas mais importantes vão poder chegar ao Superior Tribunal de Justiça. Pode deixar alguns processos mais rápidos, mas menos casos sobem pro tribunal.",
+  "oque": "Regulamenta o filtro de relevância para os recursos especiais no STJ e muda o Código de Processo Civil."
+ },
+ "PDL 171/2026": {
+  "apelido": "Derruba a ampliação de uma reserva ambiental em MT",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra quem não mora na região. Cancela o decreto que aumentou a Estação Ecológica de Taiamã, no Pantanal de Mato Grosso.",
+  "oque": "Susta o decreto que ampliou a Estação Ecológica de Taiamã, em Cáceres e Poconé (MT)."
+ },
+ "PLP 41/2026": {
+  "apelido": "Sistema nacional contra o feminicídio, com dinheiro garantido",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Cria um sistema nacional pra combater a violência contra mulheres e meninas e separa dinheiro pras ações contra o feminicídio.",
+  "oque": "Cria o Sistema Nacional de Enfrentamento da Violência contra Meninas e Mulheres e define de onde sai o dinheiro.",
+  "melhora": [
+   "Mais estrutura e dinheiro pra proteger mulheres em risco",
+   "Une União, estados e cidades no combate ao feminicídio"
+  ],
+  "piora": [
+   "O efeito depende de o dinheiro chegar de fato na ponta"
+  ]
+ },
+ "PL 2898/2025": {
+  "apelido": "Muda regras de multas ambientais",
+  "area": "Direitos",
+  "muda": "Muda o jeito de aplicar multas e punições por crime ambiental. Não mexe direto no seu dia a dia.",
+  "oque": "Altera a Lei de Crimes Ambientais para criar um regime especial no processo de infrações ambientais."
+ },
+ "PL 849/2025": {
+  "apelido": "Diminui área de proteção da baleia-franca em SC",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra quem não mora no litoral de Santa Catarina. Reduz a Área de Proteção Ambiental da Baleia Franca, liberando parte dela pra construção e uso.",
+  "oque": "Reduz o tamanho da Área de Proteção Ambiental da Baleia Franca (SC)."
+ },
+ "PL 896/2023": {
+  "apelido": "Ódio contra mulher vira crime, como o racismo",
+  "area": "Direitos",
+  "veredito": "misto",
+  "muda": "Ofender, discriminar ou incitar ódio contra mulheres por serem mulheres (misoginia) passa a ser crime, tratado como o racismo.",
+  "oque": "Inclui a misoginia na Lei do Racismo e no Código Penal.",
+  "melhora": [
+   "Dá uma lei específica pra punir o ódio contra mulheres"
+  ],
+  "piora": [
+   "Críticos temem que a lei seja usada pra punir opinião e piada"
+  ]
+ },
+ "PDL 717/2024": {
+  "apelido": "Tenta derrubar regras de demarcação de terra indígena",
+  "area": "Direitos",
+  "muda": "Não muda nada direto no dia a dia da maioria. Tenta cancelar regras do governo usadas pra demarcar terras indígenas e a homologação de algumas terras.",
+  "oque": "Susta trechos do decreto que define o processo de demarcação de terras indígenas e decretos de homologação."
+ },
+ "MPV 1343/2026": {
+  "apelido": "Código obrigatório pro frete de caminhão",
+  "area": "Trabalho",
+  "veredito": "bom",
+  "muda": "Todo frete de caminhão vai ter que ser cadastrado e ganhar um código (CIOT), o que ajuda a fiscalizar se o caminhoneiro está recebendo o piso do frete.",
+  "oque": "Cria a obrigação de cadastrar a operação de transporte e gerar o CIOT, com medidas pra cumprir a política do piso do frete.",
+  "melhora": [
+   "Mais controle pra garantir o piso do frete do caminhoneiro"
+  ],
+  "piora": [
+   "Mais burocracia pra transportadoras e embarcadores"
+  ]
+ },
+ "PL 4133/2023": {
+  "apelido": "Regras pra política da indústria nacional",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Define diretrizes pro governo montar a política de indústria, tecnologia e comércio exterior.",
+  "oque": "Estabelece diretrizes para a política industrial, tecnológica e de comércio exterior."
+ },
+ "PL 424/2015": {
+  "apelido": "SUS compra remédio do sangue sem licitação",
+  "area": "Saúde",
+  "veredito": "bom",
+  "muda": "O SUS vai poder comprar remédios feitos do sangue (hemoderivados), como os usados por quem tem hemofilia, sem licitação, o que acelera a compra.",
+  "oque": "Permite dispensa de licitação para o SUS comprar hemoderivados.",
+  "melhora": [
+   "Remédio chega mais rápido pra quem precisa"
+  ],
+  "piora": [
+   "Compra sem licitação exige mais fiscalização pra evitar abuso"
+  ]
+ },
+ "PL 957/2024": {
+  "apelido": "Muda o Código de Mineração",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto no seu dia a dia. Muda regras pra pesquisa e exploração de minérios.",
+  "oque": "Altera o Código de Mineração e outras leis do setor."
+ },
+ "PEC 5/2023": {
+  "apelido": "Mais isenção de imposto pra igrejas e entidades",
+  "area": "Bolso",
+  "veredito": "misto",
+  "muda": "Templos religiosos, partidos, sindicatos e entidades sem fins lucrativos de educação e assistência ficam com a isenção de impostos mais ampla e garantida na Constituição.",
+  "oque": "Acrescenta regra à Constituição sobre a imunidade tributária de templos e dessas entidades.",
+  "melhora": [
+   "Igrejas e entidades sociais sem fins lucrativos pagam menos imposto"
+  ],
+  "piora": [
+   "O governo arrecada menos",
+   "Críticos dizem que abre brecha pra abuso"
+  ]
+ },
+ "PL 1822/2024": {
+  "apelido": "Pais podem internar filho viciado em droga",
+  "area": "Saúde",
+  "veredito": "misto",
+  "muda": "Pais ou responsáveis poderiam pedir a internação imediata de jovens viciados em drogas ou ameaçados por traficantes. A votação registrada aqui foi de um requerimento, que foi rejeitado.",
+  "oque": "Garante aos pais a internação imediata de adolescentes dependentes químicos em situação de risco, para tratamento.",
+  "melhora": [
+   "Dá aos pais uma saída rápida em caso de risco de vida"
+  ],
+  "piora": [
+   "Internação sem a vontade do jovem é polêmica entre especialistas"
+  ]
+ },
+ "PL 68/2025": {
+  "apelido": "Proteção pra mulher atacada na política",
+  "area": "Direitos",
+  "veredito": "bom",
+  "muda": "Mulheres que sofrem ameaça ou ataque por estarem na política (vereadoras, candidatas, prefeitas) ganham mais medidas de proteção e apoio.",
+  "oque": "Muda a lei da violência política de gênero e o Código Eleitoral.",
+  "melhora": [
+   "Mais proteção pra mulheres que querem entrar na política"
+  ]
+ },
+ "PL 5900/2025": {
+  "apelido": "Ministério da Agricultura opina antes de regras sobre animais e plantas",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Dá ao Ministério da Agricultura a palavra final antes de regras que afetem espécies importantes pro agro.",
+  "oque": "Dá ao órgão federal de agricultura análise prévia vinculante sobre normas que afetem espécies de interesse agropecuário."
+ },
+ "PL 1448/2026": {
+  "apelido": "Programa de assentamentos perto das cidades",
+  "area": "Moradia",
+  "muda": "Cria um programa de assentamentos rurais perto das cidades, pra famílias produzirem alimentos e morarem.",
+  "oque": "Institui o Programa Nacional de Assentamentos Periurbanos e Semirrurais."
+ },
+ "PLP 262/2019": {
+  "apelido": "Cooperativas podem pegar dinheiro dos fundos regionais",
+  "area": "Trabalho",
+  "veredito": "bom",
+  "muda": "Cooperativas (de produtores, crédito, trabalho) passam a poder receber dinheiro dos fundos de desenvolvimento do Norte, Nordeste e Centro-Oeste.",
+  "oque": "Permite que cooperativas sejam beneficiárias dos fundos de desenvolvimento regionais (FDA, FDNE e FDCO).",
+  "melhora": [
+   "Mais crédito pra cooperativas, que geram trabalho no interior"
+  ]
+ },
+ "PL 364/2019": {
+  "apelido": "Regras pra vegetação dos campos de altitude",
+  "area": "Direitos",
+  "muda": "Não muda nada direto no seu dia a dia. Define como pode ser usada e protegida a vegetação dos campos de altitude da Mata Atlântica.",
+  "oque": "Dispõe sobre o uso e a proteção da vegetação nativa dos Campos de Altitude da Mata Atlântica."
+ },
+ "PL 4822/2025": {
+  "apelido": "Multa de partido fica só com quem errou",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra você. Se um diretório de partido for multado, só ele paga, sem descontar do dinheiro de outros diretórios.",
+  "oque": "Muda a Lei dos Partidos para individualizar a responsabilidade por sanções e vedar descontos do Fundo Partidário de outros órgãos."
+ },
+ "PLP 21/2026": {
+  "apelido": "Imposto simplificado pra clubes sem fins lucrativos",
+  "area": "Bolso",
+  "muda": "Clubes e associações esportivas sem fins lucrativos passam a pagar os impostos federais num regime único e mais simples.",
+  "oque": "Cria o Regime Especial de Tributação para Associações Desportivas (RETAD)."
+ },
+ "PL 488/2019": {
+  "apelido": "Condenado por pedofilia fica longe de criança",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Quem for condenado por crime de pedofilia vai ter punições obrigatórias além da prisão, como ser proibido de trabalhar com crianças.",
+  "oque": "Torna obrigatórias penas restritivas de direitos para condenados por crimes de pedofilia.",
+  "melhora": [
+   "Protege as crianças de quem já foi condenado"
+  ]
+ },
+ "PL 2780/2024": {
+  "apelido": "Política pra minerais usados em bateria e tecnologia",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Cria uma política pra exploração de minerais estratégicos, como lítio e terras raras, usados em bateria e celular.",
+  "oque": "Institui a Política Nacional de Minerais Críticos e Estratégicos e um comitê para o tema."
+ },
+ "PL 580/2023": {
+  "apelido": "Regras pra rever decisão de imposto na Justiça",
+  "area": "Bolso",
+  "muda": "Não muda nada direto pra você. Muda como o governo pode tentar reverter decisões da Justiça sobre impostos já encerradas.",
+  "oque": "Exige ação rescisória para desfazer decisão tributária definitiva contrária ao entendimento do STF."
+ },
+ "PEC 383/2017": {
+  "apelido": "Dinheiro mínimo garantido pro CRAS e a assistência social",
+  "area": "Direitos",
+  "veredito": "bom",
+  "muda": "Garante na Constituição um dinheiro mínimo todo ano pra assistência social (CRAS, CREAS, atendimento a famílias pobres, idosos e pessoas com deficiência).",
+  "oque": "Garante recursos mínimos para o Sistema Único de Assistência Social (SUAS).",
+  "melhora": [
+   "CRAS e assistência social com dinheiro garantido, sem corte"
+  ],
+  "piora": [
+   "Menos liberdade pro governo remanejar o orçamento"
+  ]
+ },
+ "PL 1944/2026": {
+  "apelido": "Muda regras pra preso mudar de regime",
+  "area": "Segurança",
+  "muda": "Muda as regras de quando o preso pode passar pro semiaberto ou aberto, retomando mudanças feitas pela Lei Raul Jungmann.",
+  "oque": "Altera o artigo 112 da Lei de Execução Penal (progressão de regime)."
+ },
+ "PL 6461/2019": {
+  "apelido": "Estatuto do Jovem Aprendiz",
+  "area": "Trabalho",
+  "veredito": "bom",
+  "muda": "Se você é ou tem filho jovem aprendiz, cria um estatuto com regras e direitos pro primeiro emprego como aprendiz.",
+  "oque": "Institui o Estatuto do Aprendiz.",
+  "melhora": [
+   "Regras mais claras e direitos pro jovem aprendiz"
+  ],
+  "piora": [
+   "Empresas dizem que mais regras podem diminuir as vagas"
+  ]
+ },
+ "PL 4397/2024": {
+  "apelido": "Condomínio não pode proibir aluguel pra partido",
+  "area": "Moradia",
+  "muda": "Condomínios comerciais não vão poder proibir o aluguel de salas pra partidos políticos.",
+  "oque": "Proíbe cláusula de convenção de condomínio que restrinja a locação de imóvel comercial para partidos."
+ },
+ "PL 3025/2023": {
+  "apelido": "Mais controle do ouro, contra o garimpo ilegal",
+  "area": "Direitos",
+  "muda": "Cria regras pra controlar de onde vem, quem compra, vende e transporta ouro no país, pra dificultar o garimpo ilegal.",
+  "oque": "Estabelece normas de controle de origem, compra, venda e transporte de ouro."
+ },
+ "PL 533/2024": {
+  "apelido": "Mais cultura nas escolas",
+  "area": "Educação",
+  "veredito": "bom",
+  "muda": "Cria uma política pra levar música, teatro, dança e outras atividades culturais pras escolas.",
+  "oque": "Institui a Política Nacional Mais Cultura nas Escolas.",
+  "melhora": [
+   "Mais atividades culturais pros alunos"
+  ]
+ },
+ "PLP 55/2026": {
+  "apelido": "Isenção de imposto pra Copa do Mundo Feminina",
+  "area": "Bolso",
+  "veredito": "misto",
+  "muda": "Cidades vão poder dar isenção de ISS pra serviços ligados à Copa do Mundo Feminina de 2027, que vai ser no Brasil.",
+  "oque": "Estabelece condições para isenção de ISS em fatos relacionados à Copa do Mundo Feminina FIFA 2027.",
+  "melhora": [
+   "Ajuda a trazer e organizar a Copa no Brasil"
+  ],
+  "piora": [
+   "As cidades deixam de arrecadar imposto"
+  ]
+ },
+ "PL 3838/2024": {
+  "apelido": "Resposta às regras ambientais da Europa",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Cria exigências ambientais pra produtos que vêm da União Europeia, como resposta às exigências que a Europa faz ao Brasil.",
+  "oque": "Institui exigências de compensação de carbono para produtos e serviços da União Europeia."
+ },
+ "PL 1248/2024": {
+  "apelido": "Mais dinheiro pra merenda na Amazônia",
+  "area": "Educação",
+  "veredito": "bom",
+  "muda": "Escolas da região amazônica vão receber mais dinheiro por aluno pra merenda, porque lá tudo custa mais caro.",
+  "oque": "Considera o custo amazônico no cálculo do dinheiro da alimentação escolar.",
+  "melhora": [
+   "Merenda melhor pros alunos da Amazônia"
+  ]
+ },
+ "PLP 109/2025": {
+  "apelido": "ANP pode ver dados fiscais de postos pra fiscalizar",
+  "area": "Bolso",
+  "veredito": "bom",
+  "muda": "A ANP vai poder acessar dados fiscais de postos e distribuidoras pra pegar fraude e sonegação no combustível.",
+  "oque": "Dá à ANP acesso às informações fiscais dos agentes regulados para fiscalização.",
+  "melhora": [
+   "Mais fiscalização contra combustível adulterado e sonegação"
+  ]
+ },
+ "MPV 1323/2025": {
+  "apelido": "Muda regras do seguro-defeso do pescador",
+  "area": "Trabalho",
+  "muda": "Se você é pescador artesanal, muda as regras do seguro-desemprego pago na época em que a pesca é proibida (defeso).",
+  "oque": "Altera a lei do seguro-desemprego do pescador artesanal durante o defeso."
+ },
+ "PLP 104/2025": {
+  "apelido": "Sardinha em lata sem imposto na cesta básica",
+  "area": "Bolso",
+  "veredito": "bom",
+  "muda": "A sardinha em lata entra na lista da cesta básica sem imposto da reforma tributária, o que pode deixar ela mais barata.",
+  "oque": "Inclui a sardinha em conserva na cesta básica isenta de CBS e IBS.",
+  "melhora": [
+   "Sardinha em lata pode ficar mais barata"
+  ],
+  "piora": [
+   "O governo arrecada um pouco menos"
+  ]
+ },
+ "PL 6359/2025": {
+  "apelido": "Novas varas da Justiça Federal no AM e MS",
+  "area": "Direitos",
+  "muda": "Não muda nada pra quem mora em Goiás. Cria 2 varas federais no Amazonas e 6 em Mato Grosso do Sul.",
+  "oque": "Cria varas federais no Amazonas e em Mato Grosso do Sul."
+ },
+ "PL 1069/2025": {
+  "apelido": "Lista suja do racismo no futebol",
+  "area": "Direitos",
+  "veredito": "bom",
+  "muda": "Clubes e federações punidos por racismo em jogo de futebol vão pro cadastro nacional, a lista suja.",
+  "oque": "Cria o Cadastro Nacional de equipes e entidades punidas por racismo no futebol.",
+  "melhora": [
+   "Mais pressão pra acabar com o racismo nos estádios"
+  ]
+ },
+ "PL 3780/2023": {
+  "apelido": "Pena maior pra furto e roubo",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Quem roubar ou furtar vai pegar mais tempo de prisão.",
+  "oque": "Aumenta as penas dos crimes de furto e roubo no Código Penal.",
+  "melhora": [
+   "Punição mais dura pra quem rouba"
+  ],
+  "piora": [
+   "Especialistas lembram que pena maior sozinha não reduz o crime e lota mais as cadeias"
+  ]
+ },
+ "PL 3880/2024": {
+  "apelido": "Violência vicária entra na Lei Maria da Penha",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Machucar ou ameaçar os filhos pra atingir a mãe passa a ser violência doméstica pela Lei Maria da Penha.",
+  "oque": "Inclui a violência vicária entre as formas de violência doméstica da Lei Maria da Penha.",
+  "melhora": [
+   "Mais proteção pra mães e filhos"
+  ]
+ },
+ "PL 4675/2025": {
+  "apelido": "Regras pras grandes empresas de internet",
+  "area": "Direitos",
+  "muda": "Cria regras e fiscalização pras grandes plataformas digitais (Google, Apple, Meta, Amazon) não abusarem do tamanho delas.",
+  "oque": "Muda a lei do Cade para criar regras especiais para empresas de relevância sistêmica em mercados digitais."
+ },
+ "PL 4709/2025": {
+  "apelido": "Combate ao golpe do falso advogado",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Cria regras e punições contra o golpe do falso advogado, em que bandido se passa pelo seu advogado pra pedir dinheiro.",
+  "oque": "Previne e reprime o golpe do falso advogado e outras fraudes processuais eletrônicas.",
+  "melhora": [
+   "Mais proteção contra golpe pelo WhatsApp"
+  ]
+ },
+ "PL 1769/2019": {
+  "apelido": "Chocolate com mínimo de cacau e rótulo claro",
+  "area": "Bolso",
+  "veredito": "bom",
+  "muda": "O chocolate vai ter que ter um mínimo de cacau e mostrar no rótulo quanto cacau tem.",
+  "oque": "Define percentual mínimo de cacau nos chocolates e obriga informar o percentual no rótulo.",
+  "melhora": [
+   "Você sabe o que está comprando"
+  ],
+  "piora": [
+   "Chocolate pode ficar um pouco mais caro"
+  ]
+ },
+ "PL 1922/2022": {
+  "apelido": "Água e esgoto viram direito de todo mundo",
+  "area": "Saúde",
+  "veredito": "bom",
+  "muda": "Água potável e esgoto passam a ser direito humano garantido em lei.",
+  "oque": "Muda a Lei do Saneamento para garantir água potável e esgoto como direitos humanos.",
+  "melhora": [
+   "Mais força pra cobrar água e esgoto onde ainda não tem"
+  ]
+ },
+ "PDL 330/2022": {
+  "apelido": "Barra regra de importação de cacau",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Cancela uma regra do Ministério da Agricultura sobre importação de cacau, o que protege produtores brasileiros.",
+  "oque": "Susta instrução normativa sobre requisitos para importar amêndoas de cacau."
+ },
+ "PLP 6/2024": {
+  "apelido": "Regras pra resolver briga de divisa entre cidades",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra você. Facilita resolver brigas de limite entre municípios.",
+  "oque": "Disciplina o desmembramento simplificado de municípios para resolver conflitos territoriais."
+ },
+ "PLP 108/2021": {
+  "apelido": "MEI pode faturar até R$ 130 mil",
+  "area": "Trabalho",
+  "veredito": "bom",
+  "muda": "Se você é MEI, o limite de faturamento subiria pra R$ 130 mil por ano. A votação registrada aqui foi a da urgência, aprovada por 430 a 0.",
+  "oque": "Muda o Simples para permitir MEI com receita de até R$ 130 mil por ano.",
+  "melhora": [
+   "MEI pode crescer sem virar empresa maior"
+  ]
+ },
+ "PL 759/2026": {
+  "apelido": "Muda temas obrigatórios na escola",
+  "area": "Educação",
+  "muda": "Muda um trecho da lei da educação sobre temas que as escolas devem trabalhar com os alunos.",
+  "oque": "Altera o § 9º do art. 26 da Lei de Diretrizes e Bases da Educação."
+ },
+ "PL 6415/2025": {
+  "apelido": "Advogado de graça pra vítima de crime",
+  "area": "Direitos",
+  "veredito": "bom",
+  "muda": "Vítimas de crime em situação vulnerável vão ter direito a advogado de graça no processo.",
+  "oque": "Institui a Política Nacional de Assistência Jurídica Obrigatória às Vítimas em Situação de Vulnerabilidade.",
+  "melhora": [
+   "Vítima pobre não fica sozinha no processo"
+  ]
+ },
+ "PL 727/2026": {
+  "apelido": "Spray de pimenta pra mulher se defender",
+  "area": "Segurança",
+  "veredito": "misto",
+  "muda": "Mulheres poderiam comprar e andar com spray de pimenta pra defesa pessoal. A votação registrada aqui foi de um requerimento, que foi rejeitado.",
+  "oque": "Libera compra, posse e porte de spray de extrato vegetal por mulheres para defesa pessoal.",
+  "melhora": [
+   "Dá à mulher um meio de se defender"
+  ],
+  "piora": [
+   "Críticos temem uso indevido do spray"
+  ]
+ },
+ "PL 3640/2025": {
+  "apelido": "Dados sobre o clima na vida das mulheres",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra você. O governo vai ter que reunir e divulgar dados de como a crise do clima afeta mulheres e meninas.",
+  "oque": "Dispõe sobre o mapeamento e a divulgação de dados sobre impactos da crise climática na vida de meninas e mulheres."
+ },
+ "PL 2942/2024": {
+  "apelido": "Tornozeleira pra agressor de mulher",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "O juiz (ou o delegado, onde não tem juiz) pode mandar o agressor usar tornozeleira na hora, e a vítima ganha um aparelho que avisa se ele chegar perto.",
+  "oque": "Determina monitoramento eletrônico de agressores em casos de violência doméstica.",
+  "melhora": [
+   "A vítima é avisada se o agressor se aproximar",
+   "Pena maior pra quem descumprir medida protetiva"
+  ]
+ },
+ "PL 3946/2021": {
+  "apelido": "Doula vira profissão regulamentada",
+  "area": "Saúde",
+  "veredito": "bom",
+  "muda": "A profissão de doula, que acompanha a mulher na gravidez e no parto, passa a ter regras.",
+  "oque": "Dispõe sobre o exercício da profissão de doula.",
+  "melhora": [
+   "Mais segurança pra grávida que quer ter doula"
+  ]
+ },
+ "PL 5490/2025": {
+  "apelido": "Novos cargos no CNJ",
+  "area": "Direitos",
+  "muda": "Não muda nada direto pra você. Cria cargos e funções no Conselho Nacional de Justiça, o que aumenta o gasto público.",
+  "oque": "Cria cargos efetivos, em comissão e funções no Conselho Nacional de Justiça."
+ },
+ "PL 3879/2024": {
+  "apelido": "Muda carreira dos servidores do Ministério Público",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Muda regras da carreira dos servidores do Ministério Público da União.",
+  "oque": "Altera a lei das carreiras dos servidores do MPU e do CNMP."
+ },
+ "PL 4183/2024": {
+  "apelido": "Criança fica com a mãe ou o pai durante tratamento de vício",
+  "area": "Saúde",
+  "muda": "Permite internar menores pra tratar dependência química e deixa a criança ficar junto do pai ou da mãe que está em tratamento.",
+  "oque": "Garante internação voluntária de menores para tratar dependência química e a permanência junto aos pais em tratamento."
+ },
+ "PL 6240/2013": {
+  "apelido": "Desaparecimento forçado vira crime hediondo",
+  "area": "Segurança",
+  "veredito": "bom",
+  "muda": "Sumir com uma pessoa (sequestro feito por agente do Estado ou grupo armado, sem dar notícia) vira crime hediondo, com pena mais dura.",
+  "oque": "Cria o crime de desaparecimento forçado no Código Penal e o torna hediondo.",
+  "melhora": [
+   "Punição dura pra quem some com pessoas"
+  ]
+ },
+ "PL 6139/2023": {
+  "apelido": "Apoio do governo ao crédito pra exportar",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Organiza o apoio do governo a empresas que vendem pro exterior.",
+  "oque": "Estabelece o sistema brasileiro de apoio oficial ao crédito à exportação."
+ },
+ "PL 2158/2023": {
+  "apelido": "Muda regras de venda de remédio em farmácia",
+  "area": "Saúde",
+  "muda": "Muda regras de como remédios podem ser vendidos em farmácias e drogarias.",
+  "oque": "Altera a lei do controle sanitário do comércio de medicamentos."
+ },
+ "MSC 112/2026": {
+  "apelido": "Acordo internacional sobre animais migratórios",
+  "area": "Direitos",
+  "muda": "Não muda nada no seu dia a dia. Aprova um acordo internacional sobre proteção de animais que migram entre países.",
+  "oque": "Aprova acordo da 15ª Conferência da Convenção sobre Espécies Migratórias."
+ },
+ "PL 278/2026": {
+  "apelido": "Menos imposto pra data centers",
+  "area": "Trabalho",
+  "muda": "Não muda nada direto pra você. Dá desconto de imposto pra empresas que montarem data centers (centros de computadores) no Brasil.",
+  "oque": "Cria o Regime Especial de Tributação para Serviços de Datacenter (REDATA)."
+ },
+ "PL 6132/2025": {
+  "apelido": "Cria a Universidade Federal Indígena",
+  "area": "Educação",
+  "muda": "Cria uma universidade federal voltada pra estudantes indígenas.",
+  "oque": "Cria a Universidade Federal Indígena."
+ },
+ "PLP 14/2026": {
+  "apelido": "Menos imposto pra indústria química",
+  "area": "Bolso",
+  "veredito": "misto",
+  "muda": "Reduz o PIS/Cofins da indústria química e petroquímica, pra ela competir com produto importado.",
+  "oque": "Reduz alíquotas de PIS/Pasep e Cofins sobre a indústria química e petroquímica.",
+  "melhora": [
+   "Ajuda a manter fábricas e empregos no Brasil"
+  ],
+  "piora": [
+   "O governo arrecada menos"
+  ]
+ },
+ "PL 6133/2025": {
+  "apelido": "Cria a Universidade Federal do Esporte",
+  "area": "Educação",
+  "muda": "Cria uma universidade federal voltada pro esporte.",
+  "oque": "Cria a Universidade Federal do Esporte."
+ },
+ "PL 1743/2024": {
+  "apelido": "Muda a diretoria da OAB",
+  "area": "Direitos",
+  "muda": "Não muda nada pra você. Muda nomes e composição da diretoria do Conselho Federal da OAB.",
+  "oque": "Altera o Estatuto da Advocacia sobre a diretoria do Conselho Federal da OAB."
+ },
+ "MPV 1317/2025": {
+  "apelido": "Agência pra proteger seus dados pessoais",
+  "area": "Direitos",
+  "muda": "A agência que cuida da proteção dos seus dados pessoais (ANPD) ganha carreira própria de fiscais.",
+  "oque": "Trata da Agência Nacional de Proteção de Dados e cria a carreira de Regulação e Fiscalização de Proteção de Dados."
+ },
+ "PL 6601/2025": {
+  "apelido": "Profissão de quem trabalha em cozinha industrial",
+  "area": "Trabalho",
+  "veredito": "bom",
+  "muda": "Se você trabalha em restaurante de empresa, hospital ou escola (refeições coletivas), sua profissão passa a ter regras próprias.",
+  "oque": "Regulamenta a profissão de Trabalhador em Refeições Coletivas.",
+  "melhora": [
+   "Mais direitos e reconhecimento pra categoria"
+  ]
+ },
+ "PL 68/2026": {
+  "apelido": "Mounjaro mais barato com quebra de patente",
+  "area": "Saúde",
+  "veredito": "misto",
+  "muda": "Declara Mounjaro e Zepbound (remédios de diabetes e obesidade) de interesse público, o que abre caminho pra quebrar a patente e baratear. A votação registrada aqui foi a da urgência.",
+  "oque": "Declara de interesse público os medicamentos Mounjaro e Zepbound, para fins de licença compulsória.",
+  "melhora": [
+   "Remédio pode ficar bem mais barato"
+  ],
+  "piora": [
+   "Pode afastar investimento de laboratórios no Brasil"
+  ]
  }
 }
