@@ -63,6 +63,8 @@ const ICONES = {
   gastos: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h3"/>',
   eleicoes: '<path d="M5 11h14l-1 9H6l-1-9Z"/><path d="M9 11V5h6v6"/><path d="M10 8h4"/>'
 };
+// seta de voltar fixa na faixa de cima (o "← voltar" da página some quando rola)
+new MutationObserver(() => { const b = document.querySelector("#app .back"), h = $("hback"); if (!h) return; if (b) { h.href = b.getAttribute("href"); h.hidden = false; b.hidden = true; } else h.hidden = true; document.querySelector(".top")?.classList.toggle("sub", !!b); }).observe($("app"), {childList: true});
 function menu(uf, aba) {
   const n = $("bnav"), pill = $("ufpill");
   if (!uf) { n.hidden = true; pill.hidden = true; return; }
@@ -114,7 +116,7 @@ async function blocoPauta() {
 
 async function abaVotacoes(uf, D) {
   const ps = projetos();
-  const votados = !ps.length ? '<div class="vazio">Nenhuma votação com voto nominal nos últimos 60 dias.</div>' : ps.map(p => {
+  const cartaoV = p => {
     const v = p.principal, {s, n} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
     return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${v.aprovada ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px;max-width:none">${v.aprovada == null ? "Votado" : v.aprovada ? "✅ Aprovado" : "❌ Rejeitado"} · ${dataBR(v.data)}</span>
     ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
@@ -122,8 +124,9 @@ async function abaVotacoes(uf, D) {
     <div class="mini"><i style="width:${S / (S + N || 1) * 100}%;background:var(--ok)"></i><i style="width:${N / (S + N || 1) * 100}%;background:var(--nao)"></i></div>
     <div class="pt">${NOMES[uf]}: <b style="color:var(--ok)">${s} a favor</b> · <b style="color:var(--nao)">${n} contra</b> · Câmara toda: ${S} a ${N}</div>
     <div style="margin-top:10px;font-weight:700;color:var(--sim)">Ver quem votou a favor e contra →</div></a>`;
-  }).join("");
-  return `<div class="sec">Já votados</div>${votados}` + await blocoPauta();
+  };
+  const votados = !ps.length ? '<div class="vazio">Nenhuma votação com voto nominal neste ano.</div>' : ps.slice(0, 8).map(cartaoV).join("") + (ps.length > 8 ? `<details><summary>Ver mais ${ps.length - 8} projetos votados</summary>${ps.slice(8).map(cartaoV).join("")}</details>` : "");
+  return `<div class="sec">Já votados em ${new Date().getFullYear()} <span>${ps.length}</span></div>${votados}` + await blocoPauta();
 }
 
 async function paginaProjeto(uf, nome) {
@@ -138,7 +141,7 @@ async function paginaProjeto(uf, nome) {
   <div class="kick" style="margin-top:10px">${esc(p.nome)} · votado em ${dataBR(v.data)}${v.aprovada == null ? "" : v.aprovada ? " · aprovado" : " · rejeitado"}</div>
   <h1 style="font-size:clamp(26px,6vw,36px)">${esc(p.info?.apelido || p.nome)}</h1>
   ${caixaMuda(p.info?.muda, v.ementa || v.descricao)}
-  ${p.info?.detalhe ? `<p style="margin:12px 0 0">${esc(p.info.detalhe)}</p>` : ""}
+  ${p.info?.oque || p.info?.detalhe ? `<details open style="margin-top:12px"><summary>O que é esse projeto</summary>${p.info.oque ? `<p style="margin:0 0 10px">${esc(p.info.oque)}</p>` : ""}${p.info.detalhe ? `<p class="pt" style="margin:0 0 10px">${esc(p.info.detalhe)}</p>` : ""}</details>` : ""}
   <h2>Como votaram os deputados de ${NOMES[uf]}</h2>
   <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><b style="color:var(--ok)">${s}</b><span>a favor</span></div><div class="kpi"><b style="color:var(--nao)">${n}</b><span>contra</span></div><div class="kpi"><b>${tot - s - n}</b><span>não votaram</span></div></div>
   <div class="sec" style="color:var(--ok)">✅ Votaram a favor <span>${s}</span></div>${lista(grupo("Sim"), () => '<span class="v Sim" style="background:var(--ok)">A favor</span>')}
