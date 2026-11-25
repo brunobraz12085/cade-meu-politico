@@ -175,18 +175,22 @@ async function listaVotacoes(uf, qual) {
   scrollTo(0, 0);
 }
 
-async function paginaProjeto(uf, nome) {
+async function paginaProjeto(uf, nome, depId) {
   const D = await json(`dados/uf/${uf}.json`);
   const p = projetos().find(x => x.nome === nome);
   if (!p) return render(uf, "votacoes");
+  const dep = depId && D.deputados.find(x => String(x.id) === depId);
   const v = p.principal, {s, n, tot} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
   const grupo = t => D.deputados.filter(d => t === "outro" ? !["Sim", "Não"].includes(d.votos[v.id]) : d.votos[v.id] === t);
   const lista = (ds, tag) => `<div class="list">${ds.map(d => `<a class="dep" href="#${uf}/d/${d.id}">${foto(d)}<span><span class="nm">${esc(d.nome)}</span><br><span class="pt">${esc(d.partido)}</span></span>${tag(d)}</a>`).join("") || '<div class="pt" style="padding:14px 16px">Ninguém.</div>'}</div>`;
   const outros = grupo("outro");
-  $("app").innerHTML = `<a class="back" href="#${uf}/votacoes">← Votações</a>
+  const vd = dep && dep.votos[p.principal.id], gv = p.principal.governo;
+  const caixaDep = dep ? `<div class="hero" style="margin:12px 0 0"><div class="ph" style="margin:0">${foto(dep)}<div><div class="kick">Como ${esc(dep.nome.split(" ")[0])} votou</div><div style="margin-top:4px">${votoTag(vd)}${["Sim", "Não"].includes(gv) && ["Sim", "Não"].includes(vd) ? ` <span class="pt">· ${gv === vd ? "votou com o governo" : "votou contra o governo"} (o governo orientou ${esc(gv)})</span>` : ""}</div></div></div></div>` : "";
+  $("app").innerHTML = `<a class="back" href="${dep ? `#${uf}/d/${dep.id}` : `#${uf}/votacoes`}">${dep ? "← " + esc(dep.nome.split(" ")[0]) : "← Votações"}</a>
   <div class="kick" style="margin-top:10px">${esc(p.nome)} · votado em ${dataBR(v.data)}${p.info?.resultado ? " · " + esc(p.info.resultado) : ""}</div>
   <h1 style="font-size:clamp(26px,6vw,36px)">${esc(p.info?.apelido || p.nome)}</h1>
   ${caixaMuda(p.info, v.ementa || v.descricao, true)}
+  ${caixaDep}
   ${p.info?.oque || p.info?.detalhe ? `<details open style="margin-top:12px"><summary>O que é esse projeto</summary>${p.info.oque ? `<p style="margin:0 0 10px">${esc(p.info.oque)}</p>` : ""}${p.info.detalhe ? `<p class="pt" style="margin:0 0 10px">${esc(p.info.detalhe)}</p>` : ""}</details>` : ""}
   <h2>Como votaram os deputados de ${NOMES[uf]}</h2>
   ${p.ok ? "" : `<div class="previa"><span>ℹ️</span><span>A aprovação final deste projeto foi em votação simbólica, sem registro de cada voto. Abaixo está a votação com registro mais importante: <b>${esc((v.descricao || "").split(".")[0])}</b>.</span></div>`}
@@ -206,11 +210,18 @@ async function paginaProjeto(uf, nome) {
 
 function blocoMeuVoto(uf, v, D) {
   const eu = meus()[v.id];
-  const iguais = eu ? D.deputados.filter(d => d.votos[v.id] === eu).length : 0;
-  return `<div class="hero" style="margin-top:16px"><div class="kick">E você?</div>
+  const iguais = eu ? D.deputados.filter(d => d.votos[v.id] === eu) : [];
+  const dif = eu ? D.deputados.filter(d => ["Sim", "Não"].includes(d.votos[v.id]) && d.votos[v.id] !== eu) : [];
+  const mini = ds => `<div class="list">${ds.map(d => `<a class="dep" href="#${uf}/d/${d.id}">${foto(d)}<span><span class="nm">${esc(d.nome)}</span><br><span class="pt">${esc(d.partido)}</span></span>${votoTag(d.votos[v.id])}</a>`).join("") || '<div class="pt" style="padding:12px 16px">Ninguém.</div>'}</div>`;
+  return `<div class="hero" id="meuvoto" style="margin-top:16px"><div class="kick">E você?</div>
   <h3 style="margin:4px 0 10px">Se você fosse deputado, como votaria?</h3>
   <div class="chips">${["Sim", "Não"].map(o => `<button class="chip" aria-selected="${eu === o}" data-meu="${esc(v.id)}|${o}">Eu votaria ${o}</button>`).join("")}</div>
-  ${eu ? `<p style="margin:6px 0 0"><b>${iguais} de ${D.deputados.length}</b> deputados de ${NOMES[uf]} votaram igual a você.</p>` : `<p class="pt" style="margin:6px 0 0">Seu voto fica só no seu celular. Ele serve para mostrar com quais deputados você mais concorda.</p>`}</div>`;
+  ${eu ? `<div class="meures"><div style="font-size:19px;margin:10px 0 6px">✅ Você votou <b>${esc(eu).toUpperCase()}</b></div>
+    <div class="kpis" style="margin:8px 0"><div class="kpi"><b style="color:var(--ok)">${iguais.length}</b><span>deputados de ${uf} votaram igual a você</span></div><div class="kpi"><b style="color:var(--nao)">${dif.length}</b><span>votaram diferente</span></div></div>
+    <details><summary>👍 Votaram igual a você (${iguais.length})</summary>${mini(iguais)}</details>
+    <details><summary>👎 Votaram diferente (${dif.length})</summary>${mini(dif)}</details>
+    <p class="pt" style="margin:10px 0 0">Seu voto fica guardado só no seu celular. Vote em outros projetos e, na página de cada deputado, veja em quantos vocês concordam.</p></div>`
+  : `<p class="pt" style="margin:6px 0 0">Vote e veja na hora quais deputados de ${NOMES[uf]} pensam igual a você. Seu voto fica só no seu celular.</p>`}</div>`;
 }
 
 const gdef = k => typeof GLOS[k] === "string" ? GLOS[k] : GLOS[k]?.def;
@@ -302,7 +313,7 @@ function resultado(lista, max = 99, opts = {}) {
   const tot = opts.tot || lista.filter(c => !ehBN(nm(c))).reduce((t, c) => t + vt(c), 0) || 1;
   let rank = opts.ini || 0;
   return `<div class="card">${lista.slice(0, max).map((c, i) => {
-    const nome = nm(c), v = vt(c), bn = ehBN(nome), pos = bn ? "" : ++rank, el = /^ELEITO/.test(c.sit || "");
+    const nome = nm(c), v = vt(c), bn = ehBN(nome), pos = bn || opts.semRank ? "" : ++rank, el = /^ELEITO/.test(c.sit || "");
     const part = opts.mapa && !c.partido ? opts.mapa(nome) : c.partido;
     const ini = esc(titulo(nome).split(" ").filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join("") || "?");
     const av = bn ? "" : c.foto ? `<img class="fc" src="eleicoes/fotos/${esc(c.foto)}" alt="" loading="lazy">` : opts.semFoto ? "" : `<span class="fc">${ini}</span>`;
@@ -326,7 +337,7 @@ function blocoPartidos(P, todos, comCadeiras = true) {
     return `<details><summary><span class="party" style="flex:1"><span><b>${esc(p.federacao ? p.sigla : p.sigla)}</b>${p.federacao ? ` <span class="pt">· federação (${esc(p.partidos.join(", "))})</span>` : ""}<br><span class="pt">${fmtN(p.total)} votos</span></span>${comCadeiras ? `<span class="seats ${p.cadeiras ? "" : "z"}">${p.cadeiras} ${p.cadeiras === 1 ? "cadeira" : "cadeiras"}</span>` : ""}</span></summary>
     ${p.federacao && p.nome !== p.sigla ? `<p class="pt" style="margin:0 0 8px">${esc(p.nome)}</p>` : ""}
     <p class="pt" style="margin:0 0 8px">${fmtN(p.nominais)} votos nos candidatos + ${fmtN(p.legenda)} votos só no número do partido (legenda)</p>
-    ${cands.length ? resultado(cands, 999, {}) : ""}</details>`;
+    ${cands.length ? `${cands.some(c => /^ELEITO/.test(c.sit || "")) ? `<div class="sec" style="margin-top:6px">Eleitos <span>${cands.filter(c => /^ELEITO/.test(c.sit || "")).length}</span></div>${resultado(cands.filter(c => /^ELEITO/.test(c.sit || "")), 999, {})}` : ""}${cands.some(c => !/^ELEITO/.test(c.sit || "")) ? `<div class="sec">Suplentes e não eleitos <span>${cands.filter(c => !/^ELEITO/.test(c.sit || "")).length}</span></div>${resultado(cands.filter(c => !/^ELEITO/.test(c.sit || "")), 9999, {ini: cands.filter(c => /^ELEITO/.test(c.sit || "")).length})}` : ""}` : ""}</details>`;
   }).join("");
 }
 function kpisProp(P, vagaTxt) {
@@ -416,14 +427,14 @@ async function eleicao(uf, partes) {
       (propAba === "part"
         ? (comCad ? kpisProp(D?.partidos, `vagas de ${CARGO_NOME[cargo].toLowerCase()}`) : `<p class="pt">Votos que cada partido teve em ${esc(onde)}. As cadeiras são decididas com os votos do estado todo.</p>`) + blocoPartidos(D?.partidos, todos, comCad)
         : `<div class="sec">Eleitos${ano === "2026" && C ? " (no estado) que tiveram voto aqui" : ""} <span>${eleitos.length}</span></div>${resultado(eleitos, 999, {tot: totV})}
-          <div class="sec">Demais candidatos <span>${demais.length}</span></div>${demais.length ? `<input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Buscar nome, partido ou número"><div id="lista">${resultado(demais, 999, {ini: eleitos.length, tot: totV})}</div>` : `<div class="vazio">${C ? "Sem outros candidatos." : "Escolha uma cidade acima para ver todos os candidatos."}</div>`}`) +
+          ${demais.length ? `<div class="sec">Procurar outro candidato</div><p class="pt" style="margin-top:0">Quem não foi eleito aparece em <b>Por partido</b>, com todos os suplentes. Ou digite o nome aqui:</p><input type="search" id="qc" value="${esc(buscaCand)}" placeholder="Nome, partido ou número do candidato"><div id="lista"></div>` : ""}`) +
       (C ? blocoLocal(C, `${cargo}|1`) : `<p class="note">Escolha uma cidade acima para ver por zona e por colégio eleitoral.</p>`);
     window.__demais = demais;
   }
   $("app").innerHTML = html + `<p class="note">Fonte: Portal de Dados Abertos do TSE. Porcentagens sobre os votos válidos (sem brancos e nulos).</p>`;
   const sem = x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const cq = $("cq"); if (cq) cq.addEventListener("input", () => { const k = sem(cq.value.trim()); $("cres").innerHTML = !k ? "" : (idx.filter(m => sem(m.nome).includes(k)).slice(0, 8).map(m => `<button data-cid="${esc(m.cd)}">📍 ${esc(titulo(m.nome))}</button>`).join("") || '<div class="pt">Nenhuma cidade com esse nome.</div>'); });
-  const q = $("qc"); if (q) q.addEventListener("input", e => { buscaCand = e.target.value; const k = buscaCand.toLowerCase(), r = window.__demais.filter(c => !k || (c.nome + " " + c.partido + " " + c.numero).toLowerCase().includes(k)); $("lista").innerHTML = r.length ? resultado(r, 999, {tot: window.__tot}) : '<div class="vazio">Ninguém encontrado.</div>'; });
+  const q = $("qc"); if (q) { const busca = () => { buscaCand = q.value; const k = sem(buscaCand.trim()); if (k.length < 2) { $("lista").innerHTML = ""; return; } const r = window.__demais.filter(c => sem(c.nome + " " + c.partido + " " + c.numero).includes(k)); $("lista").innerHTML = r.length ? resultado(r.slice(0, 30), 30, {tot: window.__tot, semRank: true}) : '<div class="vazio">Ninguém encontrado.</div>'; }; q.addEventListener("input", busca); if (buscaCand) busca(); }
   if (C && cargo) { const mapaNum = {}; for (const c of [...(C.vereadores?.todos || []), ...(C.depFederal?.todos || []), ...(C.depEstadual?.todos || [])]) if (c.numero) mapaNum[String(c.numero).slice(0, 2)] = c.partido; ligarLocal(C, `${cargo}|${PROP.includes(cargo) ? 1 : turno}`, mapaNum); }
   scrollTo(0, 0);
 }
@@ -503,13 +514,37 @@ async function deputado(uf, id) {
   </div>
   <div class="hero" style="margin-top:14px"><div class="kick">Você e ${esc(d.nome.split(" ")[0])}</div>
   ${emComum.length ? `<p style="margin:6px 0 0;font-size:18px">Vocês concordaram em <b>${concorda} de ${emComum.length}</b> projetos.</p>` : `<p style="margin:6px 0 0">Diga como você votaria nos projetos da aba Votações e veja aqui se você concorda com este deputado.</p>`}</div>
-  <h2>Como votou</h2>
-  <div class="card">${ps.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}" style="text-decoration:none"><span><b style="white-space:normal">${esc(p.info?.apelido || p.nome)}</b><br><span class="pt">${dataBR(p.principal.data)} · ${esc(p.nome)}${eu[p.principal.id] ? ` · você: ${esc(eu[p.principal.id])}` : ""}</span></span>${votoTag(d.votos[p.principal.id])}</a>`).join("") || '<div class="pt" style="padding:14px 0">Sem votações recentes.</div>'}</div>
-  <h2>Projetos que assinou</h2>
+  <details class="aba"><summary><span>🗳️ Como votou nos projetos <span class="pt">(${ps.filter(p => d.votos[p.principal.id]).length})</span></span></summary>
+  <p class="pt" style="margin:0 0 6px">Toque num projeto para ver a explicação, se é bom ou ruim e quem votou a favor e contra.</p>
+  <div class="card" style="box-shadow:none">${ps.map(p => { const vd = d.votos[p.principal.id], gv = p.principal.governo, ladoG = ["Sim", "Não"].includes(gv) && ["Sim", "Não"].includes(vd) ? (gv === vd ? "com o governo" : "contra o governo") : "";
+    return `<a class="row" href="#${uf}/p/${slug(p.nome)}/${d.id}" style="text-decoration:none"><span>${p.info?.veredito ? `<span class="pt">${VEREDITO[p.info.veredito][0]} ${esc(VEREDITO[p.info.veredito][1])}</span><br>` : ""}<b style="white-space:normal">${esc(p.info?.apelido || p.nome)}</b><br><span class="pt">${dataBR(p.principal.data)} · ${esc(p.nome)}${ladoG ? ` · votou ${ladoG}` : ""}${eu[p.principal.id] ? ` · você: ${esc(eu[p.principal.id])}` : ""}</span></span>${votoTag(vd)}</a>`; }).join("") || '<div class="pt" style="padding:14px 0">Sem votações recentes.</div>'}</div></details>
+  <details class="aba"><summary><span>💰 Emendas que mandou pras cidades</span></summary><div id="emendas" data-tipo="d" data-id="${d.id}" data-nome="${esc(d.nome)}"><p class="pt">Carregando…</p></div></details>
+  <details class="aba"><summary><span>📝 Projetos que assinou <span class="pt">(${pj.total})</span></span></summary>
   <p class="pt">${Object.entries(pj.porTipo).map(([t, q]) => `${q} ${esc(t)}`).join(" · ") || "Nenhum"}. Conta também os projetos que ele só assinou junto com outros deputados (PEC precisa de muitas assinaturas).</p>
-  <div class="card">${pj.ultimos.map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.nome)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 180))}</span></a>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum projeto.</div>'}</div>
+  <div class="card" style="box-shadow:none">${pj.ultimos.map(x => `<a class="row" style="display:block" href="https://www.camara.leg.br/propostas-legislativas/${esc(x.id)}" target="_blank" rel="noopener"><b>${esc(x.nome)}</b> <span class="pt">· ${dataBR(x.data)}</span><br><span class="pt">${esc(limpa(x.ementa).slice(0, 180))}</span></a>`).join("") || '<div class="pt" style="padding:14px 0">Nenhum projeto.</div>'}</div></details>
   <a class="cta" href="#${uf}/g/${d.id}" style="margin-top:22px">💸 Ver os gastos de ${esc(d.nome.split(" ")[0])} (${brl(g.total)} em ${D.ano})</a>`;
+  ligarEmendas(uf);
   scrollTo(0, 0);
+}
+
+async function ligarEmendas(uf) {
+  const box = $("emendas"); if (!box) return;
+  const det = box.closest("details");
+  const carregar = async () => {
+    if (box.dataset.ok) return; box.dataset.ok = 1;
+    const E = await json(`emendas/${box.dataset.tipo}${box.dataset.id}.json`, true);
+    if (!E || !E.cidades?.length) { box.innerHTML = `<p class="pt" style="margin:0 0 10px">Não encontramos emendas individuais de ${esc(box.dataset.nome.split(" ")[0])} no Portal da Transparência neste mandato.</p>`; return; }
+    const lin = c => `<div class="row"><span><b style="white-space:normal">${esc(titulo(c.m))}${c.uf && c.uf !== uf ? " - " + esc(c.uf) : ""}</b><br><span class="pt">${esc((c.areas || []).join(", "))}</span></span><span style="text-align:right">${brl(c.e)}<br><span class="pt" style="font-weight:400">pago: ${brl(c.p)}</span></span></div>`;
+    const sem = x => String(x).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    box.innerHTML = `<div class="kpis" style="margin:0 0 10px"><div class="kpi"><b>${brl(E.empenhado)}</b><span>reservado (empenhado)</span></div><div class="kpi"><b>${brl(E.pago)}</b><span>já pago de verdade</span></div><div class="kpi"><b>${E.cidades.length}</b><span>lugares que receberam</span></div></div>
+    <p class="pt" style="margin:0 0 8px">Emenda é o dinheiro do orçamento federal que o parlamentar escolhe pra onde vai. "Empenhado" é o valor reservado; "pago" é o que já saiu de fato. Período: ${esc(E.periodo || "")}.</p>
+    <input type="search" id="qe" placeholder="Digite o nome da sua cidade">
+    <div id="le" class="card" style="box-shadow:none">${E.cidades.slice(0, 15).map(lin).join("")}</div>
+    ${E.cidades.length > 15 ? `<p class="pt" id="lemais">Mostrando os 15 lugares que mais receberam. Digite acima pra achar a sua cidade.</p>` : ""}
+    <p class="fonte">Fonte: Portal da Transparência (CGU). Só emendas individuais deste parlamentar; emendas de bancada e de comissão não entram.</p>`;
+    $("qe").addEventListener("input", e => { const k = sem(e.target.value.trim()); const r = k ? E.cidades.filter(c => sem(c.m).includes(k)) : E.cidades.slice(0, 15); $("le").innerHTML = r.map(lin).join("") || `<div class="pt" style="padding:12px 0">${esc(box.dataset.nome.split(" ")[0])} não mandou emenda individual pra essa cidade neste mandato.</div>`; const m = $("lemais"); if (m) m.hidden = !!k; });
+  };
+  det?.addEventListener("toggle", () => det.open && carregar());
 }
 
 function termoSen(s) {
@@ -532,9 +567,11 @@ async function senador(uf, id) {
   <div class="ph">${foto(s)}<div><div class="nm" style="font-size:24px">${esc(s.nome)}</div><div class="pt">Senador(a) · ${esc(s.partido)} · ${uf}</div></div></div>
   ${s.totalVotacoes ? `<div class="stats"><div class="stat"><div class="big" style="font-size:32px">${Math.round((s.participou || 0) / s.totalVotacoes * 100)}%</div><div class="pt">votou em ${s.participou} das ${s.totalVotacoes} votações nominais do Senado em ${D.ano}</div></div></div>` : ""}
   ${termoSen(s)}
-  <h2 style="margin-top:18px">Como votou no Senado</h2>
-  <div class="card">${vs.map(v => `<div class="row"><span><b style="white-space:normal">${esc(v.materia || "Votação")}</b> <span class="pt">· ${dataBR(v.data)}${v.resultado ? " · " + esc(v.resultado.toLowerCase()) : ""}${v.secreta ? " · votação secreta" : ""}</span><br><span class="pt">${esc(limpa(v.ementa).slice(0, 160))}</span></span>${tag(v.voto)}</div>`).join("") || '<div class="pt" style="padding:14px 0">As votações deste senador aparecem na próxima atualização diária.</div>'}</div>
+  <details class="aba" style="margin-top:18px"><summary><span>🗳️ Como votou no Senado <span class="pt">(${vs.length})</span></span></summary>
+  <div class="card" style="box-shadow:none">${vs.map(v => `<div class="row"><span><b style="white-space:normal">${esc(v.materia || "Votação")}</b> <span class="pt">· ${dataBR(v.data)}${v.resultado ? " · " + esc(v.resultado.toLowerCase()) : ""}${v.secreta ? " · votação secreta" : ""}</span><br><span class="pt">${esc(limpa(v.ementa).slice(0, 160))}</span></span>${tag(v.voto)}</div>`).join("") || '<div class="pt" style="padding:14px 0">As votações deste senador aparecem na próxima atualização diária.</div>'}</div></details>
+  <details class="aba"><summary><span>💰 Emendas que mandou pras cidades</span></summary><div id="emendas" data-tipo="s" data-id="${s.id}" data-nome="${esc(s.nome)}"><p class="pt">Carregando…</p></div></details>
   <p class="note">Fonte: Dados Abertos do Senado Federal. "Votou" aparece em votações secretas, quando o voto não é divulgado.</p>`;
+  ligarEmendas(uf);
   scrollTo(0, 0);
 }
 
@@ -586,7 +623,7 @@ async function rota() {
     if (tipo === "d") return deputado(uf, id);
     if (tipo === "g") return paginaGastos(uf, id);
     if (tipo === "s") return senador(uf, id);
-    if (tipo === "p") return paginaProjeto(uf, unslug(id));
+    if (tipo === "p") return paginaProjeto(uf, unslug(id), h.split("/")[3]);
     if (tipo === "glossario") return glossario(uf);
     if (tipo === "el") return eleicao(uf, h.split("/").slice(2));
     if (tipo === "cidade") { const [, , ano, cd] = h.split("/"); salvarCid(uf, ano, cd); location.replace(`#${uf}/el/${ano}`); return; }
@@ -602,7 +639,7 @@ document.addEventListener("click", e => {
   const b = e.target.closest("[data-voto]");
   if (b) { const y = scrollY; filtroVoto = b.dataset.voto; rota().then(() => scrollTo(0, y)); return; }
   const m = e.target.closest("[data-meu]");
-  if (m) { const y = scrollY; const [id, v] = m.dataset.meu.split("|"); salvarMeu(id, v); rota().then(() => scrollTo(0, y)); return; }
+  if (m) { const [id, v] = m.dataset.meu.split("|"); salvarMeu(id, v); rota().then(() => { const el = $("meuvoto"); if (el) { el.scrollIntoView({block: "start"}); el.classList.add("pisca"); } }); return; }
   const an = e.target.closest("[data-ano]");
   if (an) { eleAno = an.dataset.ano; rota(); return; }
   const cb = e.target.closest("[data-cab]");
