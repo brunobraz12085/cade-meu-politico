@@ -484,25 +484,21 @@ async function deputado(uf, id) {
   const eu = meus(), emComum = ps.filter(p => eu[p.principal.id] && ["Sim", "Não"].includes(d.votos[p.principal.id]));
   const concorda = emComum.filter(p => eu[p.principal.id] === d.votos[p.principal.id]).length;
   const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
-  const avalT = ps.filter(p => p.ok && ["bom", "ruim"].includes(p.info?.veredito));
-  const ehFav = p => (p.info.veredito === "bom") === (d.votos[p.principal.id] === "Sim");
-  const votouA = avalT.filter(p => ["Sim", "Não"].includes(d.votos[p.principal.id]));
-  const fav = votouA.filter(ehFav).length, contra = votouA.length - fav, faltou = avalT.length - votouA.length;
-  const pF = avalT.length ? Math.round(fav / avalT.length * 100) : null;
-  const tagT = p => !["Sim", "Não"].includes(d.votos[p.principal.id]) ? '<span class="v tag">Faltou / não votou</span>' : ehFav(p) ? '<span class="v el">A favor do povo</span>' : '<span class="v Não">Contra o povo</span>';
-  const termo = `<div class="hero"><div class="kick">🌡️ Termômetro do povo</div>${pF == null ? `<p style="margin:8px 0 0">Ainda não há projetos avaliados como bons ou ruins pro povo.</p>` : `
-    <div class="big" style="margin-top:6px;color:${pF >= 60 ? "var(--ok)" : pF >= 40 ? "#d99a00" : "var(--nao)"}">${pF}% <span style="font-size:18px">a favor do povo</span></div>
-    <div class="kpis" style="margin:12px 0"><div class="kpi"><b style="color:var(--ok)">${fav}</b><span>votou a favor do povo</span></div><div class="kpi"><b style="color:var(--nao)">${contra}</b><span>votou contra o povo</span></div><div class="kpi"><b>${faltou}</b><span>faltou ou não votou</span></div></div>
-    <div class="termo"><i style="left:${pF}%"></i></div><div class="legend"><span>Contra o povo</span><span>A favor do povo</span></div>
-    <p class="pt" style="margin:10px 0 0">Conta só os ${avalT.length} projetos que mexem direto com o povo (de ${ps.length} votados). Faltar na votação conta como não ajudar.</p>
-    <details class="mais"><summary>Ver quais projetos contaram</summary>${avalT.map(p => `<a class="row" href="#${uf}/p/${slug(p.nome)}"><span><b style="white-space:normal">${esc(p.info.apelido || p.nome)}</b><br><span class="pt">${p.info.veredito === "bom" ? "👍 bom pro povo" : "👎 ruim pro povo"} · ${d.votos[p.principal.id] === "Sim" ? "votou a favor" : d.votos[p.principal.id] === "Não" ? "votou contra" : "não votou"}</span></span>${tagT(p)}</a>`).join("")}</details>`}</div>`;
+  const comOri = VOT.filter(v => ["Sim", "Não"].includes(v.governo));
+  const votouG = comOri.filter(v => ["Sim", "Não"].includes(d.votos[v.id]));
+  const comG = votouG.filter(v => v.governo === d.votos[v.id]).length, contraG = votouG.length - comG, faltG = comOri.length - votouG.length;
+  const pG = votouG.length ? Math.round(comG / votouG.length * 100) : null;
+  const termo = `<div class="hero"><div class="kick">🌡️ Termômetro: com ou contra o governo</div>${pG == null ? `<p style="margin:8px 0 0">Ainda não há votações com orientação do governo.</p>` : `
+    <div class="big" style="margin-top:6px">${pG}% <span style="font-size:18px">das vezes votou com o governo</span></div>
+    <div class="kpis" style="margin:12px 0"><div class="kpi"><b>${comG}</b><span>votou com o governo</span></div><div class="kpi"><b>${contraG}</b><span>votou contra o governo</span></div><div class="kpi"><b>${faltG}</b><span>faltou ou não votou</span></div></div>
+    <div class="termo neutro"><i style="left:${100 - pG}%"></i></div><div class="legend"><span>Com o governo</span><span>Contra o governo</span></div>
+    <p class="pt" style="margin:10px 0 0">Em cada votação, o líder do governo diz se é pra votar Sim ou Não. Aqui você vê se ${esc(d.nome.split(" ")[0])} costuma seguir ou não. Não diz se isso é bom ou ruim: é pra você saber de que lado ele costuma ficar. Conta ${comOri.length} votações de ${new Date().getFullYear()}.</p>`}</div>`;
   const card = (num, txt) => `<div class="stat"><div class="big" style="font-size:32px">${num}</div><div class="pt">${txt}</div></div>`;
   $("app").innerHTML = `<a class="back" href="#${uf}/politicos">← Seus políticos</a>
   <div class="ph">${foto(d)}<div><div class="nm" style="font-size:24px">${esc(d.nome)}</div><div class="pt">Deputado(a) federal · ${esc(d.partido)} · ${uf}</div></div></div>
   ${termo}
   <div class="stats" style="margin-top:12px">
     ${card(pct(votou, VOT.length), `votou em ${votou} das ${VOT.length} últimas votações nominais`)}
-    ${card(pct(igualGov, comGov.length), `das vezes votou igual à orientação do governo`)}
     ${card(pj.total, `projetos de lei e PECs assinados no mandato (como autor ou coautor)`)}
   </div>
   <div class="hero" style="margin-top:14px"><div class="kick">Você e ${esc(d.nome.split(" ")[0])}</div>
