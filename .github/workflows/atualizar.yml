@@ -47,6 +47,7 @@ jobs:
           else
             echo "Buscando todos os dados (demora)"
             node scripts/atualizar.mjs
+            ( curl -fsL --retry 3 -A "Mozilla/5.0" -o /tmp/emendas.zip "https://portaldatransparencia.gov.br/download-de-dados/emendas-parlamentares/UNICO" && node scripts/emendas.mjs /tmp/emendas.zip site/dados/emendas ) || echo "Emendas falharam, seguindo sem elas"
             cd site/dados
             git init -q -b dados
             git add -A
