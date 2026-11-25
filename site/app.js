@@ -121,8 +121,8 @@ async function blocoPauta(cheio) {
   const P = await json("dados/pauta.json", true);
   const it = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
   if (!it.length) return "";
-  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px;max-width:none">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto], x.ementa)}
-    <h3 style="margin-top:12px">${esc(PROJ[x.projeto]?.apelido || x.projeto)}</h3><div class="kick">${esc(x.projeto)}</div>
+  const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px;max-width:none">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto], x.ementa, true)}
+    <h3 style="margin-top:12px">${esc(PROJ[x.projeto]?.apelido || x.projeto)}</h3><div class="kick">${esc(x.projeto)}</div>${PROJ[x.projeto]?.oque ? `<p class="pt" style="margin:8px 0 0">${esc(PROJ[x.projeto].oque)}</p>` : ""}${PROJ[x.projeto]?.detalhe ? `<p class="pt" style="margin:6px 0 0">${esc(PROJ[x.projeto].detalhe)}</p>` : ""}
     ${PROJ[x.projeto] ? `<details class="mais"><summary>Texto oficial</summary><p class="pt">${esc(limpa(x.ementa))}</p></details>` : ""}</div>`;
   if (cheio) return `<p class="lead">Estão na pauta da Câmara. Estar na pauta não garante que vai ser votado. Quando forem votados, aparece quem votou a favor e contra.</p>${it.map(cartao).join("")}`;
   return `<div class="sec">Vai ser votado nesta semana <span>${it.length}</span></div>
