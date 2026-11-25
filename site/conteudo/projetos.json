@@ -25,7 +25,9 @@
     ],
     "piora": [
       "Com o freio nos gastos, sobra menos dinheiro para o governo gastar em coisas novas, como obras e serviços"
-    ]
+    ],
+    "area": "Bolso",
+    "resultado": "aprovado"
   },
   "PLP 186/2026": {
     "apelido": "MEI pode faturar mais e ter dívidas perdoadas",
@@ -54,7 +56,9 @@
     ],
     "piora": [
       "O governo deixa de cobrar essas dívidas"
-    ]
+    ],
+    "area": "Trabalho",
+    "resultado": "aprovado"
   },
   "PLP 281/2019": {
     "apelido": "Regras para quando um banco quebra",
@@ -79,6 +83,8 @@
     "melhora": [
       "Se um banco quebrasse, quem pagaria a conta seriam os donos e credores, não o dinheiro dos seus impostos"
     ],
-    "piora": []
+    "piora": [],
+    "area": "Bolso",
+    "resultado": "rejeitado"
   }
 }
