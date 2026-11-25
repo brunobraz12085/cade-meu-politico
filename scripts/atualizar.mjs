@@ -123,7 +123,7 @@ async function main() {
   console.log("   ", votacoes.length, "votações nominais");
 
   console.log(`4/5 Gastos da cota em ${ANO} (demora alguns minutos)...`);
-  const gastos = {};
+  const gastos = {}, gastosItens = {};
   await emLotes(deps, async (d, k) => {
     const itens = await todasPaginas(`${CAMARA}/deputados/${d.id}/despesas?ano=${ANO}&ordem=DESC&ordenarPor=mes`);
     const porTipo = {}, porMes = {};
@@ -136,6 +136,7 @@ async function main() {
       porTipo[tipo] = (porTipo[tipo] ?? 0) + v;
       porMes[it.mes] = (porMes[it.mes] ?? 0) + v;
       maiores.push({ v: arred(v), tipo, forn: it.nomeFornecedor, mes: it.mes, doc: it.urlDocumento || "" });
+      (gastosItens[d.id] ??= []).push({ v: arred(v), tipo, forn: it.nomeFornecedor || "", cnpj: it.cnpjCpfFornecedor || "", data: it.dataDocumento || `${ANO}-${String(it.mes).padStart(2, "0")}-01`, mes: it.mes, doc: it.urlDocumento || "" });
     }
     maiores.sort((a, b) => b.v - a.v);
     gastos[d.id] = {
@@ -176,6 +177,11 @@ async function main() {
 
   console.log("5/5 Gravando arquivos...");
   await mkdir(SAIDA, { recursive: true });
+  await mkdir(`${SAIDA}/gastos`, { recursive: true });
+  for (const [id, itens] of Object.entries(gastosItens)) {
+    itens.sort((a, b) => String(b.data).localeCompare(String(a.data)));
+    await writeFile(`${SAIDA}/gastos/${id}.json`, JSON.stringify({ id, ano: ANO, itens }));
+  }
   await writeFile(`${SAIDA}/pauta.json`, JSON.stringify({ atualizado: new Date().toISOString(), itens: pauta }));
   await mkdir(`${SAIDA}/uf`, { recursive: true });
   const resumo = { atualizado: new Date().toISOString(), ano: ANO, estados: {} };
