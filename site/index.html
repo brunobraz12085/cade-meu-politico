@@ -133,16 +133,20 @@ details[open]{padding-bottom:8px}
 .t-Transporte{background:#d8f1f6;color:#063540}.t-Impostos{background:#ffe0e1;color:#4a0b0e}.t-Educacao{background:#e6f0d6;color:#203a06}.t-Seguranca{background:#e3e7ee;color:#121b2b}.t-Moradia{background:#f4e6d6;color:#3a2207}
 .news details.mais{box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:0;margin-top:6px;background:transparent}
 .news details.mais summary{color:var(--sim);padding:12px 0 4px}
+.hback{flex:none;width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;display:grid;place-items:center;font:800 22px Inter}
+.hback[hidden]{display:none}
+.top .in{justify-content:flex-start}.top .ufpill{margin-left:auto}
+@media (max-width:420px){.top.sub .logo span{display:none}}
 footer{font-size:12.5px;color:var(--mute);padding:22px 0 8px;border-top:1px solid var(--line);margin-top:34px}
 </style>
 </head>
 <body>
-<div class="top"><div class="in"><a class="logo" href="#inicio"><i>?</i>Cadê Meu <b>Político</b></a><a class="ufpill" id="ufpill" href="#inicio" hidden></a></div></div>
+<div class="top"><div class="in"><a class="hback" id="hback" href="#inicio" hidden aria-label="Voltar">←</a><a class="logo" href="#inicio"><i>?</i><span>Cadê Meu <b>Político</b></span></a><a class="ufpill" id="ufpill" href="#inicio" hidden></a></div></div>
 <div class="wrap">
   <main id="app"><p class="pt" style="padding-top:20px">Carregando…</p></main>
   <footer>Dados oficiais da Câmara dos Deputados, do Senado Federal e do TSE, atualizados todo dia. Um projeto de Bruno Braz. <span id="upd"></span></footer>
 </div>
 <nav class="bnav" id="bnav" hidden></nav>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>
