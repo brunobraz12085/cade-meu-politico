@@ -104,32 +104,62 @@ const VEREDITO = {bom: ["👍", "Bom pro povo", "t-Saude"], ruim: ["👎", "Ruim
 const caixaMuda = (info, oficial, completo) => { const vv = VEREDITO[info?.veredito];
   return `<div class="impacto ${vv ? vv[2] : "t-Trabalho"}"><span class="ic">${vv ? vv[0] : "💡"}</span><div><span class="lbl">${vv ? vv[1] : "O que muda na sua vida"}</span><b>${info?.muda ? esc(info.muda) : `<span style="font-weight:500">Explicação simples chegando. Texto oficial: ${esc(limpa(oficial).slice(0, 140))}…</span>`}</b></div></div>` +
   (completo && (info?.melhora?.length || info?.piora?.length) ? `<div class="card" style="margin-top:10px">${(info.melhora || []).map(t => `<div class="row" style="grid-template-columns:26px minmax(0,1fr)"><span>✅</span><span>${esc(t)}</span></div>`).join("")}${(info.piora || []).map(t => `<div class="row" style="grid-template-columns:26px minmax(0,1fr)"><span>❌</span><span>${esc(t)}</span></div>`).join("")}</div>` : ""); };
-async function blocoPauta() {
+async function blocoPauta(cheio) {
   const P = await json("dados/pauta.json", true);
   const it = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
   if (!it.length) return "";
   const cartao = x => `<div class="proj"><span class="v tag" style="display:inline-block;margin-bottom:10px;max-width:none">⏳ Ainda vai ser votado · ${dataBR(x.data)}</span>${caixaMuda(PROJ[x.projeto], x.ementa)}
     <h3 style="margin-top:12px">${esc(PROJ[x.projeto]?.apelido || x.projeto)}</h3><div class="kick">${esc(x.projeto)}</div>
     ${PROJ[x.projeto] ? `<details class="mais"><summary>Texto oficial</summary><p class="pt">${esc(limpa(x.ementa))}</p></details>` : ""}</div>`;
+  if (cheio) return `<p class="lead">Estão na pauta da Câmara. Estar na pauta não garante que vai ser votado. Quando forem votados, aparece quem votou a favor e contra.</p>${it.map(cartao).join("")}`;
   return `<div class="sec">Vai ser votado nesta semana <span>${it.length}</span></div>
   <p class="pt" style="margin-top:0">Estão na pauta da Câmara. Quando forem votados, aparece aqui quem votou a favor e contra.</p>
   ${it.slice(0, 3).map(cartao).join("")}
   ${it.length > 3 ? `<details><summary>Ver os outros ${it.length - 3} da pauta</summary>${it.slice(3).map(cartao).join("")}</details>` : ""}`;
 }
 
+const AREAS = {Bolso: "💰", Trabalho: "💼", "Saúde": "🏥", "Educação": "🎒", "Trânsito": "🚗", "Segurança": "🛡️", Moradia: "🏠", Aposentadoria: "👵", Direitos: "⚖️"};
+let areaSel = "";
 async function abaVotacoes(uf, D) {
+  const ps = projetos(), vida = ps.filter(p => p.info?.veredito);
+  const P = await json("dados/pauta.json", true);
+  const pauta = (P?.itens || []).filter(x => /^(PL|PLP|PEC|PDL|MPV) /.test(x.projeto));
+  return `<p class="lead">O que você quer ver?</p><div class="opc">
+  ${opcao(`#${uf}/vt/vida`, "🔥", "Mexem com a sua vida", `${vida.length} projeto${vida.length === 1 ? "" : "s"} que mudam seu bolso, trabalho, saúde, escola ou trânsito`)}
+  ${opcao(`#${uf}/vt/todos`, "📚", "Todos os projetos votados", `${ps.length} votações em ${new Date().getFullYear()}`)}
+  ${pauta.length ? opcao(`#${uf}/vt/pauta`, "⏳", "Vai ser votado esta semana", `${pauta.length} projetos na pauta da Câmara`) : ""}</div>`;
+}
+async function listaVotacoes(uf, qual) {
+  menu(uf, "votacoes");
+  const D = await json(`dados/uf/${uf}.json`);
   const ps = projetos();
   const cartaoV = p => {
     const v = p.principal, {s, n} = placarUF(v, D.deputados), S = v.placar.Sim ?? 0, N = v.placar["Não"] ?? 0;
-    return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${v.aprovada ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px;max-width:none">${v.aprovada == null ? "Votado" : v.aprovada ? "✅ Aprovado" : "❌ Rejeitado"} · ${dataBR(v.data)}</span>
+    return `<a class="proj" href="#${uf}/p/${slug(p.nome)}"><span class="v ${p.info?.resultado === "aprovado" ? "el" : "tag"}" style="display:inline-block;margin-bottom:10px;max-width:none">${p.info?.resultado === "aprovado" ? "✅ Aprovado" : p.info?.resultado === "rejeitado" ? "❌ Rejeitado" : "🗳️ Votado"} · ${dataBR(v.data)}${p.info?.area ? ` · ${AREAS[p.info.area] || ""} ${esc(p.info.area)}` : ""}</span>
     ${caixaMuda(p.info, v.ementa || v.descricao)}
     <h3 style="margin-top:12px">${esc(p.info?.apelido || p.nome)}</h3><div class="kick">${esc(p.nome)}</div>
     <div class="mini"><i style="width:${S / (S + N || 1) * 100}%;background:var(--ok)"></i><i style="width:${N / (S + N || 1) * 100}%;background:var(--nao)"></i></div>
     <div class="pt">${NOMES[uf]}: <b style="color:var(--ok)">${s} a favor</b> · <b style="color:var(--nao)">${n} contra</b> · Câmara toda: ${S} a ${N}</div>
     <div style="margin-top:10px;font-weight:700;color:var(--sim)">Ver quem votou a favor e contra →</div></a>`;
   };
-  const votados = !ps.length ? '<div class="vazio">Nenhuma votação com voto nominal neste ano.</div>' : ps.slice(0, 8).map(cartaoV).join("") + (ps.length > 8 ? `<details><summary>Ver mais ${ps.length - 8} projetos votados</summary>${ps.slice(8).map(cartaoV).join("")}</details>` : "");
-  return `<div class="sec">Já votados em ${new Date().getFullYear()} <span>${ps.length}</span></div>${votados}` + await blocoPauta();
+  let tit = "", corpo = "";
+  if (qual === "vida") {
+    const vida = ps.filter(p => p.info?.veredito);
+    const areas = [...new Set(vida.map(p => p.info.area).filter(Boolean))];
+    const lista = vida.filter(p => !areaSel || p.info.area === areaSel);
+    tit = "🔥 Mexem com a sua vida";
+    corpo = `<p class="lead">Só os projetos que mudam alguma coisa no seu bolso ou no seu dia a dia, explicados sem enrolação.</p>
+    ${areas.length > 1 ? `<div class="chips"><button class="chip" aria-selected="${!areaSel}" data-area="">Todos</button>${areas.map(a => `<button class="chip" aria-selected="${areaSel === a}" data-area="${esc(a)}">${AREAS[a] || ""} ${esc(a)}</button>`).join("")}</div>` : ""}
+    ${lista.map(cartaoV).join("") || '<div class="vazio">Nenhum projeto aqui ainda.</div>'}`;
+  } else if (qual === "pauta") {
+    tit = "⏳ Vai ser votado esta semana";
+    corpo = await blocoPauta(true);
+  } else {
+    tit = "📚 Todos os projetos votados";
+    corpo = `<p class="lead">Todas as votações nominais da Câmara em ${new Date().getFullYear()}, da mais nova para a mais antiga.</p>` + (ps.slice(0, 10).map(cartaoV).join("") + (ps.length > 10 ? `<details><summary>Ver mais ${ps.length - 10} projetos</summary>${ps.slice(10).map(cartaoV).join("")}</details>` : "") || '<div class="vazio">Nenhuma votação neste ano.</div>');
+  }
+  $("app").innerHTML = `<a class="back" href="#${uf}/votacoes">← Votações</a><h1>${tit}</h1>${corpo}`;
+  scrollTo(0, 0);
 }
 
 async function paginaProjeto(uf, nome) {
@@ -141,7 +171,7 @@ async function paginaProjeto(uf, nome) {
   const lista = (ds, tag) => `<div class="list">${ds.map(d => `<a class="dep" href="#${uf}/d/${d.id}">${foto(d)}<span><span class="nm">${esc(d.nome)}</span><br><span class="pt">${esc(d.partido)}</span></span>${tag(d)}</a>`).join("") || '<div class="pt" style="padding:14px 16px">Ninguém.</div>'}</div>`;
   const outros = grupo("outro");
   $("app").innerHTML = `<a class="back" href="#${uf}/votacoes">← Votações</a>
-  <div class="kick" style="margin-top:10px">${esc(p.nome)} · votado em ${dataBR(v.data)}${v.aprovada == null ? "" : v.aprovada ? " · aprovado" : " · rejeitado"}</div>
+  <div class="kick" style="margin-top:10px">${esc(p.nome)} · votado em ${dataBR(v.data)}${p.info?.resultado ? " · " + esc(p.info.resultado) : ""}</div>
   <h1 style="font-size:clamp(26px,6vw,36px)">${esc(p.info?.apelido || p.nome)}</h1>
   ${caixaMuda(p.info, v.ementa || v.descricao, true)}
   ${p.info?.oque || p.info?.detalhe ? `<details open style="margin-top:12px"><summary>O que é esse projeto</summary>${p.info.oque ? `<p style="margin:0 0 10px">${esc(p.info.oque)}</p>` : ""}${p.info.detalhe ? `<p class="pt" style="margin:0 0 10px">${esc(p.info.detalhe)}</p>` : ""}</details>` : ""}
@@ -505,7 +535,8 @@ async function rota() {
     if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
-    menu(uf, tipo === "g" ? "gastos" : tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" ? "votacoes" : tipo === "el" ? "eleicoes" : tipo);
+    menu(uf, tipo === "g" ? "gastos" : tipo === "d" || tipo === "s" ? "politicos" : tipo === "p" || tipo === "vt" ? "votacoes" : tipo === "el" ? "eleicoes" : tipo);
+    if (tipo === "vt") return listaVotacoes(uf, id);
     if (tipo === "d") return deputado(uf, id);
     if (tipo === "g") return paginaGastos(uf, id);
     if (tipo === "s") return senador(uf, id);
@@ -530,13 +561,15 @@ document.addEventListener("click", e => {
   if (an) { eleAno = an.dataset.ano; rota(); return; }
   const cb = e.target.closest("[data-cab]");
   if (cb) { cidAba = cb.dataset.cab; buscaCand = ""; rota(); return; }
+  const ar = e.target.closest("[data-area]");
+  if (ar) { areaSel = ar.dataset.area; rota(); return; }
   const pb = e.target.closest("[data-pab]");
   if (pb) { propAba = pb.dataset.pab; buscaCand = ""; rota(); return; }
   const sh = e.target.closest("[data-share]");
   if (sh) { compartilhar(location.hash.slice(1).split("/")[0], sh.dataset.share); }
 });
 document.addEventListener("change", e => { if (e.target.matches("[data-ir]") && e.target.value) location.hash = e.target.value; });
-addEventListener("hashchange", () => { busca = ""; buscaGasto = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; buscaCand = ""; rota(); });
+addEventListener("hashchange", () => { busca = ""; buscaGasto = ""; filtroVoto = "todos"; cidAba = null; propAba = "cand"; areaSel = ""; buscaCand = ""; rota(); });
 json("dados/resumo.json").then(r => { $("upd").textContent = "Última atualização: " + new Date(r.atualizado).toLocaleString("pt-BR") + "."; }).catch(() => {});
 rota();
 }
