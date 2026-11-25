@@ -37,36 +37,44 @@ if (!csv) throw new Error("Sem CSV no zip");
 
 // 3) lê linha a linha (latin1, separado por ;)
 const campos = l => { const out = []; let cur = "", q = false; for (let i = 0; i < l.length; i++) { const ch = l[i]; if (ch === '"') { if (q && l[i + 1] === '"') { cur += '"'; i++; } else q = !q; } else if (ch === ";" && !q) { out.push(cur); cur = ""; } else cur += ch; } out.push(cur); return out; };
-const proc = spawn("unzip", ["-p", ZIP, csv]);
-const rl = createInterface({ input: proc.stdout.setEncoding("latin1"), crlfDelay: Infinity });
-let cab = null, ix = {}, linhas = 0, usadas = 0;
-const naoAchei = new Map();
-const R = {}; // chave -> { lugar -> {m, uf, e, p, areas:Set} }
-for await (const linha of rl) {
-  if (!cab) {
-    cab = campos(linha.replace(/^﻿/, "")).map(norm);
-    const acha = (...nomes) => cab.findIndex(c => nomes.some(n => c === norm(n)));
-    ix = { ano: acha("Ano da Emenda"), tipo: acha("Tipo de Emenda", "Tipo da Emenda"), autor: acha("Nome do Autor da Emenda"), mun: acha("Município", "Nome Município"), uf: acha("UF", "Nome UF"), loc: acha("Localidade do Gasto", "Localidade de aplicação do recurso"), funcao: acha("Nome Função"), emp: acha("Valor Empenhado"), pago: acha("Valor Pago"), rpp: acha("Valor Restos A Pagar Pagos") };
-    console.log("Colunas:", JSON.stringify(ix));
-    if (ix.autor < 0 || ix.emp < 0) throw new Error("Colunas não encontradas: " + cab.join(" | "));
-    continue;
+async function lerCSV(nome, cadaLinha) {
+  const proc = spawn("unzip", ["-p", ZIP, nome]);
+  const rl = createInterface({ input: proc.stdout.setEncoding("latin1"), crlfDelay: Infinity });
+  let cab = null, n = 0;
+  for await (const linha of rl) {
+    if (!cab) { cab = campos(linha.replace(/^\uFEFF/, "")).map(norm); console.log(nome, "colunas:", cab.join(" | ")); continue; }
+    n++; const f = campos(linha);
+    const g = (...nomes) => { for (const x of nomes) { const k = cab.indexOf(norm(x)); if (k >= 0) return f[k] || ""; } return ""; };
+    cadaLinha(g);
   }
-  linhas++;
-  const f = campos(linha);
-  if (+f[ix.ano] < DESDE) continue;
-  if (ix.tipo >= 0 && !/individual/i.test(f[ix.tipo] || "")) continue;
-  const autor = norm(f[ix.autor]);
-  const k = quem.get(autor);
-  if (!k) { naoAchei.set(autor, (naoAchei.get(autor) || 0) + 1); continue; }
-  usadas++;
-  let m = (f[ix.mun] || "").trim(), uf = (f[ix.uf] || "").trim();
-  if (!m) m = (f[ix.loc] || "Sem local definido").trim();
-  const lugar = m + "|" + uf;
-  const o = ((R[k] ??= {})[lugar] ??= { m, uf, e: 0, p: 0, areas: new Set() });
-  o.e += num(f[ix.emp]); o.p += num(f[ix.pago]) + (ix.rpp >= 0 ? num(f[ix.rpp]) : 0);
-  if (f[ix.funcao]) o.areas.add(f[ix.funcao].trim().toLowerCase().replace(/^./, c => c.toUpperCase()));
+  console.log(nome, n, "linhas");
 }
-console.log(linhas, "linhas lidas,", usadas, "emendas individuais de parlamentares atuais");
+const naoAchei = new Map();
+const quemE = g => { const autor = norm(g("Nome do Autor da Emenda")); const k = quem.get(autor); if (!k) naoAchei.set(autor, (naoAchei.get(autor) || 0) + 1); return k; };
+const individual = g => /individual/i.test(g("Tipo de Emenda", "Tipo da Emenda"));
+const anoDe = t => +(String(t).match(/(20\d\d)/)?.[1] || 0);
+
+// 3a) totais por parlamentar (empenhado e pago)
+const TOT = {};
+await lerCSV(csv, g => {
+  if (anoDe(g("Ano da Emenda")) < DESDE || !individual(g)) return;
+  const k = quemE(g); if (!k) return;
+  const o = (TOT[k] ??= { e: 0, p: 0, areas: {} });
+  o.e += num(g("Valor Empenhado")); o.p += num(g("Valor Pago")) + num(g("Valor Restos A Pagar Pagos"));
+  const fn = g("Nome Função").trim(); if (fn) o.areas[fn] = (o.areas[fn] || 0) + num(g("Valor Empenhado"));
+});
+// 3b) quanto cada cidade recebeu de fato (arquivo por favorecido)
+const R = {};
+const fav = arquivos.find(a => /favorec/i.test(a) && /\.csv$/i.test(a));
+if (fav) await lerCSV(fav, g => {
+  if (anoDe(g("Ano/Mês", "Ano Mes", "Mes Ano")) < DESDE || !individual(g)) return;
+  const k = quemE(g); if (!k) return;
+  const m = g("Município Favorecido").trim() || "Sem cidade informada", uf = g("UF Favorecido").trim();
+  const o = ((R[k] ??= {})[m + "|" + uf] ??= { m, uf, p: 0, quem: {} });
+  const v = num(g("Valor Recebido")); o.p += v;
+  const fv = g("Favorecido").trim(); if (fv) o.quem[fv] = (o.quem[fv] || 0) + v;
+});
+else console.log("Sem arquivo por favorecido no zip");
 console.log("Autores sem correspondência (mais comuns):", [...naoAchei].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([n, q]) => `${n}(${q})`).join(", "));
 
 // UF: o CSV traz o nome do estado; o app usa a sigla
@@ -74,10 +82,12 @@ const UFS = { ACRE: "AC", ALAGOAS: "AL", AMAPA: "AP", AMAZONAS: "AM", BAHIA: "BA
 await rm(SAIDA, { recursive: true, force: true });
 await mkdir(SAIDA, { recursive: true });
 let n = 0;
-for (const [k, lugares] of Object.entries(R)) {
-  const cidades = Object.values(lugares).map(o => ({ m: o.m, uf: UFS[norm(o.uf)] || o.uf, e: Math.round(o.e), p: Math.round(o.p), areas: [...o.areas].slice(0, 4) })).filter(c => c.e > 0 || c.p > 0).sort((a, b) => b.e - a.e);
-  const empenhado = cidades.reduce((t, c) => t + c.e, 0), pago = cidades.reduce((t, c) => t + c.p, 0);
-  await writeFile(`${SAIDA}/${k}.json`, JSON.stringify({ periodo: `${DESDE} a ${new Date().getFullYear()}`, atualizado: new Date().toISOString(), empenhado, pago, cidades }));
+const cap = t => t.toLowerCase().replace(/^./, c => c.toUpperCase());
+for (const k of new Set([...Object.keys(TOT), ...Object.keys(R)])) {
+  const t = TOT[k] || { e: 0, p: 0, areas: {} };
+  const cidades = Object.values(R[k] || {}).map(o => ({ m: o.m, uf: UFS[norm(o.uf)] || o.uf, p: Math.round(o.p), quem: Object.entries(o.quem).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([q]) => q) })).filter(c => c.p > 0).sort((a, b) => b.p - a.p);
+  const areas = Object.entries(t.areas).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([a]) => cap(a));
+  await writeFile(`${SAIDA}/${k}.json`, JSON.stringify({ periodo: `${DESDE} a ${new Date().getFullYear()}`, atualizado: new Date().toISOString(), empenhado: Math.round(t.e), pago: Math.round(t.p), areas, cidades }));
   n++;
 }
 console.log(n, "parlamentares com emendas gravados");
