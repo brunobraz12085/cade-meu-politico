@@ -37,9 +37,13 @@ const lembrado = () => { try { return localStorage.getItem("uf"); } catch (e) { 
 function projetos() {
   const g = new Map();
   for (const v of VOT) { if (!g.has(v.projeto)) g.set(v.projeto, []); g.get(v.projeto).push(v); }
+  // a votação que decide o projeto: "Aprovado/Rejeitado (em 2º turno) o Projeto/a Proposta/a Medida Provisória/o Substitutivo..."
+  const RE = /^(Aprovad|Rejeitad)[oa]s?(, em (primeiro|segundo) turno,)? (o|a) (Projeto|Proposta|Medida Provis|Substitutivo|Subemenda|texto|Emenda Substitutiva|Parecer)/i;
   return [...g.entries()].map(([nome, vs]) => {
-    const principal = vs.find(v => /(Aprovad|Rejeitad)[oa] [oa] (Projeto|texto|Substitutivo|Proposta|Subemenda Substitutiva|Emenda Substitutiva)/i.test(v.descricao)) || vs[vs.length - 1];
-    return { nome, vs, principal, info: PROJ[nome] || null };
+    const info = PROJ[nome] || null, cands = vs.filter(v => RE.test(v.descricao || ""));
+    const fixa = info?.votacao && vs.find(v => v.id === info.votacao);
+    const principal = fixa || cands.find(v => /segundo turno/i.test(v.descricao)) || cands[0] || vs[vs.length - 1];
+    return { nome, vs, principal, info, ok: !!(fixa || cands.length) };
   });
 }
 const slug = s => encodeURIComponent(s.replace(/\s+/g, "-"));
@@ -185,6 +189,7 @@ async function paginaProjeto(uf, nome) {
   ${caixaMuda(p.info, v.ementa || v.descricao, true)}
   ${p.info?.oque || p.info?.detalhe ? `<details open style="margin-top:12px"><summary>O que é esse projeto</summary>${p.info.oque ? `<p style="margin:0 0 10px">${esc(p.info.oque)}</p>` : ""}${p.info.detalhe ? `<p class="pt" style="margin:0 0 10px">${esc(p.info.detalhe)}</p>` : ""}</details>` : ""}
   <h2>Como votaram os deputados de ${NOMES[uf]}</h2>
+  ${p.ok ? "" : `<div class="previa"><span>ℹ️</span><span>A aprovação final deste projeto foi em votação simbólica, sem registro de cada voto. Abaixo está a votação com registro mais importante: <b>${esc((v.descricao || "").split(".")[0])}</b>.</span></div>`}
   <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><b style="color:var(--ok)">${s}</b><span>a favor</span></div><div class="kpi"><b style="color:var(--nao)">${n}</b><span>contra</span></div><div class="kpi"><b>${tot - s - n}</b><span>não votaram</span></div></div>
   <div class="sec" style="color:var(--ok)">✅ Votaram a favor <span>${s}</span></div>${lista(grupo("Sim"), () => '<span class="v Sim" style="background:var(--ok)">A favor</span>')}
   <div class="sec" style="color:var(--nao)">❌ Votaram contra <span>${n}</span></div>${lista(grupo("Não"), () => '<span class="v Não">Contra</span>')}
@@ -479,7 +484,7 @@ async function deputado(uf, id) {
   const eu = meus(), emComum = ps.filter(p => eu[p.principal.id] && ["Sim", "Não"].includes(d.votos[p.principal.id]));
   const concorda = emComum.filter(p => eu[p.principal.id] === d.votos[p.principal.id]).length;
   const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
-  const avalT = ps.filter(p => ["bom", "ruim"].includes(p.info?.veredito));
+  const avalT = ps.filter(p => p.ok && ["bom", "ruim"].includes(p.info?.veredito));
   const ehFav = p => (p.info.veredito === "bom") === (d.votos[p.principal.id] === "Sim");
   const votouA = avalT.filter(p => ["Sim", "Não"].includes(d.votos[p.principal.id]));
   const fav = votouA.filter(ehFav).length, contra = votouA.length - fav, faltou = avalT.length - votouA.length;
