@@ -242,10 +242,12 @@ function resultado(lista, max = 99, opts = {}) {
   return `<div class="card">${lista.slice(0, max).map((c, i) => {
     const nome = nm(c), v = vt(c), bn = ehBN(nome), pos = bn ? "" : ++rank, el = /^ELEITO/.test(c.sit || "");
     const part = opts.mapa && !c.partido ? opts.mapa(nome) : c.partido;
-    return `<div class="rk"><b>${pos}</b><span><span class="nm" style="font-size:15px">${esc(titulo(nome))}</span> <span class="pt">${esc(part || "")}${c.numero ? " · " + esc(c.numero) : ""}</span>
+    const ini = esc(titulo(nome).split(" ").filter(w => w.length > 2).slice(0, 2).map(w => w[0]).join("") || "?");
+    const av = bn ? "" : c.foto ? `<img class="fc" src="eleicoes/fotos/${esc(c.foto)}" alt="" loading="lazy">` : opts.semFoto ? "" : `<span class="fc">${ini}</span>`;
+    return `<div class="rk"><b>${pos}</b><span class="cand">${av}<span class="ci"><span class="nm" style="font-size:15px">${esc(titulo(nome))}</span> <span class="pt">${esc(part || "")}${c.numero ? " · " + esc(c.numero) : ""}</span>
     ${c.colig ? `<div class="pt" style="font-size:12.5px">Coligação: ${esc(c.colig)}</div>` : ""}
     ${!bn ? `<div class="t"><i style="width:${v / tot * 100}%;${el ? "background:var(--ok)" : ""}"></i></div>` : ""}
-    ${c.sit && opts.sit !== false ? `<div style="margin-top:6px">${sitTag(c.sit)}</div>` : ""}</span>
+    ${c.sit && opts.sit !== false ? `<div style="margin-top:6px">${sitTag(c.sit)}</div>` : ""}</span></span>
     <span>${bn ? "" : (v / tot * 100).toFixed(1).replace(".", ",") + "%"}<br><span class="pt" style="font-weight:400">${fmtN(v)} votos</span></span></div>`;
   }).join("")}</div>`;
 }
@@ -301,7 +303,7 @@ function ligarLocal(C, chave, mapaNum) {
   ls.addEventListener("change", () => {
     const l = locs[ls.value]; if (!l) { $("resLocal").innerHTML = ""; return; }
     const pp = l.partidos?.[chave];
-    $("resLocal").innerHTML = `<p class="pt">${esc(titulo(l.end))} · ${l.secoes} seções (urnas)</p>${resultado(l.votos[chave], 25)}
+    $("resLocal").innerHTML = `<p class="pt">${esc(titulo(l.end))} · ${l.secoes} seções (urnas)</p>${resultado(l.votos[chave], 25, {semFoto: true})}
     ${pp ? `<div class="sec">Votos por partido neste colégio</div><div class="card">${pp.map(([n, v]) => `<div class="row"><span><b>${esc(mapaNum[n] || "Partido " + n)}</b> <span class="pt">· nº ${esc(n)}</span></span><b>${fmtN(v)}</b></div>`).join("")}</div>` : ""}`;
   });
 }
