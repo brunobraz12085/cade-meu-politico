@@ -3,6 +3,8 @@
   "brasil": [
     {
       "data": "2026-11-24T12:00:00",
+      "tema": "Bolso",
+      "impacto": "Mexe com o dólar e os juros, que decidem quanto você paga no crediário, no financiamento e no cartão.",
       "titulo": "Câmara aprova o pacote para ajustar as contas do governo",
       "aconteceu": "Na segunda (23), a Câmara aprovou o PLP 299/2026, o pacote fiscal que já tinha passado no Senado. Ele freia o crescimento dos gastos do governo e limita o uso de créditos de imposto pelas empresas. Segundo o relator, Bolsa Família, BPC e abono salarial não são afetados. Como a Câmara manteve o texto do Senado, ele segue para a sanção do presidente.",
       "porque": "Quando o governo gasta mais do que arrecada, o mercado fica inseguro, o dólar sobe e os juros ficam altos. Juro alto deixa mais caro o crediário, o financiamento e o cartão. Ajustar as contas é uma das coisas que o mercado olha para decidir se o dólar e os juros sobem ou descem.",
@@ -14,6 +16,8 @@
     },
     {
       "data": "2026-11-17T12:00:00",
+      "tema": "Preços",
+      "impacto": "Combustível, frete, comida e eletrônicos tendem a ficar mais caros.",
       "titulo": "Dólar dispara e chega perto de R$ 5,80",
       "aconteceu": "O dólar subiu mais de 2% em um dia (16/11) e fechou em R$ 5,77, o maior valor desde abril de 2025. Em novembro, a alta já passa de 6%. O mercado citou a dúvida sobre as contas do governo, a indefinição da equipe econômica do próximo mandato e o cenário lá fora.",
       "porque": "Dólar alto chega no seu bolso mesmo se você nunca comprou dólar. O petróleo é cotado em dólar e o Brasil não refina todo o combustível que usa. Então o diesel encarece, o frete encarece e o preço sobe no mercado. Também ficam mais caros os produtos importados e os que usam peças ou matéria-prima de fora, como eletrônicos, remédios e o trigo do pão.",
