@@ -32,7 +32,7 @@ Chave = nome do projeto como aparece nos dados (ex.: `"PLP 299/2026"`).
 - `oque`: o que o projeto é, em linguagem simples (aparece em "O que é esse projeto").
 - `veredito`: "bom", "ruim" ou "misto" (pro povo). Critério: o efeito direto no bolso, nos direitos e nos serviços da pessoa comum. Ex.: aumenta imposto pra população = ruim; tem efeito bom e ruim relevante = misto. Sempre dizer o porquê.
 - `melhora` / `piora`: listas curtas, na língua do povo, do que melhora e do que piora na vida da pessoa.
-- Termômetro do político: % de votos a favor do povo (votou Sim em projeto "bom" ou Não em projeto "ruim"). Projetos "misto" não contam. Falar do projeto, nunca xingar o político.
+- Termômetro do político: % das votações em que ele votou igual à orientação do governo (com/contra o governo). Não julga bom ou ruim. O selo bom/ruim fica só nos projetos.
 - `detalhe`: (opcional) mais uma linha de contexto.
 - `fontes`: de onde veio a explicação.
 
