@@ -532,7 +532,7 @@ async function ligarEmendas(uf) {
   const det = box.closest("details");
   const carregar = async () => {
     if (box.dataset.ok) return; box.dataset.ok = 1;
-    const E = await json(`emendas/${box.dataset.tipo}${box.dataset.id}.json`, true);
+    const E = await json(`dados/emendas/${box.dataset.tipo}${box.dataset.id}.json`, true);
     if (!E || !E.cidades?.length) { box.innerHTML = `<p class="pt" style="margin:0 0 10px">Não encontramos emendas individuais de ${esc(box.dataset.nome.split(" ")[0])} no Portal da Transparência neste mandato.</p>`; return; }
     const lin = c => `<div class="row"><span><b style="white-space:normal">${esc(titulo(c.m))}${c.uf && c.uf !== uf ? " - " + esc(c.uf) : ""}</b><br><span class="pt">${esc((c.areas || []).join(", "))}</span></span><span style="text-align:right">${brl(c.e)}<br><span class="pt" style="font-weight:400">pago: ${brl(c.p)}</span></span></div>`;
     const sem = x => String(x).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
