@@ -462,6 +462,36 @@ async function senador(uf, id) {
   scrollTo(0, 0);
 }
 
+function sugestao() {
+  const uf = lembrado(); menu(NOMES[uf] ? uf : null, "");
+  $("app").innerHTML = `<a class="back" href="${NOMES[uf] ? `#${uf}/noticias` : "#inicio"}">← Voltar</a>
+  <h1>Mande sua sugestão</h1>
+  <p class="lead">O app ainda está em prévia e está sendo feito pensando em você. Achou algo confuso, faltando ou com erro? Tem uma ideia? Conta pra gente.</p>
+  <form id="fsug" class="card" style="padding:16px">
+    <label class="lbl" for="sEmail">Seu e-mail (opcional, só se quiser resposta)</label>
+    <input type="email" id="sEmail" name="email" placeholder="seuemail@exemplo.com" autocomplete="email">
+    <label class="lbl" for="sMsg">Sua sugestão</label>
+    <textarea id="sMsg" name="mensagem" required maxlength="2000" placeholder="Escreva aqui…"></textarea>
+    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+    <button class="cta" type="submit">Enviar sugestão</button>
+    <p id="sStatus" class="pt" style="margin:12px 0 0"></p>
+  </form>`;
+  $("fsug").addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = e.target, st = $("sStatus"), bt = f.querySelector("button");
+    if (f._honey.value) return;
+    const msg = f.mensagem.value.trim(); if (!msg) return;
+    bt.disabled = true; st.textContent = "Enviando…";
+    try {
+      const r = await fetch("https://formsubmit.co/ajax/brunobrazgo@gmail.com", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ _subject: "Sugestão no Cadê Meu Político", _template: "table", _captcha: "false", email: f.email.value.trim() || "(não informou)", estado: NOMES[uf] || "", mensagem: msg, pagina: location.href }) });
+      if (!r.ok) throw new Error(r.status);
+      f.innerHTML = `<p style="margin:0;font-size:18px"><b>Valeu! 🙌</b> Sua sugestão chegou pra gente.</p>`;
+    } catch (err) { bt.disabled = false; st.textContent = "Não consegui enviar agora. Confere sua internet e tenta de novo."; }
+  });
+  scrollTo(0, 0);
+}
+
 async function rota() {
   try {
     VOT ??= await json("dados/votacoes.json");
@@ -469,6 +499,7 @@ async function rota() {
     PROJ = (await json("conteudo/projetos.json", true)) || PROJ;
     GLOS = (await json("conteudo/glossario.json", true)) || GLOS;
     const h = location.hash.slice(1);
+    if (h === "sugestao") return sugestao();
     if (!h) { const u = lembrado(); if (NOMES[u]) { location.replace(`#${u}/noticias`); return; } return home(); }
     const [uf, tipo, id] = h.split("/");
     if (!NOMES[uf]) return home();
